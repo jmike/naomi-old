@@ -1,3 +1,5 @@
+MySqlPool = require("./mysql-pool")
+
 class Naomi
 
 	###*
@@ -9,9 +11,8 @@ class Naomi
 	###*
 	* Maps port numbers to predefined database engines.
 	###
-	defaultPort = {
-		@MYSQL: 3306
-	}
+	defaultPort = {}
+	defaultPort[@MYSQL] = 3306
 
 	###*
 	* Defines a list of supported datatypes.
@@ -26,21 +27,40 @@ class Naomi
 	* @param database {string} the name of the database (a.k.a. schema).
 	* @param username {string} the name of the user to login to the database.
 	* @param password {string} the password to login to the database.
-	* @param options {Object=} optional settings.
+	* @param o {Object=} optional settings.
 	###
-	constructor: (database, username, password, options = {}) ->
+	constructor: (database, username, password, o = {}) ->
 		if typeof database isnt "string"
 			throw new Error("Invalid database name")
 		if typeof username isnt "string"
 			throw new Error("Invalid username")
 		if typeof password isnt "string"
 			throw new Error("Invalid password")
+		if typeof o isnt "object"
+			throw new Error("Invalid options, expecting an object")
 		@database = database
 		@username = username
 		@password = password
-		@engine = options.engine || @MYSQL
-		@host = options.host || "localhost"
-		@port = options.host || "localhost"
+		@engine = o.engine || Naomi.MYSQL
+		@host = o.host || "localhost"
+		@port = o.port || defaultPort[@engine]
+		
+#		#set connection pooling
+		switch @engine
+			when Naomi.MYSQL
+				@pool = new MySqlPool(o)
+			else
+				throw new Error("Invalid or unknown database engine")
+#		@pool = poolModule.Pool({
+#			create : (callback) ->
+#				switch
+#			destroy: (conn) ->
+#				
+#			max: parseInt(o.maxConnections, 10) || 10
+#			min: parseInt(o.minConnections) || 2
+#			idleTimeoutMillis: parseInt(o.idleConnectionTimeout, 10) || 30000
+#			log: true 
+#		})
 			
 	extend: (name, attributes = {}, options = {}) ->
 		return new Naomi.model(name, attributes, options)

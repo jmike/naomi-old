@@ -3,6 +3,8 @@ Entity = require("./entity")
 class MySqlEntity extends Entity
 
 	constructor: (name, attributes = {}, options = {}) ->
+		super(name, attributes, options)
+		console.log super
 	
 	###*
 	* Returns a set of records from this entity.
