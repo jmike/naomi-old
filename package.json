@@ -1,0 +1,23 @@
+{
+	"name": "naomi",
+	"description": "",
+	"version": "0.0.2",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/jmike/naomi.git"
+	},
+	"main": "source/index.js",
+	"dependencies": {
+		"coffee-script": "latest",
+		"generic-pool": "latest",
+		"mysql": "latest",
+		"validator": "latest"
+	},
+	"devDependencies": {},
+	"optionalDependencies": {},
+	"engines": {
+		"node": "0.8.x",
+		"npm": "1.1.x"
+	}
+
+}
