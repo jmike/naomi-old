@@ -48,7 +48,16 @@ class Naomi
 #		#set connection pooling
 		switch @engine
 			when Naomi.MYSQL
-				@pool = new MySqlPool(o)
+				@pool = new MySqlPool({
+					@database
+					user: @username
+					@password
+					@host
+					@port
+					max: parseInt(o.maxConnections, 10) || 10
+					min: parseInt(o.minConnections) || 2
+					idleTimeout: parseInt(o.idleConnectionTimeout, 10) || 30000
+				})
 			else
 				throw new Error("Invalid or unknown database engine")
 #		@pool = poolModule.Pool({
