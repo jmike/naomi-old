@@ -19,6 +19,4 @@ class MySqlEntity extends Entity
 
 	del: (settings, callback) ->
 	
-	isValid: (attribute, value) ->
-	
 module.exports = MySqlEntity
