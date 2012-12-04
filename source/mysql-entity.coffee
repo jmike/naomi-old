@@ -11,7 +11,20 @@ class MySqlEntity extends Entity
 	* @param settings {Object|null} key/value pairs.
 	* @param callback {function=} (optional).
 	###
-	get: (settings, callback) ->
+	get: (query, callback) ->
+		params = []
+		sql = "SELECT "
+		if query.show?
+			for x, i in query.show
+				if i isnt 0 then sql += ", "
+				sql += "`#{x.key}`"
+				if x.alias?
+					sql += " AS '{x.alias}'"
+		else
+			sql += "*"
+		sql += " FROM `#{this.name}`"
+		sql += ";"
+		return sql
 	
 	count: (settings, callback) ->
 	

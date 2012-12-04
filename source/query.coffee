@@ -1,5 +1,13 @@
+###
+Query is a handy class that can be used to create complex queries.
+###
 class Query
 	
+	###
+	Constructs a new Query instance with the specified attributes.
+	@param {String|Array<String>} the name of the attribute and it's optional corresponding alias name, i.e. "field" or "["field", "alias"].
+	@return {Query} to allow method chaining.
+	###
 	@show: (args...) ->
 		q = new Query()
 		q.show.apply(q, args)
@@ -10,15 +18,15 @@ class Query
 		q.filter.apply(q, args)
 		return q
 		
-#	@and: (args...) ->
-#		q = {}
-#		Query.And.apply(q, args)
-#		return q
-#		
-#	@or: (args...) ->
-#		q = {}
-#		Query.Or.apply(q, args)
-#		return q
+	@and: (args...) ->
+		x = Object.create(Query.And.prototype)
+		Query.And.apply(x, args)
+		return x
+		
+	@or: (args...) ->
+		x = Object.create(Query.Or.prototype)
+		Query.Or.apply(x, args)
+		return x
 	
 	@order: (args...) ->
 		q = new Query()
@@ -36,14 +44,14 @@ class Query
 		@_properties = {}
 
 	###
-	Specifies the fields to include in the query.
-	@param {String, Array.<String>} accepts multiple parameters.
+	Specifies the attributes to include in the query.
+	@param {String|Array<String>} the name of the attribute and it's optional corresponding alias name, i.e. "field" or "["field", "alias"].
 	@return {Query} to allow method chaining.
 	###
 	show: (args...) ->
-		q = {}
-		Query.Show.apply(q, args)
-		@_properties.show = q.expression		
+		x = Object.create(Query.Show.prototype)
+		Query.Show.apply(x, args)
+		@_properties.show = x.expression		
 		return this
 
 	###
@@ -52,9 +60,9 @@ class Query
 	@return {Query} to allow method chaining.
 	###
 	filter: (args...) ->
-		q = {}
-		Query.Filter.apply(q, args)
-		@_properties.filter = q.expression
+		x = Object.create(Query.Filter.prototype)
+		Query.Filter.apply(x, args)
+		@_properties.filter = x.expression
 		return this
 	
 	###
@@ -63,9 +71,9 @@ class Query
 	@return {Query} to allow method chaining.
 	###
 	order: (args...) ->
-		q = {}
-		Query.Order.apply(q, args)
-		@_properties.order = q.expression
+		x = Object.create(Query.Order.prototype)
+		Query.Order.apply(x, args)
+		@_properties.order = x.expression
 		return this
 
 	###
@@ -220,7 +228,7 @@ class Query.Filter
 		if args.length is 0
 			throw new Error("You must specify at least one filter parameter")
 		if args.length > 1
-			x = {}
+			x = Object.create(Query.And.prototype)
 			Query.And.apply(x, args)
 			@expression = {
 				"and": x.expression
@@ -263,15 +271,18 @@ class Query.Filter.Clause
 		@key = key
 		@operator = operator
 		@value = value
+		
+AND = Query.and
+OR = Query.or
 
 q = Query.show(
 	"name"
 	"id"
 	["age", "years old"]
 ).filter(
-	new Query.And(
+	AND(
 		["id", ">", "10"]
-		new Query.Or(
+		OR(
 			["name", "=", "mitsos"]
 			["name", "=", "kitsos"]
 		)
