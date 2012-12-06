@@ -1,5 +1,3 @@
-check = require("validator").check
-
 class Entity
 
 	###*
@@ -9,9 +7,5 @@ class Entity
 	* @param options {object=} key/value settings (optional).
 	###
 	constructor: (name, attributes = {}, options = {}) ->
-		
-	
-	isValid: (attribute, value) ->
-		
 	
 module.exports = Entity
