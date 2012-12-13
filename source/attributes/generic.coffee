@@ -17,4 +17,15 @@ class GenericAttribute
 		@name = name
 		@options = options
 
+	###
+	Specifies whether an explicit null value can be assigned to the attribute.
+	@param {Boolean} bool
+	@return {GenericAttribute} to allow method chaining.
+	###
+	nillable: (bool = true) ->
+		if typeof bool isnt "boolean"
+			throw new Error("Invalid nillable value - expected Boolean, got #{typeof value}")
+		@options.nillable = bool
+		return this
+
 module.exports = GenericAttribute
