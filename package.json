@@ -9,6 +9,7 @@
 	"main": "source/index.js",
 	"dependencies": {
 		"coffee-script": "latest",
+		"amdefine": "latest",
 		"generic-pool": "latest",
 		"mysql": "latest",
 		"validator": "latest"
