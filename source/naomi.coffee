@@ -10,14 +10,6 @@ class Naomi
 	@POSTGRE: "POSTGRE"
 
 	###*
-	* Defines a list of supported datatypes.
-	###
-	@STRING: "STRING"
-	@NUMBER: "NUMBER"
-	@BOOLEAN: "BOOLEAN"
-	@DATE: "DATE"
-
-	###*
 	* Contructs a new Naomi instance of the specified properties.
 	* @param database {string} the name of the database (a.k.a. schema).
 	* @param username {string} the name of the user to login to the database.
