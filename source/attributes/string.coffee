@@ -9,10 +9,11 @@ class StringAttribute extends GenericAttribute
 	###
 	Constructs a new StringAttribute instance of the designated name.
 	@param {String} name the attribute's name.
+	@param {Object} options key/value constraints (optional).
 	###
-	constructor: (name) ->
-		super(name)
-		
+	constructor: (name, options = {}) ->
+		super(name, options)
+
 	###
 	Sets the attribute's minimum length.
 	@param {Number} len number of characters.
@@ -22,7 +23,7 @@ class StringAttribute extends GenericAttribute
 		if typeof len isnt "number"
 			throw new Error("Invalid length - expected Number, got #{typeof len}")
 		unless NumberUtils.isNonNegativeInt(len)
-			throw new Error("Minimum length must be an integer at least 0 in value")
+			throw new Error("Minimum length must be a integer at least 0 in value")
 		@options.minLength = len
 		return this
 		
@@ -75,7 +76,7 @@ class StringAttribute extends GenericAttribute
 			throw new Error("You must specify at least one allowed value")
 		for value in values when typeof value isnt "string"
 			throw new Error("Invalid allowed value - expected String, got #{typeof value}")
-		@options.isIn = values
+		@options.equals = values
 		return this
 
 	###
@@ -90,7 +91,7 @@ class StringAttribute extends GenericAttribute
 			throw new Error("You must specify at least one prohibited value")
 		for value in values when typeof value isnt "string"
 			throw new Error("Invalid prohibited value - expected String, got #{typeof value}")
-		@options.notIn = values
+		@options.notEquals = values
 		return this
 
 	###
@@ -142,43 +143,56 @@ class StringAttribute extends GenericAttribute
 		return this
 
 	###
+	Parses the supplied value and returns a string or null.
+	@param {*} value
+	@return {String|null}
+	###	
+	parse: (value) ->
+		if value?
+			if typeof value is "string"
+				return value
+			else
+				return value.toString()
+		else
+			return null
+
+	###
 	Throws an error if the specified value is invalid.
 	@param {*} x
 	@throw {Error} if value is invalid.
 	###	
-	validate: (x) ->
-		if typeof x isnt "string"
-			x = x.toString()
-		# Min length
-		if @options.minLength? and x.length < @options.minLength
-			throw new Error("Attribute #{@name} must be at least #{@options.minLength} characters in length")
-		# Max length
-		if @options.maxLength? and x.length < @options.maxLength
-			throw new Error("Attribute #{@name} must be at most #{@options.maxLength} characters in length")
-		# Exact length
-		if @options.length? and x.length isnt @options.length
-			throw new Error("Attribute #{@name} must be of #{@options.length} characters in length")
-		# Value not equals ..
-		if @options.notEquals? and x is @options.notEquals
-			throw new Error("Attribute #{@name} must not be equal to #{@options.notEquals} in value")
-		# Value in [..]
-		if @options.isIn? and x not in @options.isIn
-			throw new Error("Attribute #{@name} must be equal to one of the predefined allowed values")
-		# Value not in [..]
-		if @options.notIn? and x in @options.notIn
-			throw new Error("Attribute #{@name} must not be equal to one of the predefined prohibited values")
-		# Value matches RegExp
-		if @options.regex? and not @options.regex.test(x)
-			throw new Error("Attribute #{@name} must match the regular expression #{@options.regex.toString()}")
-		# Value not matches RegExp
-		if @options.notRegex? and @options.notRegex.test(x)
-			throw new Error("Attribute #{@name} must not match the regular expression #{@options.notRegex.toString()}")
-		# Value contains
-		if @options.contains? and x.indexOf(@options.contains) is -1
-			throw new Error("Attribute #{@name} must contain the value #{@options.contains}")
-		# Value not contains
-		if @options.notContains? and x.indexOf(@options.notContains) isnt -1
-			throw new Error("Attribute #{@name} must not contain the value #{@options.notContains}")
+	validate: (value) ->
+		value = this.parse(value)# parse this value
+		if value isnt null
+			# Min length
+			if @options.minLength? and value.length < @options.minLength
+				throw new Error("Attribute #{@name} must be at least #{@options.minLength} characters in length")
+			# Max length
+			if @options.maxLength? and value.length < @options.maxLength
+				throw new Error("Attribute #{@name} must be at most #{@options.maxLength} characters in length")
+			# Exact length
+			if @options.length? and value.length isnt @options.length
+				throw new Error("Attribute #{@name} must be exactly #{@options.length} characters in length")
+			# Value equals
+			if @options.equals? and value isnt @options.equals and value not in @options.equals
+				throw new Error("Attribute #{@name} must be equal to an allowed value")
+			# Value not equals
+			if @options.notEquals? and (value is @options.notEquals or value in @options.notEquals)
+				throw new Error("Attribute #{@name} cannot be equal to a prohibited value")
+			# Value matches RegExp
+			if @options.regex? and not @options.regex.test(value)
+				throw new Error("Attribute #{@name} must match the regular expression #{@options.regex.toString()}")
+			# Value not matches RegExp
+			if @options.notRegex? and @options.notRegex.test(value)
+				throw new Error("Attribute #{@name} cannot match the regular expression #{@options.notRegex.toString()}")
+			# Value contains
+			if @options.contains? and value.indexOf(@options.contains) is -1
+				throw new Error("Attribute #{@name} must contain the value #{@options.contains}")
+			# Value not contains
+			if @options.notContains? and value.indexOf(@options.notContains) isnt -1
+				throw new Error("Attribute #{@name} cannot contain the value #{@options.notContains}")
+		else if not @options.nullable
+			throw new Error("Attribute #{@name} cannot be assigned with a null value")
 		return
 
 module.exports = StringAttribute

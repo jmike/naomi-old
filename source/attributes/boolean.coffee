@@ -1,41 +1,30 @@
-#if typeof define isnt "function" then define = require("amdefine")(module)
-
 GenericAttribute = require("./generic")
 
 ###
-BooleanAttribute represents a boolean attribute.
+BooleanAttribute represents a boolean attribute of an entity.
 ###
 class BooleanAttribute extends GenericAttribute
 
 	###
-	Constructs a new BooleanAttribute instance.
+	Constructs a new boolean attribute.
 	@param {String} name the attribute's name.
+	@param {Object} options key/value constraints (optional).
 	###
-	constructor: (name) ->
-		super(name)
+	constructor: (name, options = {}) ->
+		super(name, options)
 
 	###
-	Sets the attribute's prohibited value.
-	@param {Boolean} value
-	@return {BooleanAttribute} to allow method chaining.
-	###
-	notEquals: (value) ->
-		if typeof value isnt "boolean"
-			throw new Error("Invalid value - expected Boolean, got #{typeof value}")
-		@options.notEquals = value
-		return this
-
-	###
-	Throws an error if the specified value is invalid.
-	@param {*} x
-	@throw {Error} if value is invalid.
+	Parses the supplied value and returns a boolean or null.
+	@param {*} value
+	@return {Boolean|null}
 	###	
-	validate: (x) ->
-		if typeof x isnt "boolean"
-			x = /^(true|1)$/i.test(x) or x is 1
-		# Value not equals ..
-		if typeof @options.notEquals isnt "undefined" and x is @options.notEquals
-			throw new Error("Attribute #{@name} must not be equal to #{@options.notEquals} in value")
-		return
+	parse: (value) ->
+		if value?
+			if typeof value is "boolean"
+				return value
+			else
+				return /^(true|1)$/i.test(value) or value is 1
+		else
+			return null
 
 module.exports = BooleanAttribute

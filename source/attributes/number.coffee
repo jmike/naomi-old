@@ -2,30 +2,44 @@ GenericAttribute = require("./generic")
 NumberUtils = require("../utils/number")
 
 ###
-NumberAttribute represents a numeric attribute.
+NumberAttribute represents a numeric attribute of an entity.
 ###
 class NumberAttribute extends GenericAttribute
 
 	###
-	Constructs a new NumberAttribute instance.
+	Constructs a new number attribute.
 	@param {String} name the attribute's name.
+	@param {Object} options key/value constraints (optional).
 	###
-	constructor: (name) ->
-		super(name)
+	constructor: (name, options = {}) ->
+		super(name, options)
 		
 	###
-	Sets the attribute's precision.
-	@param {Number} x number of digits after the decimal point.
+	Sets the the maximum number of digits allowed in the attribute's value.
+	@param {Number} x number of digits.
 	@return {NumberAttribute} to allow method chaining.
 	###
 	precision: (x) ->
 		if typeof x isnt "number"
-			throw new Error("Invalid number of fractional digits - expected Number, got #{typeof value}")
+			throw new Error("Invalid precision value - expected Number, got #{typeof value}")
 		unless NumberUtils.isNonNegativeInt(x)
-			throw new Error("Number of fractional digits must an integer of at least 0 in value")
-		@options.precision = x	
+			throw new Error("Number of digits cannot be negative")
+		@options.precision = x
 		return this
-		
+
+	###
+	Sets the the maximum number of digits allowed to the right of a decimal point.
+	@param {Number} x number of digits.
+	@return {NumberAttribute} to allow method chaining.
+	###
+	scale: (x) ->
+		if typeof x isnt "number"
+			throw new Error("Invalid scale value - expected Number, got #{typeof value}")
+		unless NumberUtils.isNonNegativeInt(x)
+			throw new Error("Number of digits cannot be negative")
+		@options.scale = x
+		return this
+
 	###
 	Sets the attribute's minimum allowed value.
 	@param {Number} value
@@ -60,63 +74,80 @@ class NumberAttribute extends GenericAttribute
 		return this
 
 	###
-	Sets the attribute's allowed values.
+	Sets a list of allowed values for this attribute.
 	@param {Array<Number>} values
 	@return {NumberAttribute} to allow method chaining.
 	###
 	isIn: (values) ->
 		if not Array.isArray(values)
-			throw new Error("Invalid allowed values - expected Array, got #{typeof values}")
+			throw new Error("Invalid allowed values - expected an Array, got #{typeof values}")
 		if values.length is 0
 			throw new Error("You must specify at least one allowed value")
 		for value in values when typeof value isnt "number"
 			throw new Error("Invalid allowed value - expected Number, got #{typeof value}")
-		@options.isIn = values
+		@options.equals = values
 		return this
 
 	###
-	Sets the attribute's prohibited values.
+	Sets a list of prohibited values for this attribute.
 	@param {Array<Number>} values
 	@return {NumberAttribute} to allow method chaining.
 	###
 	notIn: (values) ->
 		if not Array.isArray(values)
-			throw new Error("Invalid prohibited values - expected Array, got #{typeof values}")
+			throw new Error("Invalid prohibited values - expected an Array, got #{typeof values}")
 		if values.length is 0
 			throw new Error("You must specify at least one prohibited value")
 		for value in values when typeof value isnt "number"
 			throw new Error("Invalid prohibited value - expected Number, got #{typeof value}")
-		@options.notIn = values
+		@options.notEquals = values
 		return this
+	
+	###
+	Parses the supplied value and returns a number or null.
+	@param {*} value
+	@return {Number|null}
+	###	
+	parse: (value) ->
+		if value?
+			if typeof value is "number"
+				return value
+			else
+				return parseFloat(value)
+		else
+			return null
 
 	###
 	Throws an error if the specified value is invalid.
-	@param {*} x
+	@param {*} value
 	@throw {Error} if value is invalid.
 	###	
-	validate: (x) ->
-		if typeof x isnt "number"
-			x = parseFloat(x)
-		# Decimal precision
-		if @options.precision?
-			arr = x.toString().split(/\.|,/)
-			if arr[1]? and arr[1].length > @options.precision
-				throw new Error("Attribute #{@name} must have #{@options.precision} fractional digits")
-		# Min value
-		if @options.min? and x < @options.min
-			throw new Error("Attribute #{@name} must be at least #{@options.min} in value")
-		# Max value
-		if @options.max? and x > @options.max
-			throw new Error("Attribute #{@name} must be at most #{@options.max} in value")
-		# Value not equals ..
-		if @options.notEquals? and x is @options.notEquals
-			throw new Error("Attribute #{@name} must not be equal to #{@options.notEquals} in value")
-		# Value in [..]
-		if @options.isIn? and x not in @options.isIn
-			throw new Error("Attribute #{@name} must be equal to one of the predefined allowed values")
-		# Value not in [..]
-		if @options.notIn? and x in @options.notIn
-			throw new Error("Attribute #{@name} must not be equal to one of the predefined prohibited values")
+	validate: (value) ->
+		value = this.parse(value)# parse this value
+		if value isnt null
+			# Min value
+			if @options.min? and value < @options.min
+				throw new Error("Attribute #{@name} must be at least #{@options.min} in value")
+			# Max value
+			if @options.max? and value > @options.max
+				throw new Error("Attribute #{@name} must be at most #{@options.max} in value")
+			# Value equals
+			if @options.equals? and value isnt @options.equals and value not in @options.equals
+				throw new Error("Attribute #{@name} must be equal to an allowed value")
+			# Value not equals
+			if @options.notEquals? and (value is @options.notEquals or value in @options.notEquals)
+				throw new Error("Attribute #{@name} cannot be equal to a prohibited value")
+			# Precision
+			if @options.precision?
+				if value.toString().replace(/\.|,/, "").length > @options.precision
+					throw new Error("Attribute #{@name} must be at most #{@options.precision} digits in length")
+			# Scale
+			if @options.scale?
+				arr = value.toString().split(/\.|,/)
+				if arr[1]? and arr[1].length > @options.scale
+					throw new Error("Attribute #{@name} must have at most #{@options.scale} digits to right of the decimal point")
+		else if not @options.nullable
+			throw new Error("Attribute #{@name} cannot be assigned with a null value")
 		return
 
 module.exports = NumberAttribute

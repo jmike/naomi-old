@@ -76,6 +76,20 @@ class DateAttribute extends GenericAttribute
 		return this
 
 	###
+	Parses the supplied value and returns a Date object or null.
+	@param {*} value
+	@return {Date|null}
+	###	
+	parse: (value) ->
+		if value?
+			if value instanceof Date
+				return value
+			else
+				return new Date(value)
+		else
+			return null
+
+	###
 	Throws an error if the specified value is invalid.
 	@param {*} x
 	@throw {Error} if value is invalid.
