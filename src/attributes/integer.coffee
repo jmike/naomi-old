@@ -1,8 +1,5 @@
 NumberAttribute = require("./number")
 
-###
-IntegerAttribute represents an integer attribute of an entity.
-###
 class IntegerAttribute extends NumberAttribute
 
 	###

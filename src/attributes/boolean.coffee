@@ -1,12 +1,9 @@
 GenericAttribute = require("./generic")
 
-###
-BooleanAttribute represents a boolean attribute of an entity.
-###
 class BooleanAttribute extends GenericAttribute
 
 	###
-	Constructs a new boolean attribute.
+	Constructs a new boolean attribute of the specified properties.
 	@param {String} name the attribute's name.
 	@param {Object} options key/value constraints (optional).
 	###
@@ -14,17 +11,20 @@ class BooleanAttribute extends GenericAttribute
 		super(name, options)
 
 	###
-	Parses the supplied value and returns a boolean or null.
+	Parses the supplied value to match the attribute's internal type.
 	@param {*} value
 	@return {Boolean|null}
 	###	
 	parse: (value) ->
 		if value?
-			if typeof value is "boolean"
-				return value
-			else
-				return /^(true|1)$/i.test(value) or value is 1
-		else
+			switch typeof value
+				when "boolean"
+					return value
+				when "string", "number"
+					return /^(true|1)$/i.test(value) or value is 1
+				else
+					return Boolean(value)
+		else# null or undefined
 			return null
 
 module.exports = BooleanAttribute

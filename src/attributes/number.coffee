@@ -1,9 +1,6 @@
 GenericAttribute = require("./generic")
 NumberUtils = require("../utils/number")
 
-###
-NumberAttribute represents a numeric attribute of an entity.
-###
 class NumberAttribute extends GenericAttribute
 
 	###
@@ -104,9 +101,9 @@ class NumberAttribute extends GenericAttribute
 		return this
 	
 	###
-	Parses the supplied value and returns a number or null.
+	Parses the supplied value to match the attribute's internal type.
 	@param {*} value
-	@return {Number|null}
+	@return {Number|null|NaN}
 	###	
 	parse: (value) ->
 		if value?
@@ -114,7 +111,7 @@ class NumberAttribute extends GenericAttribute
 				return value
 			else
 				return parseFloat(value)
-		else
+		else# null, undefined
 			return null
 
 	###

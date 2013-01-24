@@ -21,7 +21,7 @@ class GenericAttribute
 
 	###
 	Specifies whether an explicit null value can be assigned to the attribute.
-	@param {Boolean} bool (optional), true by default.
+	@param {Boolean} bool (optional).
 	@return {GenericAttribute} to allow method chaining.
 	###
 	nullable: (bool = true) ->
@@ -31,7 +31,7 @@ class GenericAttribute
 		return this
 	
 	###
-	Parses the supplied value and returns a new value the conforms to the attribute's type.
+	Parses the supplied value to match the attribute's internal type.
 	@param {*} value
 	@return {*}
 	###	
@@ -41,7 +41,7 @@ class GenericAttribute
 	Throws an error if the specified value is invalid.
 	@param {*} value
 	@throw {Error} if value is invalid.
-	###	
+	###
 	validate: (value) ->
 		value = this.parse(value)
 		if value is null and not @options.nullable

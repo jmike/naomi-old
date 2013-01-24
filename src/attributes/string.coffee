@@ -1,13 +1,10 @@
 GenericAttribute = require("./generic")
 NumberUtils = require("../utils/number")
 
-###
-StringAttribute represents a string attribute.
-###
 class StringAttribute extends GenericAttribute
 
 	###
-	Constructs a new StringAttribute instance of the designated name.
+	Constructs a new string attribute of the designated properties.
 	@param {String} name the attribute's name.
 	@param {Object} options key/value constraints (optional).
 	###
@@ -54,7 +51,7 @@ class StringAttribute extends GenericAttribute
 		return this
 
 	###
-	Sets a value the attribute must not equal to.
+	Sets a value the attribute must not be equal to.
 	@param {String} value
 	@return {StringAttribute} to allow method chaining.
 	###
@@ -143,7 +140,7 @@ class StringAttribute extends GenericAttribute
 		return this
 
 	###
-	Parses the supplied value and returns a string or null.
+	Parses the supplied value to match the attribute's internal type.
 	@param {*} value
 	@return {String|null}
 	###	
@@ -153,7 +150,7 @@ class StringAttribute extends GenericAttribute
 				return value
 			else
 				return value.toString()
-		else
+		else# null, undefined
 			return null
 
 	###
@@ -162,13 +159,13 @@ class StringAttribute extends GenericAttribute
 	@throw {Error} if value is invalid.
 	###	
 	validate: (value) ->
-		value = this.parse(value)# parse this value
+		value = this.parse(value)
 		if value isnt null
 			# Min length
 			if @options.minLength? and value.length < @options.minLength
 				throw new Error("Attribute #{@name} must be at least #{@options.minLength} characters in length")
 			# Max length
-			if @options.maxLength? and value.length < @options.maxLength
+			if @options.maxLength? and value.length > @options.maxLength
 				throw new Error("Attribute #{@name} must be at most #{@options.maxLength} characters in length")
 			# Exact length
 			if @options.length? and value.length isnt @options.length
@@ -192,7 +189,7 @@ class StringAttribute extends GenericAttribute
 			if @options.notContains? and value.indexOf(@options.notContains) isnt -1
 				throw new Error("Attribute #{@name} cannot contain the value #{@options.notContains}")
 		else if not @options.nullable
-			throw new Error("Attribute #{@name} cannot be assigned with a null value")
+			throw new Error("Attribute #{@name} cannot contain a null value")
 		return
 
 module.exports = StringAttribute
