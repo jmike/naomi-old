@@ -1,20 +1,23 @@
 {
 	"name": "naomi",
-	"description": "",
-	"version": "0.0.2",
+	"description": "Entity relation management for node.js and the browser.",
+	"version": "0.1.4",
 	"repository": {
 		"type": "git",
 		"url": "git://github.com/jmike/naomi.git"
 	},
 	"main": "source/index.js",
 	"dependencies": {
-		"coffee-script": "latest",
-		"amdefine": "latest",
-		"generic-pool": "latest",
-		"mysql": "latest",
-		"validator": "latest"
+		"coffee-script": "1.4.x",
+		"amdefine": "0.0.x",
+		"generic-pool": "2.0.x",
+		"mysql": "2.0.0-alpha5",
+		"validator": "0.4.x"
 	},
-	"devDependencies": {},
+	"devDependencies": {
+		"mocha": "1.8.x",
+		"chai": "1.4.x"
+	},
 	"optionalDependencies": {},
 	"engines": {
 		"node": "0.8.x",
