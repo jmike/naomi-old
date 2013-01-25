@@ -105,7 +105,7 @@ class NumberAttribute extends GenericAttribute
 	@param {*} value
 	@return {Number|null|NaN}
 	###	
-	parse: (value) ->
+	@parse: (value) ->
 		if value?
 			if typeof value is "number"
 				return value
@@ -120,7 +120,7 @@ class NumberAttribute extends GenericAttribute
 	@throw {Error} if value is invalid.
 	###	
 	validate: (value) ->
-		value = this.parse(value)# parse this value
+		value = NumberAttribute.parse(value)# parse this value
 		if value isnt null
 			# Min value
 			if @options.min? and value < @options.min

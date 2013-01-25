@@ -15,7 +15,7 @@ class BooleanAttribute extends GenericAttribute
 	@param {*} value
 	@return {Boolean|null}
 	###	
-	parse: (value) ->
+	@parse: (value) ->
 		if value?
 			switch typeof value
 				when "boolean"

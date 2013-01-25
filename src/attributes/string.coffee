@@ -144,7 +144,7 @@ class StringAttribute extends GenericAttribute
 	@param {*} value
 	@return {String|null}
 	###	
-	parse: (value) ->
+	@parse: (value) ->
 		if value?
 			if typeof value is "string"
 				return value
@@ -159,7 +159,7 @@ class StringAttribute extends GenericAttribute
 	@throw {Error} if value is invalid.
 	###	
 	validate: (value) ->
-		value = this.parse(value)
+		value = StringAttribute.parse(value)
 		if value isnt null
 			# Min length
 			if @options.minLength? and value.length < @options.minLength

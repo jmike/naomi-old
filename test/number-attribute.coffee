@@ -14,17 +14,17 @@ describe("Number attribute", ->
 	)
 	
 	it("should parse '0' as 0", ->
-		assert.equal(new NumberAttribute("test").parse("0"), 0)
+		assert.equal(NumberAttribute.parse("0"), 0)
 		return
 	)
 	
 	it("should parse '132.123213' as 132.123213", ->
-		assert.equal(new NumberAttribute("test").parse("132.123213"), 132.123213)
+		assert.equal(NumberAttribute.parse("132.123213"), 132.123213)
 		return
 	)
 	
 	it("should parse true as NaN", ->
-		assert.strictEqual(isNaN(new NumberAttribute("test").parse(true)), true)
+		assert.strictEqual(isNaN(NumberAttribute.parse(true)), true)
 		return
 	)
 	

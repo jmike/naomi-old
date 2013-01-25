@@ -80,7 +80,7 @@ class DateAttribute extends GenericAttribute
 	@param {*} value
 	@return {Date|null}
 	###	
-	parse: (value) ->
+	@parse: (value) ->
 		if value?
 			if value instanceof Date
 				return value

@@ -14,52 +14,52 @@ describe("Boolean attribute", ->
 	)
 	
 	it("should parse 0 as false", ->
-		assert.equal(new BooleanAttribute("test").parse(0), false)
+		assert.equal(BooleanAttribute.parse(0), false)
 		return
 	)
 	
 	it("should parse 1 as true", ->
-		assert.equal(new BooleanAttribute("test").parse(1), true)
+		assert.equal(BooleanAttribute.parse(1), true)
 		return
 	)
 	
 	it("should parse '0' as false", ->
-		assert.equal(new BooleanAttribute("test").parse("0"), false)
+		assert.equal(BooleanAttribute.parse("0"), false)
 		return
 	)
 	
 	it("should parse '1' as true", ->
-		assert.equal(new BooleanAttribute("test").parse("1"), true)
+		assert.equal(BooleanAttribute.parse("1"), true)
 		return
 	)
 	
 	it("should parse 'false' as false", ->
-		assert.equal(new BooleanAttribute("test").parse("false"), false)
+		assert.equal(BooleanAttribute.parse("false"), false)
 		return
 	)
 	
 	it("should parse 'tRUe' as true", ->
-		assert.equal(new BooleanAttribute("test").parse("tRUe"), true)
+		assert.equal(BooleanAttribute.parse("tRUe"), true)
 		return
 	)
 	
 	it("should parse an empty object as true", ->
-		assert.equal(new BooleanAttribute("test").parse({}), true)
+		assert.equal(BooleanAttribute.parse({}), true)
 		return
 	)
 	
 	it("should parse NaN as false", ->
-		assert.equal(new BooleanAttribute("test").parse(NaN), false)
+		assert.equal(BooleanAttribute.parse(NaN), false)
 		return
 	)
 	
 	it("should parse null as null", ->
-		assert.isNull(new BooleanAttribute("test").parse(null))
+		assert.isNull(BooleanAttribute.parse(null))
 		return
 	)
 	
 	it("should parse undefined as null", ->
-		assert.isNull(new BooleanAttribute("test").parse())
+		assert.isNull(BooleanAttribute.parse())
 		return
 	)
 	

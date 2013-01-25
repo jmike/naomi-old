@@ -14,17 +14,17 @@ describe("String attribute", ->
 	)
 	
 	it("should parse 0 as '0'", ->
-		assert.equal(new StringAttribute("test").parse(0), "0")
+		assert.equal(StringAttribute.parse(0), "0")
 		return
 	)
 	
 	it("should parse 132.123213 as '132.123213'", ->
-		assert.equal(new StringAttribute("test").parse(132.123213), "132.123213")
+		assert.equal(StringAttribute.parse(132.123213), "132.123213")
 		return
 	)
 	
 	it("should parse true as 'true'", ->
-		assert.equal(new StringAttribute("test").parse(true), "true")
+		assert.equal(StringAttribute.parse(true), "true")
 		return
 	)
 	

@@ -35,7 +35,7 @@ class GenericAttribute
 	@param {*} value
 	@return {*}
 	###	
-	parse: (value) -> value
+	@parse: (value) -> value
 
 	###
 	Throws an error if the specified value is invalid.
@@ -43,7 +43,6 @@ class GenericAttribute
 	@throw {Error} if value is invalid.
 	###
 	validate: (value) ->
-		value = this.parse(value)
 		if value is null and not @options.nullable
 			throw new Error("Attribute #{@name} cannot be assigned with a null value")
 		return
