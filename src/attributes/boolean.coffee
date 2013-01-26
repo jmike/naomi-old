@@ -1,14 +1,17 @@
-GenericAttribute = require("./generic")
+AbstractAttribute = require("./abstract")
 
-class BooleanAttribute extends GenericAttribute
+###
+@extend AbstractAttribute
+@author Dimitrios C. Michalakos
+###
+class BooleanAttribute extends AbstractAttribute
 
 	###
-	Constructs a new boolean attribute of the specified properties.
-	@param {String} name the attribute's name.
-	@param {Object} options key/value constraints (optional).
+	Constructs a new boolean attribute.
+	@param {Object} options key/value properties (optional).
 	###
-	constructor: (name, options = {}) ->
-		super(name, options)
+	constructor: (options = {}) ->
+		super(options)
 
 	###
 	Parses the supplied value to match the attribute's internal type.

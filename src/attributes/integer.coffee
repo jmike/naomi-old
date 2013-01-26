@@ -1,19 +1,22 @@
 NumberAttribute = require("./number")
 
+###
+@extend NumberAttribute
+@author Dimitrios C. Michalakos
+###
 class IntegerAttribute extends NumberAttribute
 
 	###
 	Constructs a new integer attribute.
-	@param {String} name the attribute's name.
+	@param {Object} options key/value properties (optional).
 	###
-	constructor: (name) -> super(name, {
-		scale: 0
-	})
-	
-	###
-	Always throws an error since integer attributes don't allow fractional digits.
-	@throw {Error}
-	###
-	scale: -> throw Error("Fractional digits are not allowed")
+	constructor: (options = {}) ->
+		Object.defineProperty(options, "scale", {
+			value: 0
+			writable: false
+			enumerable: true
+			configurable: false
+		})
+		super(options)
 
 module.exports = IntegerAttribute

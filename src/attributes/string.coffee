@@ -1,15 +1,18 @@
-GenericAttribute = require("./generic")
+AbstractAttribute = require("./abstract")
 NumberUtils = require("../utils/number")
 
-class StringAttribute extends GenericAttribute
+###
+@extend AbstractAttribute
+@author Dimitrios C. Michalakos
+###
+class StringAttribute extends AbstractAttribute
 
 	###
-	Constructs a new string attribute of the designated properties.
-	@param {String} name the attribute's name.
-	@param {Object} options key/value constraints (optional).
+	Constructs a new string attribute.
+	@param {Object} options key/value properties (optional).
 	###
-	constructor: (name, options = {}) ->
-		super(name, options)
+	constructor: (options = {}) ->
+		super(options)
 
 	###
 	Sets the attribute's minimum length.

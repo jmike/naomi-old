@@ -1,16 +1,17 @@
-GenericAttribute = require("./generic")
+AbstractAttribute = require("./abstract")
 
 ###
-DateAttribute represents a date attribute.
+@extend AbstractAttribute
+@author Dimitrios C. Michalakos
 ###
-class DateAttribute extends GenericAttribute
+class DateAttribute extends AbstractAttribute
 
 	###
 	Constructs a new DateAttribute instance.
-	@param {String} name the attribute's name.
+	@param {Object} options key/value properties (optional).
 	###
-	constructor: (name) ->
-		super(name)
+	constructor: (options = {}) ->
+		super(options)
 
 	###
 	Sets the attribute's minimum allowed value.

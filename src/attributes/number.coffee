@@ -1,15 +1,18 @@
-GenericAttribute = require("./generic")
+AbstractAttribute = require("./abstract")
 NumberUtils = require("../utils/number")
 
-class NumberAttribute extends GenericAttribute
+###
+@extend AbstractAttribute
+@author Dimitrios C. Michalakos
+###
+class NumberAttribute extends AbstractAttribute
 
 	###
 	Constructs a new number attribute.
-	@param {String} name the attribute's name.
-	@param {Object} options key/value constraints (optional).
+	@param {Object} options key/value properties (optional).
 	###
-	constructor: (name, options = {}) ->
-		super(name, options)
+	constructor: (options = {}) ->
+		super(options)
 		
 	###
 	Sets the the maximum number of digits allowed in the attribute's value.
