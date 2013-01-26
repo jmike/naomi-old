@@ -72,7 +72,7 @@ class AbstractCollection
 		catch error
 			callback(error)
 			return
-		
+
 		
 	
 module.exports = AbstractCollection
