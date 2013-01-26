@@ -2,54 +2,44 @@ assert = require("chai").assert
 BooleanAttribute = require("../src/attributes/boolean")
 
 describe("Boolean attribute", ->
-
-	it("should throw an error if name is empty", ->
-		assert.throws(-> new BooleanAttribute(""))
-		return
-	)
-	
-	it("should throw an error if name is not String", ->
-		assert.throws(-> new BooleanAttribute(""))
-		return
-	)
 	
 	it("should parse 0 as false", ->
-		assert.equal(BooleanAttribute.parse(0), false)
+		assert.strictEqual(BooleanAttribute.parse(0), false)
 		return
 	)
 	
 	it("should parse 1 as true", ->
-		assert.equal(BooleanAttribute.parse(1), true)
+		assert.strictEqual(BooleanAttribute.parse(1), true)
 		return
 	)
 	
 	it("should parse '0' as false", ->
-		assert.equal(BooleanAttribute.parse("0"), false)
+		assert.strictEqual(BooleanAttribute.parse("0"), false)
 		return
 	)
 	
 	it("should parse '1' as true", ->
-		assert.equal(BooleanAttribute.parse("1"), true)
+		assert.strictEqual(BooleanAttribute.parse("1"), true)
 		return
 	)
 	
 	it("should parse 'false' as false", ->
-		assert.equal(BooleanAttribute.parse("false"), false)
+		assert.strictEqual(BooleanAttribute.parse("false"), false)
 		return
 	)
 	
 	it("should parse 'tRUe' as true", ->
-		assert.equal(BooleanAttribute.parse("tRUe"), true)
+		assert.strictEqual(BooleanAttribute.parse("tRUe"), true)
 		return
 	)
 	
 	it("should parse an empty object as true", ->
-		assert.equal(BooleanAttribute.parse({}), true)
+		assert.strictEqual(BooleanAttribute.parse({}), true)
 		return
 	)
 	
 	it("should parse NaN as false", ->
-		assert.equal(BooleanAttribute.parse(NaN), false)
+		assert.strictEqual(BooleanAttribute.parse(NaN), false)
 		return
 	)
 	
@@ -65,7 +55,7 @@ describe("Boolean attribute", ->
 	
 	it("should accept null values if nullable", ->
 		assert.doesNotThrow(->
-			new BooleanAttribute("test")
+			new BooleanAttribute()
 				.nullable()
 				.validate(null)
 		)
@@ -74,7 +64,7 @@ describe("Boolean attribute", ->
 	
 	it("should not accept null values if not nullable", ->
 		assert.throw(->
-			new BooleanAttribute("test")
+			new BooleanAttribute()
 				.validate(null)
 		)
 		return

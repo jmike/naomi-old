@@ -1,25 +1,15 @@
 assert = require("chai").assert
 IntegerAttribute = require("../src/attributes/integer")
 
-describe("Number attribute", ->
-
-	it("should throw an error if name is empty", ->
-		assert.throws(-> new IntegerAttribute(""))
-		return
-	)
-	
-	it("should throw an error if name is not String", ->
-		assert.throws(-> new IntegerAttribute(""))
-		return
-	)
+describe("Integer attribute", ->
 	
 	it("should parse '0' as 0", ->
-		assert.equal(IntegerAttribute.parse("0"), 0)
+		assert.strictEqual(IntegerAttribute.parse("0"), 0)
 		return
 	)
 	
 	it("should parse '132.123213' as 132.123213", ->
-		assert.equal(IntegerAttribute.parse("132.123213"), 132.123213)
+		assert.strictEqual(IntegerAttribute.parse("132.123213"), 132.123213)
 		return
 	)
 	
@@ -30,7 +20,7 @@ describe("Number attribute", ->
 	
 	it("should accept null values if nullable", ->
 		assert.doesNotThrow(->
-			new IntegerAttribute("test")
+			new IntegerAttribute()
 				.nullable()
 				.validate(null)
 		)
@@ -39,7 +29,7 @@ describe("Number attribute", ->
 	
 	it("should not accept null values if not nullable", ->
 		assert.throw(->
-			new IntegerAttribute("test")
+			new IntegerAttribute()
 				.validate(null)
 		)
 		return
@@ -47,9 +37,15 @@ describe("Number attribute", ->
 	
 	it("should reject fractional numbers", ->
 		assert.throw(->
-			new IntegerAttribute("test")
+			new IntegerAttribute()
 				.validate(100000.213452)
 		)
+		return
+	)
+	
+	it("should not allow it's 'scale' property to change", ->
+		attr = new IntegerAttribute().scale(35)
+		assert.strictEqual(attr.options.scale, 0)
 		return
 	)
 

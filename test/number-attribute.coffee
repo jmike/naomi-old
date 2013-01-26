@@ -3,23 +3,13 @@ NumberAttribute = require("../src/attributes/number")
 
 describe("Number attribute", ->
 
-	it("should throw an error if name is empty", ->
-		assert.throws(-> new NumberAttribute(""))
-		return
-	)
-	
-	it("should throw an error if name is not String", ->
-		assert.throws(-> new NumberAttribute(""))
-		return
-	)
-	
 	it("should parse '0' as 0", ->
-		assert.equal(NumberAttribute.parse("0"), 0)
+		assert.strictEqual(NumberAttribute.parse("0"), 0)
 		return
 	)
 	
 	it("should parse '132.123213' as 132.123213", ->
-		assert.equal(NumberAttribute.parse("132.123213"), 132.123213)
+		assert.strictEqual(NumberAttribute.parse("132.123213"), 132.123213)
 		return
 	)
 	
@@ -30,7 +20,7 @@ describe("Number attribute", ->
 	
 	it("should accept null values if nullable", ->
 		assert.doesNotThrow(->
-			new NumberAttribute("test")
+			new NumberAttribute()
 				.nullable()
 				.validate(null)
 		)
@@ -39,7 +29,7 @@ describe("Number attribute", ->
 	
 	it("should not accept null values if not nullable", ->
 		assert.throw(->
-			new NumberAttribute("test")
+			new NumberAttribute()
 				.validate(null)
 		)
 		return
@@ -47,7 +37,7 @@ describe("Number attribute", ->
 	
 	it("should have a precision constraint", ->
 		assert.throw(->
-			new NumberAttribute("test")
+			new NumberAttribute()
 				.precision(5)
 				.validate(100000)
 		)
@@ -56,7 +46,7 @@ describe("Number attribute", ->
 	
 	it("should have a scale constraint", ->
 		assert.throw(->
-			new NumberAttribute("test")
+			new NumberAttribute()
 				.scale(5)
 				.validate(100000.213452)
 		)
@@ -65,7 +55,7 @@ describe("Number attribute", ->
 	
 	it("should work fine with scale and precision constraints combined", ->
 		assert.doesNotThrow(->
-			new NumberAttribute("test")
+			new NumberAttribute()
 				.precision(10)
 				.scale(5)
 				.validate(10000.23452)
@@ -75,7 +65,7 @@ describe("Number attribute", ->
 	
 	it("should accept a minimum allowed value", ->
 		assert.throw(->
-			new NumberAttribute("test")
+			new NumberAttribute()
 				.min(8.53)
 				.validate(4)
 		)
@@ -84,7 +74,7 @@ describe("Number attribute", ->
 	
 	it("should accept a maximum allowed value", ->
 		assert.throw(->
-			new NumberAttribute("test")
+			new NumberAttribute()
 				.max(10)
 				.validate(11)
 		)
@@ -93,7 +83,7 @@ describe("Number attribute", ->
 	
 	it("should not be equal to specified value", ->
 		assert.throw(->
-			new NumberAttribute("test")
+			new NumberAttribute()
 				.notEquals(100.34)
 				.validate(100.34)
 		)
@@ -102,7 +92,7 @@ describe("Number attribute", ->
 	
 	it("should accept a set of allowed values", ->
 		assert.throw(->
-			new NumberAttribute("test")
+			new NumberAttribute()
 				.isIn(1, 2, 5, 12.4)
 				.validate(3)
 		)
@@ -111,7 +101,7 @@ describe("Number attribute", ->
 	
 	it("should reject a set of restricted values", ->
 		assert.throw(->
-			new NumberAttribute("test")
+			new NumberAttribute()
 				.notIn(1, 2, 5, 12.4)
 				.validate(12.4)
 		)
