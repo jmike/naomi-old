@@ -11,12 +11,12 @@ class IntegerAttribute extends NumberAttribute
 	@param {Object} options key/value properties (optional).
 	###
 	constructor: (options = {}) ->
-		Object.defineProperty(options, "scale", {
+		super(options)
+		Object.defineProperty(@options, "scale", {
 			value: 0
 			writable: false
 			enumerable: true
 			configurable: false
 		})
-		super(options)
 
 module.exports = IntegerAttribute
