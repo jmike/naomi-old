@@ -87,7 +87,7 @@ class MySqlConnector
 	Adds the specified data to the designated table.
 	@param {Collection} collection the name of the table.
 	@param {Object} attributes an object describing the table's fields.
-	@param {Object|Array} data
+	@param {Object|Array<Object>} data
 	@param {Boolean} updateDuplicate a boolean flag indicating whether duplicate records should be updated.
 	@param {Function} callback i.e. function(error, data).
 	###

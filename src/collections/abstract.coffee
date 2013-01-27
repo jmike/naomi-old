@@ -44,11 +44,11 @@ class AbstractCollection
 	###
 	Adds a new model or an array of models to the collection.
 	@overload create(data, updateDuplicate, callback)
-		@param {Object|Array} data
+		@param {Object|Array<Object>} data
 		@param {Boolean} updateDuplicate a boolean flag indicating whether duplicate models should be updated.
 		@param {Function} callback i.e. function(error, summary).	
 	@overload create(data, callback)
-		@param {Object|Array} data
+		@param {Object|Array<Object>} data
 		@param {Function} callback i.e. function(error, summary).	
 	###
 	add: (data, updateDuplicate = false, callback = -> null) ->
