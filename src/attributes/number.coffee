@@ -104,10 +104,10 @@ class NumberAttribute extends AbstractAttribute
 		return this
 	
 	###
-	Parses the supplied value to match the attribute's internal type.
+	Parses the supplied value to match the attribute's native internal type.
 	@param {*} value
 	@return {Number|null|NaN}
-	###	
+	###
 	@parse: (value) ->
 		if value?
 			if typeof value is "number"
@@ -116,6 +116,13 @@ class NumberAttribute extends AbstractAttribute
 				return parseFloat(value)
 		else# null, undefined
 			return null
+
+	###
+	Parses the supplied value to match the attribute's native internal type.
+	@param {*} value
+	@return {Number|null|NaN}
+	###
+	parse: @parse
 
 	###
 	Throws an error if the specified value is invalid.

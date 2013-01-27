@@ -143,10 +143,10 @@ class StringAttribute extends AbstractAttribute
 		return this
 
 	###
-	Parses the supplied value to match the attribute's internal type.
+	Parses the supplied value to match the attribute's native internal type.
 	@param {*} value
 	@return {String|null}
-	###	
+	###
 	@parse: (value) ->
 		if value?
 			if typeof value is "string"
@@ -155,6 +155,13 @@ class StringAttribute extends AbstractAttribute
 				return value.toString()
 		else# null, undefined
 			return null
+
+	###
+	Parses the supplied value to match the attribute's native internal type.
+	@param {*} value
+	@return {String|null}
+	###
+	parse: @parse
 
 	###
 	Throws an error if the specified value is invalid.

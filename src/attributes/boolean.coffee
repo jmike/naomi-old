@@ -14,7 +14,7 @@ class BooleanAttribute extends AbstractAttribute
 		super(options)
 
 	###
-	Parses the supplied value to match the attribute's internal type.
+	Parses the supplied value to match the attribute's native internal type.
 	@param {*} value
 	@return {Boolean|null}
 	###	
@@ -29,5 +29,12 @@ class BooleanAttribute extends AbstractAttribute
 					return Boolean(value)
 		else# null or undefined
 			return null
+	
+	###
+	Parses the supplied value to match the attribute's native internal type.
+	@param {*} value
+	@return {Boolean|null}
+	###		
+	parse: @parse
 
 module.exports = BooleanAttribute

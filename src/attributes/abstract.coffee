@@ -25,11 +25,18 @@ class AbstractAttribute
 		return this
 	
 	###
-	Parses the supplied value to match the attribute's internal type.
+	Parses the supplied value to match the attribute's native internal type.
 	@param {*} value
 	@return {*}
 	###	
 	@parse: (value) -> value
+	
+	###
+	Parses the supplied value to match the attribute's native internal type.
+	@param {*} value
+	@return {*}
+	###	
+	parse: @parse
 
 	###
 	Throws an error if the specified value is invalid.

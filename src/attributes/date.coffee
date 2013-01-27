@@ -77,10 +77,10 @@ class DateAttribute extends AbstractAttribute
 		return this
 
 	###
-	Parses the supplied value and returns a Date object or null.
+	Parses the supplied value to match the attribute's native internal type.
 	@param {*} value
 	@return {Date|null}
-	###	
+	###
 	@parse: (value) ->
 		if value?
 			if value instanceof Date
@@ -89,6 +89,13 @@ class DateAttribute extends AbstractAttribute
 				return new Date(value)
 		else
 			return null
+
+	###
+	Parses the supplied value to match the attribute's native internal type.
+	@param {*} value
+	@return {Date|null}
+	###			
+	parse: @parse
 
 	###
 	Throws an error if the specified value is invalid.
