@@ -23,7 +23,7 @@ task("test", "Runs naomi unit tests.", (options) ->
 )
 
 task("docs", "Generates documentation for #{meta.name} v.#{meta.version}.", (options) ->
-	exec("codo --output-dir #{docs} --name #{meta.name} --title '#{meta.name} #{meta.version}' --private --cautious #{src}", (error, stdout, stderr) ->
+	exec("codo --output-dir #{docs} --name #{meta.name} --title '#{meta.name} #{meta.version}' --private --cautious #{src} - LICENSE", (error, stdout, stderr) ->
 		if error? then throw error
 		console.log(stdout + stderr)
 	)

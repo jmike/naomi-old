@@ -106,7 +106,7 @@ class NumberAttribute extends AbstractAttribute
 	###
 	Parses the supplied value to match the attribute's native internal type.
 	@param {*} value
-	@return {Number|null|NaN}
+	@return {Number, null, NaN}
 	###
 	@parse: (value) ->
 		if value?
@@ -120,7 +120,7 @@ class NumberAttribute extends AbstractAttribute
 	###
 	Parses the supplied value to match the attribute's native internal type.
 	@param {*} value
-	@return {Number|null|NaN}
+	@return {Number, null, NaN}
 	###
 	parse: @parse
 

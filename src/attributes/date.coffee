@@ -79,7 +79,7 @@ class DateAttribute extends AbstractAttribute
 	###
 	Parses the supplied value to match the attribute's native internal type.
 	@param {*} value
-	@return {Date|null}
+	@return {Date, null}
 	###
 	@parse: (value) ->
 		if value?
@@ -93,7 +93,7 @@ class DateAttribute extends AbstractAttribute
 	###
 	Parses the supplied value to match the attribute's native internal type.
 	@param {*} value
-	@return {Date|null}
+	@return {Date, null}
 	###			
 	parse: @parse
 

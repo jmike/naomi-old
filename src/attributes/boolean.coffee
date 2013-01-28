@@ -16,7 +16,7 @@ class BooleanAttribute extends AbstractAttribute
 	###
 	Parses the supplied value to match the attribute's native internal type.
 	@param {*} value
-	@return {Boolean|null}
+	@return {Boolean, null}
 	###	
 	@parse: (value) ->
 		if value?
@@ -33,7 +33,7 @@ class BooleanAttribute extends AbstractAttribute
 	###
 	Parses the supplied value to match the attribute's native internal type.
 	@param {*} value
-	@return {Boolean|null}
+	@return {Boolean, null}
 	###		
 	parse: @parse
 

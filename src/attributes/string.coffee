@@ -145,7 +145,7 @@ class StringAttribute extends AbstractAttribute
 	###
 	Parses the supplied value to match the attribute's native internal type.
 	@param {*} value
-	@return {String|null}
+	@return {String, null}
 	###
 	@parse: (value) ->
 		if value?
@@ -159,7 +159,7 @@ class StringAttribute extends AbstractAttribute
 	###
 	Parses the supplied value to match the attribute's native internal type.
 	@param {*} value
-	@return {String|null}
+	@return {String, null}
 	###
 	parse: @parse
 
