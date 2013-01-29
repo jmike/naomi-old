@@ -8,15 +8,22 @@ docs = "./docs"
 test = "./test"
 meta = JSON.parse(fs.readFileSync("package.json", "utf-8"))
 
+option("-u", "--unit [FILENAME]", "Specify the unit test to run")
+
 task("test", "Runs naomi unit tests.", (options) ->
 	mocha = new Mocha({
 		reporter: "spec"
 	})
-	fs.readdirSync(test).forEach((file) ->
+	if options.unit?
 		mocha.addFile(
-			path.join(test, file)
+			path.join("test", path.basename(options.unit) + "." + (path.extname(options.unit) || "coffee"))
 		)
-	)
+	else
+		fs.readdirSync(test).forEach((file) ->
+			mocha.addFile(
+				path.join(test, file)
+			)
+		)
 	mocha.run((failures) ->
 		process.exit(failures)
 	)
