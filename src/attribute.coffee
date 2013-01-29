@@ -1,55 +1,51 @@
-BooleanAttribute = require("./attributes/boolean")
-DateAttribute = require("./attributes/date")
-IntegerAttribute = require("./attributes/integer")
-NumberAttribute = require("./attributes/number")
-StringAttribute = require("./attributes/String")
+BooleanDatatype = require("./datatypes/boolean")
+DateDatatype = require("./datatypes/date")
+IntegerDatatype = require("./datatypes/integer")
+NumberDatatype = require("./datatypes/number")
+StringDatatype = require("./datatypes/string")
+EmailDatatype = require("./datatypes/email")
 
 ###
-Attribute can be used to effortesly construct an entity's attribute.
 @author Dimitrios C. Michalakos
 ###
 class Attribute
 
-	###
-	Constructs and returns a new number attribute of the specified name.
-	@param {String} name
-	@return {NumberAttribute}
-	###
-	@number: (name) -> new NumberAttribute(name)
-	
-	###
-	Constructs and returns a new integer attribute of the specified name.
-	@param {String} name
-	@return {IntegerAttribute}
-	###
-	@integer: (name) -> new IntegerAttribute(name)
-	
-	###
-	Constructs and returns a new string attribute of the specified name.
-	@param {String} name
-	@return {StringAttribute}
-	###
-	@string: (name) -> new StringAttribute(name)
-	
-	###
-	Constructs and returns a new boolean attribute of the specified name.
-	@param {String} name
-	@return {BooleanAttribute}
-	###
-	@bool: (name) -> new BooleanAttribute(name)
+	@Boolean = BooleanDatatype
+	@Number = NumberDatatype
+	@String = StringDatatype
+	@Date = DateDatatype
+	@Integer = IntegerDatatype
+	@Email = EmailDatatype
 
 	###
-	Constructs and returns a new date attribute of the specified name.
-	@param {String} name
-	@return {DateAttribute}
+	Constructs and returns a new number datatype.
+	@return {Attribute.Number}
 	###
-	@date: (name) -> new DateAttribute(name)
-		
+	@number: -> new @Number()
+	
+	###
+	Constructs and returns a new integer datatype.
+	@return {Attribute.Integer}
+	###
+	@integer: -> new @Integer()
+	
+	###
+	Constructs and returns a new string datatype.
+	@return {Attribute.String}
+	###
+	@string: -> new @String()
+	
+	###
+	Constructs and returns a new boolean datatype.
+	@return {Attribute.Boolean}
+	###
+	@boolean: -> new @Boolean()
+
+	###
+	Constructs and returns a new date datatype.
+	@return {Attribute.Date}
+	###
+	@date: -> new @Date()
+	
 module.exports = Attribute
-
-attr = Attribute.number("mitsos").min(1).max(5)
-try
-	attr.validate("6")
-catch error
-	console.error error
 	
