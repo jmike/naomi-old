@@ -1,20 +1,20 @@
-AbstractAttribute = require("./abstract")
+AbstractDatatype = require("./abstract")
 
 ###
-@extend AbstractAttribute
+@extend AbstractDatatype
 @author Dimitrios C. Michalakos
 ###
-class BooleanAttribute extends AbstractAttribute
+class BooleanDatatype extends AbstractDatatype
 
 	###
-	Constructs a new boolean attribute.
+	Constructs a new boolean datatype.
 	@param {Object} options key/value properties (optional).
 	###
 	constructor: (options = {}) ->
 		super(options)
 
 	###
-	Parses the supplied value to match the attribute's native internal type.
+	Parses the supplied value and returns a boolean or null.
 	@param {*} value
 	@return {Boolean, null}
 	###	
@@ -29,12 +29,15 @@ class BooleanAttribute extends AbstractAttribute
 					return Boolean(value)
 		else# null or undefined
 			return null
-	
-	###
-	Parses the supplied value to match the attribute's native internal type.
-	@param {*} value
-	@return {Boolean, null}
-	###		
-	parse: @parse
 
-module.exports = BooleanAttribute
+	###
+	Throws an error if the specified value is invalid.
+	@param {*} value
+	@throw {Error} if value is invalid.
+	###
+	validate: (value) ->
+		value = BooleanDatatype.parse(value)# parse this value
+		super(value)
+		return
+
+module.exports = BooleanDatatype

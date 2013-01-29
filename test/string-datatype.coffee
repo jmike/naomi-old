@@ -1,26 +1,26 @@
 assert = require("chai").assert
-StringAttribute = require("../src/attributes/string")
+StringDatatype = require("../src/datatypes/string")
 
-describe("String attribute", ->
+describe("String datatype", ->
 
 	it("should parse 0 as '0'", ->
-		assert.strictEqual(StringAttribute.parse(0), "0")
+		assert.strictEqual(StringDatatype.parse(0), "0")
 		return
 	)
 	
 	it("should parse 132.123213 as '132.123213'", ->
-		assert.strictEqual(StringAttribute.parse(132.123213), "132.123213")
+		assert.strictEqual(StringDatatype.parse(132.123213), "132.123213")
 		return
 	)
 	
 	it("should parse true as 'true'", ->
-		assert.strictEqual(StringAttribute.parse(true), "true")
+		assert.strictEqual(StringDatatype.parse(true), "true")
 		return
 	)
 	
 	it("should accept null values if nullable", ->
 		assert.doesNotThrow(->
-			new StringAttribute()
+			new StringDatatype()
 				.nullable()
 				.validate(null)
 		)
@@ -29,7 +29,7 @@ describe("String attribute", ->
 	
 	it("should not accept null values if not nullable", ->
 		assert.throw(->
-			new StringAttribute()
+			new StringDatatype()
 				.validate(null)
 		)
 		return
@@ -37,7 +37,7 @@ describe("String attribute", ->
 	
 	it("should have a minimum length constraint", ->
 		assert.throw(->
-			new StringAttribute()
+			new StringDatatype()
 				.minLength(3)
 				.validate("a")
 		)
@@ -46,7 +46,7 @@ describe("String attribute", ->
 	
 	it("should have a maximum length constraint", ->
 		assert.throw(->
-			new StringAttribute()
+			new StringDatatype()
 				.maxLength(3)
 				.validate("abcd")
 		)
@@ -55,7 +55,7 @@ describe("String attribute", ->
 	
 	it("should have an exact length constraint", ->
 		assert.throw(->
-			new StringAttribute()
+			new StringDatatype()
 				.length(3)
 				.validate("abcd")
 		)
@@ -64,7 +64,7 @@ describe("String attribute", ->
 	
 	it("should be not be equal to a specified value", ->
 		assert.throw(->
-			new StringAttribute()
+			new StringDatatype()
 				.notEquals("abcd")
 				.validate("abcd")
 		)
@@ -73,8 +73,8 @@ describe("String attribute", ->
 	
 	it("should accept a set of allowed values", ->
 		assert.throw(->
-			new StringAttribute()
-				.isIn("a", "b", "c", "d")
+			new StringDatatype()
+				.equals("a", "b", "c", "d")
 				.validate("abcd")
 		)
 		return
@@ -82,16 +82,23 @@ describe("String attribute", ->
 	
 	it("should accept a set of restricted values", ->
 		assert.throw(->
-			new StringAttribute()
-				.notIn("a", "b", "c", "d")
+			new StringDatatype()
+				.notEquals("a", "b", "c", "d")
 				.validate("a")
 		)
 		return
 	)
 	
+	it("should accept an infinite number of allowed values", ->
+		attr = new StringDatatype()
+			.equals("a", "b", "c", "d")
+		assert.strictEqual(attr.options.equals.length, 4)
+		return
+	)
+	
 	it("should be able to match a regex", ->
 		assert.throw(->
-			new StringAttribute()
+			new StringDatatype()
 				.regex(/^[a-z]+$/)
 				.validate("asd3")
 		)
@@ -100,7 +107,7 @@ describe("String attribute", ->
 	
 	it("should be able to not match a regex", ->
 		assert.throw(->
-			new StringAttribute()
+			new StringDatatype()
 				.notRegex(/^[a-z]+$/)
 				.validate("asd")
 		)
@@ -109,7 +116,7 @@ describe("String attribute", ->
 	
 	it("should contain a specified value", ->
 		assert.throw(->
-			new StringAttribute()
+			new StringDatatype()
 				.contains("zzz")
 				.validate("asd3")
 		)
@@ -118,7 +125,7 @@ describe("String attribute", ->
 	
 	it("should not contain a specified value", ->
 		assert.throw(->
-			new StringAttribute()
+			new StringDatatype()
 				.notContains("as")
 				.validate("asd")
 		)

@@ -1,11 +1,11 @@
 assert = require("chai").assert
-EmailAttribute = require("../src/attributes/email")
+EmailDatatype = require("../src/datatypes/email")
 
-describe("Email attribute", ->
+describe("Email datatype", ->
 	
 	it("should throw an error if value is not an email", ->
 		assert.throws(->
-			new EmailAttribute()
+			new EmailDatatype()
 				.validate("sadsadsad")
 		)
 		return
