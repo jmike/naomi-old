@@ -105,15 +105,15 @@ class MySqlConnector
 		sql += ")"
 		
 		sql += " VALUES "
-		for values, i in data
+		for x, i in data
 			if i isnt 0
 				sql += ", "
 			sql += "("
 			for name, j in fields
-				if i isnt 0
+				if j isnt 0
 					sql += ", "
 				sql += "?"
-				params.push(attributes[name].parse(data[name]))
+				params.push(attributes[name].parse(x[name], false))
 			sql += ")"
 		
 		if updateDuplicate
