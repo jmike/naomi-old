@@ -62,7 +62,7 @@ class DateDatatype extends AbstractDatatype
 		return this
 
 	###
-	Parses the supplied value to match the datatype's native internal type.
+	Parses the supplied value and returns Date or null.
 	@param {*} value
 	@return {Date, null}
 	###
@@ -78,10 +78,12 @@ class DateDatatype extends AbstractDatatype
 	###
 	Throws an error if the specified value is invalid.
 	@param {*} value
+	@param {Boolean} parse indicates whether the specified value should be parsed before being validated, defaults to true.
 	@throw {Error} if value is invalid.
 	###
-	validate: (value) ->
-		value = DateDatatype.parse(value)
+	validate: (value, parse = true) ->
+		if parse
+			value = DateDatatype.parse(value)
 
 		if value?
 			if @options.min? and value < @options.min
@@ -98,5 +100,19 @@ class DateDatatype extends AbstractDatatype
 								
 		super(value)
 		return
+		
+	###
+	Parses the supplied value and returns Date or null.
+	@param {*} value
+	@return {Date, null}
+	###
+	parse: (value) ->
+		value = DateDatatype.parse(value)
+		if validate
+			try
+				this.validate(value, false)
+			catch error
+				throw error
+		return value
 
 module.exports = DateDatatype

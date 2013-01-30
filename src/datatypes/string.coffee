@@ -128,26 +128,25 @@ class StringDatatype extends AbstractDatatype
 		return this
 
 	###
-	Parses the supplied value and returns a string or null.
+	Parses the supplied value and returns string or null.
 	@param {*} value
 	@return {String, null}
 	###
 	@parse: (value) ->
 		if value?
-			if typeof value is "string"
-				return value
-			else
-				return value.toString()
+			return value.toString()
 		else# null, undefined
 			return null
 
 	###
 	Throws an error if the specified value is invalid.
-	@param {*} x
+	@param {*} value
+	@param {Boolean} parse indicates whether the specified value should be parsed before being validated, defaults to true.
 	@throw {Error} if value is invalid.
-	###	
-	validate: (value) ->
-		value = StringDatatype.parse(value)
+	###
+	validate: (value, parse = true)  ->
+		if parse
+			value = StringDatatype.parse(value)
 		
 		if value?
 			if @options.minLength? and value.length < @options.minLength
@@ -179,5 +178,20 @@ class StringDatatype extends AbstractDatatype
 
 		super(value)	
 		return
+
+	###
+	Parses the supplied value and returns string or null.
+	@param {*} value
+	@param {Boolean} validate indicates whether the result should be validated before being returned, defaults to true.
+	@return {Boolean, null}
+	###	
+	parse: (value, validate = true) ->
+		value = StringDatatype.parse(value)
+		if validate
+			try
+				this.validate(value, false)
+			catch error
+				throw error
+		return value
 
 module.exports = StringDatatype

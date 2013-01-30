@@ -89,26 +89,25 @@ class NumberDatatype extends AbstractDatatype
 		return this
 
 	###
-	Parses the supplied value and returns a number or null.
+	Parses the supplied value and returns number or null.
 	@param {*} value
 	@return {Number, null, NaN}
 	###
 	@parse: (value) ->
 		if value?
-			if typeof value is "number"
-				return value
-			else
-				return parseFloat(value)
+			return parseFloat(value)
 		else# null, undefined
 			return null
 
 	###
 	Throws an error if the specified value is invalid.
 	@param {*} value
+	@param {Boolean} parse indicates whether the specified value should be parsed before being validated, defaults to true.
 	@throw {Error} if value is invalid.
-	###	
-	validate: (value) ->
-		value = NumberDatatype.parse(value)# parse this value
+	###
+	validate: (value, parse = true)  ->
+		if parse
+			value = NumberDatatype.parse(value)# parse this value
 		
 		if value?
 			if @options.min? and value < @options.min
@@ -134,5 +133,20 @@ class NumberDatatype extends AbstractDatatype
 		
 		super(value)
 		return
+
+	###
+	Parses the supplied value and returns number or null.
+	@param {*} value
+	@param {Boolean} validate indicates whether the result should be validated before being returned, defaults to true.
+	@return {Boolean, null}
+	###	
+	parse: (value, validate = true) ->
+		value = NumberDatatype.parse(value)
+		if validate
+			try
+				this.validate(value, false)
+			catch error
+				throw error
+		return value
 
 module.exports = NumberDatatype
