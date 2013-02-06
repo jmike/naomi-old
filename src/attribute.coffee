@@ -21,31 +21,37 @@ class Attribute
 	Constructs and returns a new number datatype.
 	@return {Attribute.Number}
 	###
-	@number: -> new @Number()
+	@number: -> new NumberDatatype()
 	
 	###
 	Constructs and returns a new integer datatype.
 	@return {Attribute.Integer}
 	###
-	@integer: -> new @Integer()
+	@integer: -> new IntegerDatatype()
 	
 	###
 	Constructs and returns a new string datatype.
 	@return {Attribute.String}
 	###
-	@string: -> new @String()
+	@string: -> new StringDatatype()
+	
+	###
+	Constructs and returns a new e-mail datatype.
+	@return {Attribute.String}
+	###
+	@email: -> new EmailDatatype()
 	
 	###
 	Constructs and returns a new boolean datatype.
 	@return {Attribute.Boolean}
 	###
-	@boolean: -> new @Boolean()
+	@boolean: -> new BooleanDatatype()
 
 	###
 	Constructs and returns a new date datatype.
 	@return {Attribute.Date}
 	###
-	@date: -> new @Date()
+	@date: -> new DateDatatype()
 	
 module.exports = Attribute
 	
