@@ -1,5 +1,6 @@
 mansion = require("generic-pool")
 mysql = require("mysql")
+Attribute = require("../attribute")
 
 ###
 @author Dimitrios C. Michalakos
@@ -72,6 +73,7 @@ class MySqlConnector
 	@param {Function} callback i.e. function(error, data).
 	###
 	execute: (sql, params, callback = -> null) ->
+		console.log sql
 		@pool.acquire((error, client) =>
 			if error?
 				callback(error)
@@ -88,46 +90,94 @@ class MySqlConnector
 	@param {Collection} collection the name of the table.
 	@param {Object} attributes an object describing the table's fields.
 	@param {Object|Array<Object>} data
-	@param {Boolean} updateDuplicate a boolean flag indicating whether duplicate records should be updated.
+	@param {Boolean} duplicateUpdate a boolean flag indicating whether duplicate records should be updated.
 	@param {Function} callback i.e. function(error, data).
 	###
-	add: (collection, attributes, data, updateDuplicate, callback) ->
+	add: (collection, attributes, data, duplicateUpdate, callback) ->
 		sql = "INSERT INTO `#{collection}`"
 		params = []
-		fields = name for own name of attributes
+		columns = (k for own k of attributes)
 		unless Array.isArray(data) then data = [data]
 	
 		sql += " ("
-		for name, i in fields
+		for column, i in columns
 			if i isnt 0
 				sql += ", "
-			sql += "`#{name}`"
+			sql += "`#{column}`"
 		sql += ")"
 		
 		sql += " VALUES "
-		for x, i in data
+		for values, i in data
 			if i isnt 0
 				sql += ", "
 			sql += "("
-			for name, j in fields
+			for column, j in columns
 				if j isnt 0
 					sql += ", "
 				sql += "?"
-				params.push(attributes[name].parse(x[name], false))
+				attr = attributes[column]
+				value = values[column]
+				params.push(attr.parse(value, false))
 			sql += ")"
 		
-		if updateDuplicate
+		if duplicateUpdate
 			sql += " ON DUPLICATE KEY UPDATE "
-			for name, i in fields
+			for column, i in columns
 				if i isnt 0
 					sql += ", "
-				sql += "`#{name}` = VALUES(`#{name}`)"
+				sql += "`#{column}` = VALUES(`#{column}`)"
 			sql += ")"
 		
 		sql += ";"
 		
-		console.log sql
 		this.execute(sql, params, callback)
 		return sql
+		
+	###
+	Creates a new collection with the specified properties.
+	@param {String} name the name of the collection.
+	@param {Object} attributes an object describing the collections's attributes.
+	@param {Function} callback i.e. function(error, data).
+	###
+	create: (name, attributes, callback) ->
+		sql = "CREATE TABLE IF NOT EXISTS `#{collection}` "
+		params = []
+		columns = (k for own k of attributes)
+
+		for column, i in columns
+			if i isnt 0
+				sql += ", "
+			sql += "`#{column}`"
+			
+			attr = attributes[column]
+			
+			if attr.options.nullable
+				sql += " NULL "
+			else
+				sql += " NOT NULL "
+				
+			if attr instanceof Attribute.Boolean
+				sql += "TINYINT(1) UNSIGNED"
+			else if attr instanceof Attribute.Integer or
+			attr instanceof Attribute.Number and attr.options.scale is 0
+				sql += "TINYINT(1) UNSIGNED"
+			else if attr instanceof Attribute.Number
+				sql += "TINYINT(1) UNSIGNED"
+			else if attr instanceof Attribute.String
+				null
+			else if attr instanceof Attribute.Date
+				null
+			
+		this.execute(sql, params, callback)
+		return sql
+
+#max = 0
+#precision = attr.options.precision
+#if precision?
+#	max = Math.pow(10, precision)
+#else
+#	candidates = [Math.abs(attr.options.min), Math.abs(attr.options.min)]
+#	max = Math.max.apply(Math, candidates)
+	
 	
 module.exports = MySqlConnector
