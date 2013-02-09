@@ -1,7 +1,7 @@
 {
 	"name": "naomi",
 	"description": "Entity relation management for node.js and the browser.",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"repository": {
 		"type": "git",
 		"url": "git://github.com/jmike/naomi.git"
