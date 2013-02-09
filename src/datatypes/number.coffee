@@ -15,52 +15,86 @@ class NumberDatatype extends AbstractDatatype
 		super(options)
 		
 	###
-	Sets the the maximum number of digits allowed in the datatype's value.
-	@param {Number} x number of digits.
-	@return {NumberDatatype} to allow method chaining.
+	@overload precision()
+	  Returns the the maximum number of digits allowed in the datatype's value.
+	  @return {Number}
+	@overload precision(value)
+	  Sets the the maximum number of digits allowed in the datatype's value.
+	  @param {Number} value number of digits, cannot be negative or zero.
+	  @return {NumberDatatype} to allow method chaining.
 	###
-	precision: (x) ->
-		if typeof x isnt "number"
-			throw new Error("Invalid precision value - expected Number, got #{typeof value}")
-		unless NumberUtils.isNonNegativeInt(x)
-			throw new Error("Number of digits cannot be negative")
-		@options.precision = x
-		return this
+	precision: (value) ->
+		switch typeof value
+			when "undefined"
+				return @options.precision
+			when "number"
+				if NumberUtils.isPositiveInt(value)
+					@options.precision = value
+					return this
+				else
+					throw new Error("Invalid precision value - cannot be negative or zero")
+			else
+				throw new Error("Invalid precision value - expected Number, got #{typeof value}")
 
 	###
-	Sets the the maximum number of digits allowed to the right of a decimal point.
-	@param {Number} x number of digits.
-	@return {NumberDatatype} to allow method chaining.
+	@overload scale()
+	  Returns the the maximum number of digits allowed to the right of a decimal point.
+	  @return {Number}
+	@overload scale(value)
+	  Sets the the maximum number of digits allowed to the right of a decimal point.
+	  @param {Number} value number of digits.
+	  @return {NumberDatatype} to allow method chaining.
 	###
-	scale: (x) ->
-		if typeof x isnt "number"
-			throw new Error("Invalid scale value - expected Number, got #{typeof value}")
-		unless NumberUtils.isNonNegativeInt(x)
-			throw new Error("Number of digits cannot be negative")
-		@options.scale = x
-		return this
+	scale: (value) ->
+		switch typeof value
+			when "undefined"
+				return @options.scale
+			when "number"
+				if NumberUtils.isNonNegativeInt(value)
+					@options.scale = value
+					return this
+				else
+					throw new Error("Invalid scale value - cannot be negative")
+			else
+				throw new Error("Invalid scale value - expected Number, got #{typeof value}")
 
 	###
-	Sets the datatype's minimum allowed value.
-	@param {Number} value
-	@return {NumberDatatype} to allow method chaining.
+	@overload min()
+	  Returns the datatype's minimum allowed value.
+	  @return {Number}
+	@overload min(value)
+	  Sets the datatype's minimum allowed value.
+	  @param {Number} value
+	  @return {NumberDatatype} to allow method chaining.
 	###
 	min: (value) ->
-		if typeof value isnt "number"
-			throw new Error("Invalid value - expected Number, got #{typeof value}")
-		@options.min = value
-		return this
+		switch typeof value
+			when "undefined"
+				return @options.min
+			when "number"
+				@options.min = value
+				return this
+			else
+				throw new Error("Invalid value - expected Number, got #{typeof value}")
 		
 	###
-	Sets the datatype's maximum allowed value.
-	@param {Number} value
-	@return {NumberDatatype} to allow method chaining.
+	@overload max()
+	  Returns the datatype's maximum allowed value.
+	  @return {Number}
+	@overload max(value)
+	  Sets the datatype's maximum allowed value.
+	  @param {Number} value
+	  @return {NumberDatatype} to allow method chaining.
 	###
 	max: (value) ->
-		if typeof value isnt "number"
-			throw new Error("Invalid value - expected Number, got #{typeof value}")
-		@options.max = value
-		return this
+		switch typeof value
+			when "undefined"
+				return @options.max
+			when "number"
+				@options.max = value
+				return this
+			else
+				throw new Error("Invalid value - expected Number, got #{typeof value}")
 		
 	###
 	Sets the datatype's allowed value(s).
@@ -102,7 +136,7 @@ class NumberDatatype extends AbstractDatatype
 	###
 	Throws an error if the specified value is invalid.
 	@param {*} value
-	@param {Boolean} parse indicates whether the specified value should be parsed before being validated, defaults to true.
+	@param {Boolean} parse indicates whether the specified value should be parsed, defaults to true.
 	@throw {Error} if value is invalid.
 	###
 	validate: (value, parse = true)  ->
@@ -137,7 +171,7 @@ class NumberDatatype extends AbstractDatatype
 	###
 	Parses the supplied value and returns number or null.
 	@param {*} value
-	@param {Boolean} validate indicates whether the result should be validated before being returned, defaults to true.
+	@param {Boolean} validate indicates whether the value should be validated, defaults to true.
 	@return {Boolean, null}
 	###	
 	parse: (value, validate = true) ->

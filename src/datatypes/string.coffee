@@ -15,43 +15,70 @@ class StringDatatype extends AbstractDatatype
 		super(options)
 
 	###
-	Sets the datatype's minimum length.
-	@param {Number} len number of characters.
-	@return {StringDatatype} to allow method chaining.
+	@overload minLength()
+	  Returns the datatype's minimum length.
+	  @return {Number}
+	@overload minLength(value)
+	  Sets the datatype's minimum length.
+	  @param {Number} value number of characters.
+	  @return {StringDatatype} to allow method chaining.
 	###
-	minLength: (len) ->
-		if typeof len isnt "number"
-			throw new Error("Invalid length - expected Number, got #{typeof len}")
-		unless NumberUtils.isNonNegativeInt(len)
-			throw new Error("Minimum length must be a integer at least 0 in value")
-		@options.minLength = len
-		return this
+	minLength: (value) ->
+		switch typeof value
+			when "undefined"
+				return @options.minLength
+			when "number"
+				if NumberUtils.isNonNegativeInt(value)
+					@options.minLength = value
+					return this
+				else
+					throw new Error("Invalid minimum length - cannot be negative")
+			else
+				throw new Error("Invalid minimum length - expected Number, got #{typeof value}")
 		
 	###
-	Sets the datatype's maximum length.
-	@param {Number} length number of characters.
-	@return {StringDatatype} to allow method chaining.
+	@overload maxLength()
+	  Returns the datatype's maximum length.
+	  @return {Number}
+	@overload maxLength(value)
+	  Sets the datatype's maximum length.
+	  @param {Number} length number of characters.
+	  @return {StringDatatype} to allow method chaining.
 	###
-	maxLength: (len) ->
-		if typeof len isnt "number"
-			throw new Error("Invalid length - expected Number, got #{typeof len}")
-		unless NumberUtils.isPositiveInt(len)
-			throw new Error("Maximum length must be an integer at least 1 in value")
-		@options.maxLength = len
-		return this
+	maxLength: (value) ->
+		switch typeof value
+			when "undefined"
+				return @options.maxLength
+			when "number"
+				if NumberUtils.isPositiveInt(value)
+					@options.maxLength = value
+					return this
+				else
+					throw new Error("Invalid maximum length - cannot be negative or zero")
+			else
+				throw new Error("Invalid maximum length - expected Number, got #{typeof value}")
 		
 	###
-	Sets the datatype's exact length.
-	@param {Number} length number of characters.
-	@return {StringDatatype} to allow method chaining.
+	@overload length()
+	  Returns the datatype's exact length.
+	  @return {Number}
+	@overload length(value)
+	  Sets the datatype's exact length.
+	  @param {Number} length number of characters.
+	  @return {StringDatatype} to allow method chaining.
 	###
-	length: (len) ->
-		if typeof len isnt "number"
-			throw new Error("Invalid length - expected Number, got #{typeof len}")
-		unless NumberUtils.isPositiveInt(len)
-			throw new Error("Exact length must be an integer at least 1 in value")
-		@options.length = len
-		return this
+	length: (value) ->
+		switch typeof value
+			when "undefined"
+				return @options.length
+			when "number"
+				if NumberUtils.isPositiveInt(value)
+					@options.length = value
+					return this
+				else
+					throw new Error("Invalid length - cannot be negative or zero")
+			else
+				throw new Error("Invalid length - expected Number, got #{typeof value}")
 		
 	###
 	Sets the datatype's allowed value(s).
@@ -141,7 +168,7 @@ class StringDatatype extends AbstractDatatype
 	###
 	Throws an error if the specified value is invalid.
 	@param {*} value
-	@param {Boolean} parse indicates whether the specified value should be parsed before being validated, defaults to true.
+	@param {Boolean} parse indicates whether the specified value should be parsed, defaults to true.
 	@throw {Error} if value is invalid.
 	###
 	validate: (value, parse = true)  ->
@@ -182,7 +209,7 @@ class StringDatatype extends AbstractDatatype
 	###
 	Parses the supplied value and returns string or null.
 	@param {*} value
-	@param {Boolean} validate indicates whether the result should be validated before being returned, defaults to true.
+	@param {Boolean} validate indicates whether the value should be validated, defaults to true.
 	@return {Boolean, null}
 	###	
 	parse: (value, validate = true) ->

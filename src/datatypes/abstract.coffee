@@ -14,15 +14,23 @@ class AbstractDatatype
 		@options = options
 
 	###
-	Specifies whether an explicit null value can be assigned to the datatype.
-	@param {Boolean} x (optional).
-	@return {AbstractDatatype} to allow method chaining.
+	@overload nullable()
+	  Indicates whether an explicit null value can be assigned to the datatype.
+	  @return {Boolean}
+	@overload nullable(value)
+	  Specifies whether an explicit null value can be assigned to the datatype.
+	  @param {Boolean} x (optional).
+	  @return {AbstractDatatype} to allow method chaining.
 	###
-	nullable: (x = true) ->
-		if typeof x isnt "boolean"
-			throw new Error("Invalid nullable value - expected Boolean, got #{typeof x}")
-		@options.nullable = x
-		return this
+	nullable: (value) ->
+		switch typeof value
+			when "undefined"
+				return @options.nullable
+			when "boolean"
+				@options.nullable = value
+				return this
+			else
+				throw new Error("Invalid nullable value - expected Boolean, got #{typeof value}")
 
 	###
 	Throws an error if the specified value is invalid.

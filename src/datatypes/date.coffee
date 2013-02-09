@@ -14,26 +14,40 @@ class DateDatatype extends AbstractDatatype
 		super(options)
 
 	###
-	Sets the datatype's minimum allowed value.
-	@param {Date} value
-	@return {DateDatatype} to allow method chaining.
+	@overload min()
+	  Returns the datatype's minimum allowed value.
+	  @return {Date}
+	@overload min(value)
+	  Sets the datatype's minimum allowed value.
+	  @param {Date} value
+	  @return {DateDatatype} to allow method chaining.
 	###
 	min: (value) ->
-		unless value instanceof Date
+		if typeof value is "undefined"
+			return @options.min
+		else if value instanceof Date
+			@options.min = value
+			return this
+		else
 			throw new Error("Invalid value - expected Date, got #{typeof value}")
-		@options.min = value
-		return this
 		
 	###
-	Sets the datatype's maximum allowed value.
-	@param {Date} value
-	@return {DateDatatype} to allow method chaining.
+	@overload max()
+	  Returns the datatype's maximum allowed value.
+	  @return {Date}
+	@overload max(value)
+	  Sets the datatype's maximum allowed value.
+	  @param {Date} value
+	  @return {DateDatatype} to allow method chaining.
 	###
 	max: (value) ->
-		unless value instanceof Date
+		if typeof value is "undefined"
+			return @options.max
+		else if value instanceof Date
+			@options.max = value
+			return this
+		else
 			throw new Error("Invalid value - expected Date, got #{typeof value}")
-		@options.max = value
-		return this
 		
 	###
 	Sets the datatype's allowed value(s).
@@ -78,7 +92,7 @@ class DateDatatype extends AbstractDatatype
 	###
 	Throws an error if the specified value is invalid.
 	@param {*} value
-	@param {Boolean} parse indicates whether the specified value should be parsed before being validated, defaults to true.
+	@param {Boolean} parse indicates whether the specified value should be parsed, defaults to true.
 	@throw {Error} if value is invalid.
 	###
 	validate: (value, parse = true) ->
@@ -104,9 +118,10 @@ class DateDatatype extends AbstractDatatype
 	###
 	Parses the supplied value and returns Date or null.
 	@param {*} value
+	@param {Boolean} validate indicates whether the value should be validated, defaults to true.
 	@return {Date, null}
 	###
-	parse: (value) ->
+	parse: (value, validate = true) ->
 		value = DateDatatype.parse(value)
 		if validate
 			try

@@ -21,7 +21,7 @@ describe("String datatype", ->
 	it("should accept null values if nullable", ->
 		assert.doesNotThrow(->
 			new StringDatatype()
-				.nullable()
+				.nullable(true)
 				.validate(null)
 		)
 		return

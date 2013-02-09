@@ -56,7 +56,7 @@ describe("Boolean datatype", ->
 	it("should accept null values if nullable", ->
 		assert.doesNotThrow(->
 			new BooleanDatatype()
-				.nullable()
+				.nullable(true)
 				.validate(null)
 		)
 		return
