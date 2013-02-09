@@ -8,10 +8,10 @@ class BooleanDatatype extends AbstractDatatype
 
 	###
 	Constructs a new boolean datatype.
-	@param {Object} options key/value properties (optional).
+	@param {Object} properties key/value properties (optional).
 	###
-	constructor: (options = {}) ->
-		super(options)
+	constructor: (properties = {}) ->
+		super(properties)
 
 	###
 	Parses the supplied value and returns boolean or null.

@@ -8,10 +8,10 @@ class DateDatatype extends AbstractDatatype
 
 	###
 	Constructs a new date datatype.
-	@param {Object} options key/value properties (optional).
+	@param {Object} properties key/value properties (optional).
 	###
-	constructor: (options = {}) ->
-		super(options)
+	constructor: (properties = {}) ->
+		super(properties)
 
 	###
 	@overload min()
@@ -24,9 +24,9 @@ class DateDatatype extends AbstractDatatype
 	###
 	min: (value) ->
 		if typeof value is "undefined"
-			return @options.min
+			return @_properties.min
 		else if value instanceof Date
-			@options.min = value
+			@_properties.min = value
 			return this
 		else
 			throw new Error("Invalid value - expected Date, got #{typeof value}")
@@ -42,9 +42,9 @@ class DateDatatype extends AbstractDatatype
 	###
 	max: (value) ->
 		if typeof value is "undefined"
-			return @options.max
+			return @_properties.max
 		else if value instanceof Date
-			@options.max = value
+			@_properties.max = value
 			return this
 		else
 			throw new Error("Invalid value - expected Date, got #{typeof value}")
@@ -59,7 +59,7 @@ class DateDatatype extends AbstractDatatype
 			throw new Error("You must specify at least one allowed value")
 		for e in values when not e instanceof Date
 			throw new Error("Invalid allowed value - expected date, got #{typeof e}")
-		@options.equals = values
+		@_properties.equals = values
 		return this
 
 	###
@@ -72,7 +72,7 @@ class DateDatatype extends AbstractDatatype
 			throw new Error("You must specify at least one prohibited value")
 		for e in values when not e instanceof Date
 			throw new Error("Invalid prohibited value - expected date, got #{typeof e}")
-		@options.notEquals = values
+		@_properties.notEquals = values
 		return this
 
 	###
@@ -100,16 +100,16 @@ class DateDatatype extends AbstractDatatype
 			value = DateDatatype.parse(value)
 
 		if value?
-			if @options.min? and value < @options.min
-				throw new Error("Datatype must be at least #{@options.min} in value")
+			if @_properties.min? and value < @_properties.min
+				throw new Error("Datatype must be at least #{@_properties.min} in value")
 
-			if @options.max? and value > @options.max
-				throw new Error("Datatype must be at most #{@options.max} in value")
+			if @_properties.max? and value > @_properties.max
+				throw new Error("Datatype must be at most #{@_properties.max} in value")
 
-			if @options.equals? and value not in @options.equals
+			if @_properties.equals? and value not in @_properties.equals
 				throw new Error("Datatype should match an allowed value")
 
-			if @options.notEquals? and value in @options.notEquals
+			if @_properties.notEquals? and value in @_properties.notEquals
 				throw new Error("Datatype cannot match a prohibited value")
 								
 		super(value)

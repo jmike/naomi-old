@@ -45,7 +45,7 @@ describe("Integer datatype", ->
 	
 	it("should not allow it's 'scale' property to change", ->
 		attr = new IntegerDatatype().scale(35)
-		assert.strictEqual(attr.options.scale, 0)
+		assert.strictEqual(attr._properties.scale, 0)
 		return
 	)
 

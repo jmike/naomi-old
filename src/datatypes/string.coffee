@@ -9,10 +9,10 @@ class StringDatatype extends AbstractDatatype
 
 	###
 	Constructs a new string datatype.
-	@param {Object} options key/value properties (optional).
+	@param {Object} properties key/value properties (optional).
 	###
-	constructor: (options = {}) ->
-		super(options)
+	constructor: (properties = {}) ->
+		super(properties)
 
 	###
 	@overload minLength()
@@ -26,10 +26,10 @@ class StringDatatype extends AbstractDatatype
 	minLength: (value) ->
 		switch typeof value
 			when "undefined"
-				return @options.minLength
+				return @_properties.minLength
 			when "number"
 				if NumberUtils.isNonNegativeInt(value)
-					@options.minLength = value
+					@_properties.minLength = value
 					return this
 				else
 					throw new Error("Invalid minimum length - cannot be negative")
@@ -48,10 +48,10 @@ class StringDatatype extends AbstractDatatype
 	maxLength: (value) ->
 		switch typeof value
 			when "undefined"
-				return @options.maxLength
+				return @_properties.maxLength
 			when "number"
 				if NumberUtils.isPositiveInt(value)
-					@options.maxLength = value
+					@_properties.maxLength = value
 					return this
 				else
 					throw new Error("Invalid maximum length - cannot be negative or zero")
@@ -70,10 +70,10 @@ class StringDatatype extends AbstractDatatype
 	length: (value) ->
 		switch typeof value
 			when "undefined"
-				return @options.length
+				return @_properties.length
 			when "number"
 				if NumberUtils.isPositiveInt(value)
-					@options.length = value
+					@_properties.length = value
 					return this
 				else
 					throw new Error("Invalid length - cannot be negative or zero")
@@ -90,7 +90,7 @@ class StringDatatype extends AbstractDatatype
 			throw new Error("You must specify at least one allowed value")
 		for e in values when typeof e isnt "string"
 			throw new Error("Invalid allowed value - expected string, got #{typeof e}")
-		@options.equals = values
+		@_properties.equals = values
 		return this
 
 	###
@@ -103,7 +103,7 @@ class StringDatatype extends AbstractDatatype
 			throw new Error("You must specify at least one prohibited value")
 		for e in values when typeof e isnt "string"
 			throw new Error("Invalid prohibited value - expected string, got #{typeof e}")
-		@options.notEquals = values
+		@_properties.notEquals = values
 		return this
 
 	###
@@ -114,7 +114,7 @@ class StringDatatype extends AbstractDatatype
 	regex: (re) ->
 		unless re instanceof RegExp
 			throw new Error("Invalid regular expression - expected RegExp, got #{typeof re}")
-		@options.regex = re
+		@_properties.regex = re
 		return this
 
 	###
@@ -125,7 +125,7 @@ class StringDatatype extends AbstractDatatype
 	notRegex: (re) ->
 		unless re instanceof RegExp
 			throw new Error("Invalid regular expression - expected RegExp, got #{typeof re}")
-		@options.notRegex = re
+		@_properties.notRegex = re
 		return this
 
 	###
@@ -138,7 +138,7 @@ class StringDatatype extends AbstractDatatype
 			throw new Error("Invalid string - expected String, got #{typeof str}")
 		if str.length is 0
 			throw new Error("String cannot be empty")
-		@options.contains = str
+		@_properties.contains = str
 		return this
 		
 	###
@@ -151,7 +151,7 @@ class StringDatatype extends AbstractDatatype
 			throw new Error("Invalid string - expected String, got #{typeof str}")
 		if str.length is 0
 			throw new Error("String cannot be empty")
-		@options.notContains = str
+		@_properties.notContains = str
 		return this
 
 	###
@@ -176,32 +176,32 @@ class StringDatatype extends AbstractDatatype
 			value = StringDatatype.parse(value)
 		
 		if value?
-			if @options.minLength? and value.length < @options.minLength
-				throw new Error("Datatype must have at least #{@options.minLength} characters in length")
+			if @_properties.minLength? and value.length < @_properties.minLength
+				throw new Error("Datatype must have at least #{@_properties.minLength} characters in length")
 
-			if @options.maxLength? and value.length > @options.maxLength
-				throw new Error("Datatype must have at most #{@options.maxLength} characters in length")
+			if @_properties.maxLength? and value.length > @_properties.maxLength
+				throw new Error("Datatype must have at most #{@_properties.maxLength} characters in length")
 
-			if @options.length? and value.length isnt @options.length
-				throw new Error("Datatype must have exactly #{@options.length} characters in length")
+			if @_properties.length? and value.length isnt @_properties.length
+				throw new Error("Datatype must have exactly #{@_properties.length} characters in length")
 
-			if @options.equals? and value not in @options.equals
+			if @_properties.equals? and value not in @_properties.equals
 				throw new Error("Datatype must be equal to an allowed value")
 
-			if @options.notEquals? and value in @options.notEquals
+			if @_properties.notEquals? and value in @_properties.notEquals
 				throw new Error("Datatype cannot be equal to a prohibited value")
 
-			if @options.regex? and not @options.regex.test(value)
-				throw new Error("Datatype must match the regular expression #{@options.regex.toString()}")
+			if @_properties.regex? and not @_properties.regex.test(value)
+				throw new Error("Datatype must match the regular expression #{@_properties.regex.toString()}")
 
-			if @options.notRegex? and @options.notRegex.test(value)
-				throw new Error("Datatype cannot match the regular expression #{@options.notRegex.toString()}")
+			if @_properties.notRegex? and @_properties.notRegex.test(value)
+				throw new Error("Datatype cannot match the regular expression #{@_properties.notRegex.toString()}")
 
-			if @options.contains? and value.indexOf(@options.contains) is -1
-				throw new Error("Datatype must contain the value #{@options.contains}")
+			if @_properties.contains? and value.indexOf(@_properties.contains) is -1
+				throw new Error("Datatype must contain the value #{@_properties.contains}")
 
-			if @options.notContains? and value.indexOf(@options.notContains) isnt -1
-				throw new Error("Datatype cannot contain the value #{@options.notContains}")
+			if @_properties.notContains? and value.indexOf(@_properties.notContains) isnt -1
+				throw new Error("Datatype cannot contain the value #{@_properties.notContains}")
 
 		super(value)	
 		return

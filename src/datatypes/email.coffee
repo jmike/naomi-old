@@ -9,11 +9,11 @@ class EmailDatatype extends StringDatatype
 
 	###
 	Constructs a new email datatype.
-	@param {Object} options key/value properties (optional).
+	@param {Object} properties key/value properties (optional).
 	###
-	constructor: (options = {}) ->
-		super(options)
-		Object.defineProperty(@options, "regex", {
+	constructor: (properties = {}) ->
+		super(properties)
+		Object.defineProperty(@_properties, "regex", {
 			value: re
 			writable: false
 			enumerable: true

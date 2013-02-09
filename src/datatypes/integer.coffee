@@ -8,11 +8,11 @@ class IntegerDatatype extends NumberDatatype
 
 	###
 	Constructs a new integer datatype.
-	@param {Object} options key/value properties (optional).
+	@param {Object} properties key/value properties (optional).
 	###
-	constructor: (options = {}) ->
-		super(options)
-		Object.defineProperty(@options, "scale", {
+	constructor: (properties = {}) ->
+		super(properties)
+		Object.defineProperty(@_properties, "scale", {
 			value: 0
 			writable: false
 			enumerable: true

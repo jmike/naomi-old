@@ -9,10 +9,10 @@ class NumberDatatype extends AbstractDatatype
 
 	###
 	Constructs a new number datatype.
-	@param {Object} options key/value properties (optional).
+	@param {Object} properties key/value properties (optional).
 	###
-	constructor: (options = {}) ->
-		super(options)
+	constructor: (properties = {}) ->
+		super(properties)
 		
 	###
 	@overload precision()
@@ -26,10 +26,10 @@ class NumberDatatype extends AbstractDatatype
 	precision: (value) ->
 		switch typeof value
 			when "undefined"
-				return @options.precision
+				return @_properties.precision
 			when "number"
 				if NumberUtils.isPositiveInt(value)
-					@options.precision = value
+					@_properties.precision = value
 					return this
 				else
 					throw new Error("Invalid precision value - cannot be negative or zero")
@@ -48,10 +48,10 @@ class NumberDatatype extends AbstractDatatype
 	scale: (value) ->
 		switch typeof value
 			when "undefined"
-				return @options.scale
+				return @_properties.scale
 			when "number"
 				if NumberUtils.isNonNegativeInt(value)
-					@options.scale = value
+					@_properties.scale = value
 					return this
 				else
 					throw new Error("Invalid scale value - cannot be negative")
@@ -70,9 +70,9 @@ class NumberDatatype extends AbstractDatatype
 	min: (value) ->
 		switch typeof value
 			when "undefined"
-				return @options.min
+				return @_properties.min
 			when "number"
-				@options.min = value
+				@_properties.min = value
 				return this
 			else
 				throw new Error("Invalid value - expected Number, got #{typeof value}")
@@ -89,9 +89,9 @@ class NumberDatatype extends AbstractDatatype
 	max: (value) ->
 		switch typeof value
 			when "undefined"
-				return @options.max
+				return @_properties.max
 			when "number"
-				@options.max = value
+				@_properties.max = value
 				return this
 			else
 				throw new Error("Invalid value - expected Number, got #{typeof value}")
@@ -106,7 +106,7 @@ class NumberDatatype extends AbstractDatatype
 			throw new Error("You must specify at least one allowed value")
 		for e in values when typeof e isnt "number"
 			throw new Error("Invalid allowed value - expected number, got #{typeof e}")
-		@options.equals = values
+		@_properties.equals = values
 		return this
 
 	###
@@ -119,7 +119,7 @@ class NumberDatatype extends AbstractDatatype
 			throw new Error("You must specify at least one prohibited value")
 		for e in values when typeof e isnt "number"
 			throw new Error("Invalid prohibited value - expected number, got #{typeof e}")
-		@options.notEquals = values
+		@_properties.notEquals = values
 		return this
 
 	###
@@ -144,26 +144,26 @@ class NumberDatatype extends AbstractDatatype
 			value = NumberDatatype.parse(value)# parse this value
 		
 		if value?
-			if @options.min? and value < @options.min
-				throw new Error("Datatype must be at least #{@options.min} in value")
+			if @_properties.min? and value < @_properties.min
+				throw new Error("Datatype must be at least #{@_properties.min} in value")
 
-			if @options.max? and value > @options.max
-				throw new Error("Datatype must be at most #{@options.max} in value")
+			if @_properties.max? and value > @_properties.max
+				throw new Error("Datatype must be at most #{@_properties.max} in value")
 
-			if @options.equals? and value not in @options.equals
+			if @_properties.equals? and value not in @_properties.equals
 				throw new Error("Datatype should match an allowed value")
 
-			if @options.notEquals? and value in @options.notEquals
+			if @_properties.notEquals? and value in @_properties.notEquals
 				throw new Error("Datatype cannot match a prohibited value")
 
-			if @options.precision?
-				if value.toString().replace(/\.|,/, "").length > @options.precision
-					throw new Error("Datatype must have at most #{@options.precision} digits")
+			if @_properties.precision?
+				if value.toString().replace(/\.|,/, "").length > @_properties.precision
+					throw new Error("Datatype must have at most #{@_properties.precision} digits")
 
-			if @options.scale?
+			if @_properties.scale?
 				arr = value.toString().split(/\.|,/)
-				if arr[1]? and arr[1].length > @options.scale
-					throw new Error("Datatype must have at most #{@options.scale} digits to the right of the decimal point")
+				if arr[1]? and arr[1].length > @_properties.scale
+					throw new Error("Datatype must have at most #{@_properties.scale} digits to the right of the decimal point")
 		
 		super(value)
 		return

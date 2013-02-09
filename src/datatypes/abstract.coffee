@@ -5,13 +5,13 @@ class AbstractDatatype
 
 	###
 	Constructs a new abstract datatype.
-	@param {Object} options key/value properties (optional).
-	@throw {Error} if options is of the wrong type.
+	@param {Object} properties key/value properties (optional).
+	@throw {Error} if properties is of the wrong type.
 	###
-	constructor: (options = {}) ->
-		if typeof options isnt "object"
-			throw new Error("Invalid datatype's options - expected Object, got #{typeof options}")
-		@options = options
+	constructor: (properties = {}) ->
+		if typeof properties isnt "object"
+			throw new Error("Invalid datatype's properties - expected Object, got #{typeof properties}")
+		@_properties = properties
 
 	###
 	@overload nullable()
@@ -25,9 +25,9 @@ class AbstractDatatype
 	nullable: (value) ->
 		switch typeof value
 			when "undefined"
-				return @options.nullable
+				return @_properties.nullable
 			when "boolean"
-				@options.nullable = value
+				@_properties.nullable = value
 				return this
 			else
 				throw new Error("Invalid nullable value - expected Boolean, got #{typeof value}")
@@ -38,7 +38,7 @@ class AbstractDatatype
 	@throw {Error} if value is invalid.
 	###
 	validate: (value) ->
-		if value is null and not @options.nullable
+		if value is null and not @_properties.nullable
 			throw new Error("Datatype cannot be assigned with a null value")
 		return
 
