@@ -202,5 +202,20 @@ class MySqlConnector
 
 		this.execute(sql, params, callback)
 		return sql
+
+#	fetch: ->
+#		params = []
+#		sql = "SELECT "
+#		if query.show?
+#			for x, i in query.show
+#				if i isnt 0 then sql += ", "
+#				sql += "`#{x.key}`"
+#				if x.alias?
+#					sql += " AS '{x.alias}'"
+#		else
+#			sql += "*"
+#		sql += " FROM `#{this.name}`"
+#		sql += ";"
+#		return sql
 	
 module.exports = MySqlConnector
