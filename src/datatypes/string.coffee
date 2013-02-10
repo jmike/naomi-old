@@ -26,7 +26,12 @@ class StringDatatype extends AbstractDatatype
 	minLength: (value) ->
 		switch typeof value
 			when "undefined"
-				return @_properties.minLength
+				if @_properties.minLength?
+					return @_properties.minLength
+				else if @_properties.equals?
+					return Math.min.apply(Math, @_properties.equals.map((e) -> e.length));
+				else
+					return undefined
 			when "number"
 				if NumberUtils.isNonNegativeInt(value)
 					@_properties.minLength = value
