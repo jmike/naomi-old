@@ -151,33 +151,56 @@ class MySqlConnector
 			
 			attr = attributes[column]
 			
-			if attr.options.nullable
+			if attr.nullable()
 				sql += " NULL "
 			else
 				sql += " NOT NULL "
 				
-			if attr instanceof Attribute.Boolean
-				sql += "TINYINT(1) UNSIGNED"
-			else if attr instanceof Attribute.Integer or
-			attr instanceof Attribute.Number and attr.options.scale is 0
+			if attr instanceof Attribute.Boolean# boolean
 				sql += "TINYINT(1) UNSIGNED"
 			else if attr instanceof Attribute.Number
-				sql += "TINYINT(1) UNSIGNED"
-			else if attr instanceof Attribute.String
-				null
-			else if attr instanceof Attribute.Date
-				null
-			
+				precision = attr.precision()
+				scale = attr.scale()
+				min = attr.min()
+				max = attr.max()
+				if scale is 0# integer
+					if min >= 0# unsigned
+						if max < 256
+							sql += "TINYINT"
+						else if max < 65536
+							sql += "SMALLINT"
+						else if max < 16777216
+							sql += "MEDIUMINT"
+						else if max < 4294967296 or typeof max is "undefined"
+							sql += "INT"
+						else
+							sql += "BIGINT"
+						sql += " UNSIGNED"
+					else# signed
+						if min >= -128 and max < 128
+							sql += "TINYINT"
+						else if min >= -32768 and max < 32768
+							sql += "SMALLINT"
+						else if min >= -8388608 and max < 8388608
+							sql += "MEDIUMINT"
+						else if min >= -2147483648 or typeof min is "undefined" and
+						max < 2147483648 or typeof max is "undefined"
+							sql += "INT"
+						else
+							sql += "BIGINT"
+				else# float
+					sql += "FLOAT"
+					if typeof precision isnt "undefined" and
+					typeof scale isnt "undefined"
+						sql += "(#{precision}, #{scale})"
+					if min >= 0# unsigned
+						sql += " UNSIGNED"
+			else if attr instanceof Attribute.String# String
+				console.log "under contruction"
+			else if attr instanceof Attribute.Date# Date
+				console.log "under contruction"
+
 		this.execute(sql, params, callback)
 		return sql
-
-#max = 0
-#precision = attr.options.precision
-#if precision?
-#	max = Math.pow(10, precision)
-#else
-#	candidates = [Math.abs(attr.options.min), Math.abs(attr.options.min)]
-#	max = Math.max.apply(Math, candidates)
-	
 	
 module.exports = MySqlConnector
