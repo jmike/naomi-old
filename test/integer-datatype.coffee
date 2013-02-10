@@ -1,4 +1,5 @@
 assert = require("chai").assert
+NumberDatatype = require("../src/datatypes/number")
 IntegerDatatype = require("../src/datatypes/integer")
 
 describe("Integer datatype", ->
@@ -45,7 +46,14 @@ describe("Integer datatype", ->
 	
 	it("should not allow it's 'scale' property to change", ->
 		attr = new IntegerDatatype().scale(35)
-		assert.strictEqual(attr._properties.scale, 0)
+		assert.strictEqual(attr.scale(), 0)
+		return
+	)
+	
+	it("should be an instance of number datatype with zero (0) scale", ->
+		attr = new IntegerDatatype()
+		assert.isTrue(attr instanceof NumberDatatype, 0)
+		assert.strictEqual(attr.scale(), 0)
 		return
 	)
 
