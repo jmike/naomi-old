@@ -48,7 +48,12 @@ class StringDatatype extends AbstractDatatype
 	maxLength: (value) ->
 		switch typeof value
 			when "undefined"
-				return @_properties.maxLength
+				if @_properties.maxLength?
+					return @_properties.maxLength
+				else if @_properties.equals?
+					return Math.max.apply(Math, @_properties.equals.map((e) -> e.length));
+				else
+					return undefined
 			when "number"
 				if NumberUtils.isPositiveInt(value)
 					@_properties.maxLength = value

@@ -81,6 +81,16 @@ describe("Number datatype", ->
 		return
 	)
 	
+	it("should use precision and scale to calculate the maximum allowed value if not explicitely defined", ->
+		assert.strictEqual(new NumberDatatype().precision(4).scale(1).max(), 999.9)
+		return
+	)
+	
+	it("should use equals to calculate the maximum allowed value if not explicitely defined", ->
+		assert.strictEqual(new NumberDatatype().equals(33, 29.78, 1928.9902).max(), 1928.9902)
+		return
+	)
+	
 	it("should not be equal to specified value", ->
 		assert.throw(->
 			new NumberDatatype()

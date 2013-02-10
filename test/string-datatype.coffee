@@ -131,5 +131,10 @@ describe("String datatype", ->
 		)
 		return
 	)
+	
+	it("should use equals to calculate the maximum allowed value if not explicitely defined", ->
+		assert.strictEqual(new StringDatatype().equals("sadsad", "a", "bc").maxLength(), 6)
+		return
+	)
 
 )

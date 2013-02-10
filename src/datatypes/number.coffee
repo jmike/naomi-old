@@ -89,7 +89,15 @@ class NumberDatatype extends AbstractDatatype
 	max: (value) ->
 		switch typeof value
 			when "undefined"
-				return @_properties.max
+				if @_properties.max?
+					return @_properties.max
+				else if @_properties.equals?
+					return Math.max.apply(Math, @_properties.equals);
+				else if @_properties.precision?
+					return Math.pow(10, @_properties.precision - (@_properties.scale || 0)) - 1 / 
+						Math.pow(10, (@_properties.scale || 0))
+				else
+					return undefined
 			when "number"
 				@_properties.max = value
 				return this
