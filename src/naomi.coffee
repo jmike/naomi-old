@@ -6,6 +6,8 @@ class Naomi
 
 	@MYSQL: "MYSQL"
 	@POSTGRE: "POSTGRE"
+	
+	@Attribute = Attribute
 
 	###
 	Contructs a new Naomi instance of the specified properties.
