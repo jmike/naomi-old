@@ -10,7 +10,7 @@ class AbstractDatatype
 	###
 	constructor: (properties = {}) ->
 		if typeof properties isnt "object"
-			throw new Error("Invalid datatype's properties - expected Object, got #{typeof properties}")
+			throw new Error("Invalid datatype's properties: expected Object, got #{typeof properties}")
 		@_properties = properties
 
 	###
@@ -30,7 +30,7 @@ class AbstractDatatype
 				@_properties.nullable = value
 				return this
 			else
-				throw new Error("Invalid nullable value - expected Boolean, got #{typeof value}")
+				throw new Error("Invalid nullable value: expected Boolean, got #{typeof value}")
 
 	###
 	Throws an error if the specified value is invalid.

@@ -37,9 +37,9 @@ class StringDatatype extends AbstractDatatype
 					@_properties.minLength = value
 					return this
 				else
-					throw new Error("Invalid minimum length - cannot be negative")
+					throw new Error("Invalid minimum length: cannot be negative")
 			else
-				throw new Error("Invalid minimum length - expected Number, got #{typeof value}")
+				throw new Error("Invalid minimum length: expected number, got #{typeof value}")
 		
 	###
 	@overload maxLength()
@@ -64,9 +64,9 @@ class StringDatatype extends AbstractDatatype
 					@_properties.maxLength = value
 					return this
 				else
-					throw new Error("Invalid maximum length - cannot be negative or zero")
+					throw new Error("Invalid maximum length: cannot be negative or zero")
 			else
-				throw new Error("Invalid maximum length - expected Number, got #{typeof value}")
+				throw new Error("Invalid maximum length: expected number, got #{typeof value}")
 		
 	###
 	@overload length()
@@ -86,9 +86,9 @@ class StringDatatype extends AbstractDatatype
 					@_properties.length = value
 					return this
 				else
-					throw new Error("Invalid length - cannot be negative or zero")
+					throw new Error("Invalid exact length: cannot be negative or zero")
 			else
-				throw new Error("Invalid length - expected Number, got #{typeof value}")
+				throw new Error("Invalid exact length: expected number, got #{typeof value}")
 		
 	###
 	Sets the datatype's allowed value(s).
@@ -99,7 +99,7 @@ class StringDatatype extends AbstractDatatype
 		if values.length is 0
 			throw new Error("You must specify at least one allowed value")
 		for e in values when typeof e isnt "string"
-			throw new Error("Invalid allowed value - expected string, got #{typeof e}")
+			throw new Error("Invalid allowed value: expected string, got #{typeof e}")
 		@_properties.equals = values
 		return this
 
@@ -112,7 +112,7 @@ class StringDatatype extends AbstractDatatype
 		if values.length is 0
 			throw new Error("You must specify at least one prohibited value")
 		for e in values when typeof e isnt "string"
-			throw new Error("Invalid prohibited value - expected string, got #{typeof e}")
+			throw new Error("Invalid prohibited value: expected string, got #{typeof e}")
 		@_properties.notEquals = values
 		return this
 
@@ -123,7 +123,7 @@ class StringDatatype extends AbstractDatatype
 	###
 	regex: (re) ->
 		unless re instanceof RegExp
-			throw new Error("Invalid regular expression - expected RegExp, got #{typeof re}")
+			throw new Error("Invalid regular expression: expected RegExp, got #{typeof re}")
 		@_properties.regex = re
 		return this
 
@@ -134,7 +134,7 @@ class StringDatatype extends AbstractDatatype
 	###
 	notRegex: (re) ->
 		unless re instanceof RegExp
-			throw new Error("Invalid regular expression - expected RegExp, got #{typeof re}")
+			throw new Error("Invalid regular expression: expected RegExp, got #{typeof re}")
 		@_properties.notRegex = re
 		return this
 
@@ -145,7 +145,7 @@ class StringDatatype extends AbstractDatatype
 	###
 	contains: (str) ->
 		if typeof str isnt "string"
-			throw new Error("Invalid string - expected String, got #{typeof str}")
+			throw new Error("Invalid string to contain: expected string, got #{typeof str}")
 		if str.length is 0
 			throw new Error("String cannot be empty")
 		@_properties.contains = str
@@ -158,9 +158,9 @@ class StringDatatype extends AbstractDatatype
 	###
 	notContains: (str) ->
 		if typeof str isnt "string"
-			throw new Error("Invalid string - expected String, got #{typeof str}")
+			throw new Error("Invalid string to not contain: expected string, got #{typeof str}")
 		if str.length is 0
-			throw new Error("String cannot be empty")
+			throw new Error("Invalid string to not contain: value cannot be empty")
 		@_properties.notContains = str
 		return this
 

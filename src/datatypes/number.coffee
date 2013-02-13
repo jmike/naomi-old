@@ -32,9 +32,9 @@ class NumberDatatype extends AbstractDatatype
 					@_properties.precision = value
 					return this
 				else
-					throw new Error("Invalid precision value - cannot be negative or zero")
+					throw new Error("Invalid precision value: cannot be negative or zero")
 			else
-				throw new Error("Invalid precision value - expected Number, got #{typeof value}")
+				throw new Error("Invalid precision value: expected number, got #{typeof value}")
 
 	###
 	@overload scale()
@@ -54,9 +54,9 @@ class NumberDatatype extends AbstractDatatype
 					@_properties.scale = value
 					return this
 				else
-					throw new Error("Invalid scale value - cannot be negative")
+					throw new Error("Invalid scale value: cannot be negative")
 			else
-				throw new Error("Invalid scale value - expected Number, got #{typeof value}")
+				throw new Error("Invalid scale value: expected number, got #{typeof value}")
 
 	###
 	@overload min()
@@ -83,7 +83,7 @@ class NumberDatatype extends AbstractDatatype
 				@_properties.min = value
 				return this
 			else
-				throw new Error("Invalid value - expected Number, got #{typeof value}")
+				throw new Error("Invalid minimum value: expected number, got #{typeof value}")
 		
 	###
 	@overload max()
@@ -110,7 +110,7 @@ class NumberDatatype extends AbstractDatatype
 				@_properties.max = value
 				return this
 			else
-				throw new Error("Invalid value - expected Number, got #{typeof value}")
+				throw new Error("Invalid maximum value: expected number, got #{typeof value}")
 		
 	###
 	Sets the datatype's allowed value(s).
@@ -121,7 +121,7 @@ class NumberDatatype extends AbstractDatatype
 		if values.length is 0
 			throw new Error("You must specify at least one allowed value")
 		for e in values when typeof e isnt "number"
-			throw new Error("Invalid allowed value - expected number, got #{typeof e}")
+			throw new Error("Invalid allowed value: expected number, got #{typeof e}")
 		@_properties.equals = values
 		return this
 
@@ -134,7 +134,7 @@ class NumberDatatype extends AbstractDatatype
 		if values.length is 0
 			throw new Error("You must specify at least one prohibited value")
 		for e in values when typeof e isnt "number"
-			throw new Error("Invalid prohibited value - expected number, got #{typeof e}")
+			throw new Error("Invalid prohibited value: expected number, got #{typeof e}")
 		@_properties.notEquals = values
 		return this
 
