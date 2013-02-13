@@ -1,70 +1,57 @@
-MySqlConnectionPool = require("./mysql-connection-pool")
-MySqlEntity = require("./mysql-entity")
+MySqlConnector = require("./connectors/mysql")
+Collection = require("./collection")
+Attribute = require("./attribute")
 
 class Naomi
 
-	###*
-	* Defines a list of supported database engines.
-	###
 	@MYSQL: "MYSQL"
 	@POSTGRE: "POSTGRE"
 
-	###*
-	* Contructs a new Naomi instance of the specified properties.
-	* @param database {string} the name of the database (a.k.a. schema).
-	* @param username {string} the name of the user to login to the database.
-	* @param password {string} the password to login to the database.
-	* @param o {Object=} optional settings.
+	###
+	Contructs a new Naomi instance of the specified properties.
+	@param {String} database the name of the database (a.k.a. schema).
+	@param {String} username the name of the user to login to the database.
+	@param {String} password the password to login to the database.
+	@param {Object} options key/value settings.
+	@throw {Error}
 	###
 	constructor: (database, username, password, options = {}) ->
 		if typeof database isnt "string"
-			throw new Error("Invalid database name")
+			throw new Error("Invalid database name: expected string, got #{typeof database}")
 		if typeof username isnt "string"
-			throw new Error("Invalid username")
+			throw new Error("Invalid username: expected string, got #{typeof username}")
 		if typeof password isnt "string"
-			throw new Error("Invalid password")
+			throw new Error("Invalid password: expected string, got #{typeof password}")
 		if typeof options isnt "object"
-			throw new Error("Invalid options, expecting object, got #{typeof(options)}")
-		@_engine = options.engine || Naomi.MYSQL
-		@_entities = {}
-		host = options.host || "localhost"
-		port = parseInt(options.port, 10)
-		minConnections = parseInt(options.maxConnections, 10)
-		maxConnections = parseInt(options.maxConnections, 10)
-		idleTimeout = parseInt(options.idleTimeout, 10)
-		#create connection pool
-		switch @_engine
+			throw new Error("Invalid options: expected object, got #{typeof(options)}")
+		engine = options.engine || Naomi.MYSQL
+
+		# set the database's connector
+		switch engine
 			when Naomi.MYSQL
-				@_pool = MySqlConnectionPool.create(
-					database
-					username
-					password
-					host
-					port || 3306
-					minConnections || 2
-					maxConnections || 10
-					idleTimeout || 30000
-				)
-			else 
-				throw new Error("Invalid or unsupported database engine")
-	
-	###*
-	* Creates and returns a new Entity.
-	* @param name {string} the name of the entity, must be unique.
-	* @param attributes {object=} the entity's attributes (optional).
-	* @param options {object=} key/value settings (optional).
-	* @return {Entity}
-	###
-	extend: (name, attributes = {}, options = {}) ->
-		if @_entities[name]?
-			throw new Error("Entity #{name} is already defined")
-		switch @_engine
-			when Naomi.MYSQL
-				entity = new MySqlEntity(name, attributes, options)
+				@_connector = new MySqlConnector(options)
 			when Naomi.POSTGRE
 				throw new Error("Postgre database not yet supported")
-		@_entities[name] = entity
-		return entity
+			else 
+				throw new Error("Invalid or unsupported database engine")
+		
+		# set a new object to store the database's tables (a.k.a. collections)
+		@_collections = {}
+	
+	###
+	Creates and returns a new Collection.
+	@param name {String} the name of the entity, must be unique.
+	@param attributes {Object} the entity's attributes (optional).
+	@param options {Object} key/value settings (optional).
+	@return {Collection}
+	###
+	extend: (name, attributes = {}, options = {}) ->
+		if @_collections.hasOwnProperty(name)
+			throw new Error("Collection #{name} is already defined")
+		else
+			collection = new Collection(name, attributes, options)
+			@_collections[name] = collection
+			return collection
 		
 	assosiate: ->
 	

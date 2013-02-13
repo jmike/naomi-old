@@ -24,7 +24,7 @@ class MySqlConnector
 		if typeof options isnt "object"
 			throw new Error("Invalid connector's options - expected Object, got #{typeof options}")
 		
-		# Extract connector properties
+		# Extract connector properties from options
 		database = options.database
 		username = options.username
 		password = options.password
