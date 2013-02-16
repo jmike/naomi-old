@@ -1,5 +1,5 @@
 MySqlConnector = require("./connectors/mysql")
-Collection = require("./collection")
+EntitySet = require("./entity-set")
 Attribute = require("./attribute")
 
 class Naomi
@@ -24,23 +24,23 @@ class Naomi
 			else 
 				throw new Error("Invalid or unsupported database engine")
 		
-		# set a new object to store the database's tables (a.k.a. collections)
-		@_collections = {}
+		# set a new object to store the database's entity sets (a.k.a. tables)
+		@_entitySets = {}
 	
 	###
-	Creates and returns a new Collection.
+	Creates and returns a new EntitySet.
 	@param name {String} the name of the entity, must be unique.
 	@param attributes {Object} the entity's attributes (optional).
 	@param options {Object} key/value settings (optional).
-	@return {Collection}
+	@return {EntitySet}
 	###
 	extend: (name, attributes = {}, options = {}) ->
-		if @_collections.hasOwnProperty(name)
-			throw new Error("Collection #{name} is already defined")
+		if @_entitySets.hasOwnProperty(name)
+			throw new Error("EntitySet #{name} is already defined")
 		else
-			collection = new Collection(name, attributes, options)
-			@_collections[name] = collection
-			return collection
+			e = new EntitySet(name, attributes, options)
+			@_entitySets[name] = e
+			return e
 		
 	assosiate: ->
 	

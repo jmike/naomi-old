@@ -96,15 +96,15 @@ class MySqlConnector
 		return
 	
 	###
-	Adds the specified data to the designated table.
-	@param {Collection} collection the name of the table.
+	Adds the supplied data to the designated entity set.
+	@param {String} name the name of the table.
 	@param {Object} attributes an object describing the table's fields.
 	@param {Object|Array<Object>} data
 	@param {Boolean} duplicateUpdate a boolean flag indicating whether duplicate records should be updated.
 	@param {Function} callback i.e. function(error, data).
 	###
-	add: (collection, attributes, data, duplicateUpdate, callback) ->
-		sql = "INSERT INTO `#{collection}`"
+	add: (name, attributes, data, duplicateUpdate, callback) ->
+		sql = "INSERT INTO `#{name}`"
 		params = []
 		columns = (k for own k of attributes)
 		unless Array.isArray(data) then data = [data]
@@ -144,13 +144,13 @@ class MySqlConnector
 		return sql
 		
 	###
-	Creates a new collection with the specified properties.
-	@param {String} name the name of the collection.
-	@param {Object} attributes an object describing the collections's attributes.
+	Creates a new entity set with the specified properties.
+	@param {String} name the name of the entity set.
+	@param {Object} attributes an object describing the entity set's attributes.
 	@param {Function} callback i.e. function(error, data).
 	###
 	create: (name, attributes, callback) ->
-		sql = "CREATE TABLE IF NOT EXISTS `#{collection}` "
+		sql = "CREATE TABLE IF NOT EXISTS `#{name}` "
 		params = []
 		columns = (k for own k of attributes)
 
