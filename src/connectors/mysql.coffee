@@ -159,16 +159,17 @@ class MySqlConnector
 			if i isnt 0
 				sql += ", "
 			sql += "`#{column}` "
-			
 			attr = attributes[column]
-				
+
 			if attr instanceof Attribute.Boolean# boolean
 				sql += "TINYINT(1) UNSIGNED"
-			else if attr instanceof Attribute.Number
+
+			else if attr instanceof Attribute.Number# number
 				precision = attr.precision()
 				scale = attr.scale()
 				min = attr.min()
 				max = attr.max()
+
 				if scale is 0# integer
 					if min >= 0# unsigned
 						if max < 256
@@ -194,6 +195,7 @@ class MySqlConnector
 							sql += "INT"
 						else
 							sql += "BIGINT"
+
 				else# float
 					sql += "FLOAT"
 					if typeof precision isnt "undefined" and
@@ -201,24 +203,26 @@ class MySqlConnector
 						sql += "(#{precision}, #{scale})"
 					if min >= 0# unsigned
 						sql += " UNSIGNED"
+
 			else if attr instanceof Attribute.String# String
 				console.log "under contruction"
+
 			else if attr instanceof Attribute.Date# Date
 				console.log "under contruction"	
-				
+
 			if attr.nullable()
 				sql += " NULL"
 			else
 				sql += " NOT NULL"
-				
+
 		sql += ")"
-		
+
 		engine = options.engine || "InnoDB"
 		if engine?
 			sql += " ENGINE = #{engine}"
-		
+
 		sql += ";"
-		
+
 		this.execute(sql, params, callback)
 		return sql
 
