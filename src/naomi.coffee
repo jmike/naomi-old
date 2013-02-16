@@ -1,6 +1,7 @@
 MySqlConnector = require("./connectors/mysql")
 EntitySet = require("./entity-set")
 Attribute = require("./attribute")
+async = require("async")
 
 class Naomi
 
@@ -54,11 +55,14 @@ class Naomi
 	sync: (options, callback = -> null) ->
 		if typeof options is "function"
 			callback = options
-	
+
+		tasks = []
 		for own k, v of @schema
-			@_connector.create(k, v.attributes, v.options, (error, data) ->
-				console.log arguments
-			)
+			tasks.push((callback) =>
+				@_connector.create(k, v.attributes, v.options, callback)
+			) 
+
+		async.parallel(tasks, callback)
 		return
 
 module.exports = Naomi
