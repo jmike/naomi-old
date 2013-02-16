@@ -136,7 +136,6 @@ class MySqlConnector
 				if i isnt 0
 					sql += ", "
 				sql += "`#{column}` = VALUES(`#{column}`)"
-			sql += ")"
 		
 		sql += ";"
 		
@@ -147,24 +146,21 @@ class MySqlConnector
 	Creates a new entity set with the specified properties.
 	@param {String} name the name of the entity set.
 	@param {Object} attributes an object describing the entity set's attributes.
+	@param {Object} options key/value settings.
 	@param {Function} callback i.e. function(error, data).
 	###
-	create: (name, attributes, callback) ->
-		sql = "CREATE TABLE IF NOT EXISTS `#{name}` "
+	create: (name, attributes, options, callback) ->
+		sql = "CREATE TABLE IF NOT EXISTS `#{name}`"
 		params = []
 		columns = (k for own k of attributes)
 
+		sql += " ("
 		for column, i in columns
 			if i isnt 0
 				sql += ", "
-			sql += "`#{column}`"
+			sql += "`#{column}` "
 			
 			attr = attributes[column]
-			
-			if attr.nullable()
-				sql += " NULL "
-			else
-				sql += " NOT NULL "
 				
 			if attr instanceof Attribute.Boolean# boolean
 				sql += "TINYINT(1) UNSIGNED"
@@ -208,8 +204,21 @@ class MySqlConnector
 			else if attr instanceof Attribute.String# String
 				console.log "under contruction"
 			else if attr instanceof Attribute.Date# Date
-				console.log "under contruction"
-
+				console.log "under contruction"	
+				
+			if attr.nullable()
+				sql += " NULL"
+			else
+				sql += " NOT NULL"
+				
+		sql += ")"
+		
+		engine = options.engine || "InnoDB"
+		if engine?
+			sql += " ENGINE = #{engine}"
+		
+		sql += ";"
+		
 		this.execute(sql, params, callback)
 		return sql
 

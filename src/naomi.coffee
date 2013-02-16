@@ -11,7 +11,7 @@ class Naomi
 
 	###
 	Contructs a new Naomi instance of the specified properties.
-	@param {String} type the type of the internal database connector, e.g. "MYSQL".
+	@param {String} type the type of the database connector to use, e.g. "MYSQL".
 	@param {Object} options key/value settings (optional).
 	@throw {Error} if type is unspecified or invalid.
 	###
@@ -25,25 +25,40 @@ class Naomi
 				throw new Error("Invalid or unsupported database engine")
 		
 		# set a new object to store the database's entity sets (a.k.a. tables)
-		@_entitySets = {}
+		@entitySets = {}
 	
 	###
-	Creates and returns a new EntitySet.
+	Creates and returns a new EntitySet of the specified properties.
 	@param name {String} the name of the entity, must be unique.
 	@param attributes {Object} the entity's attributes (optional).
 	@param options {Object} key/value settings (optional).
 	@return {EntitySet}
+	@throw {Error} if EntitySet already exists in database.
 	###
 	extend: (name, attributes = {}, options = {}) ->
-		if @_entitySets.hasOwnProperty(name)
+		if @entitySets.hasOwnProperty(name)
 			throw new Error("EntitySet #{name} is already defined")
-		else
-			e = new EntitySet(name, attributes, options)
-			@_entitySets[name] = e
-			return e
+		
+		entitySet = new EntitySet(name, attributes, options)
+		@entitySets[name] = entitySet# store locally
+		return entitySet
 		
 	assosiate: ->
 	
-	sync: ->
+	###
+	Synchronizes the current naomi instance with the remote database.
+	@note Makes sure all entity sets exist on the remote database, but doen't store any data in them.
+	@param {Object} options key/value settings (optional).
+	@param {Function} callback i.e. function(error, data).
+	###
+	sync: (options, callback = -> null) ->
+		if typeof options is "function"
+			callback = options
+	
+		for own k, v of @entitySets
+			@_connector.create(k, v.attributes, v.options, (error, data) ->
+				console.log arguments
+			)
+		return
 
 module.exports = Naomi
