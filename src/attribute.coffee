@@ -45,7 +45,7 @@ class Attribute
 	Constructs and returns a new boolean datatype.
 	@return {Attribute.Boolean}
 	###
-	@boolean: -> new BooleanDatatype()
+	@bool: -> new BooleanDatatype()
 
 	###
 	Constructs and returns a new date datatype.
