@@ -208,7 +208,7 @@ class MySqlConnector
 				console.log "under contruction"
 
 			else if attr instanceof Attribute.Date# Date
-				console.log "under contruction"	
+				console.log "under contruction"
 
 			if attr.nullable()
 				sql += " NULL"
