@@ -1,6 +1,7 @@
 mansion = require("generic-pool")
 mysql = require("mysql")
 Attribute = require("../attribute")
+NumberUtils = require("../utils/number")
 
 ###
 @author Dimitrios C. Michalakos
@@ -18,12 +19,13 @@ class MySqlConnector
 	@option options {Number} minConnections the minimum number of connections to keep in the pool at any given time (optional), defaults to 2.
 	@option options {Number} maxConnections the maximum number of connections to create at any given time (optional), defaults to 10.
 	@option options {Number} idleTimeout time, in milliseconds, a connection can go unused before being destroyed (optional), defaults to 30000.
+	@throw {Error} if options is unspecified or invalid.
 	###
 	constructor: (options) ->
 		# Make sure options is valid
 		if typeof options isnt "object"
 			throw new Error("Invalid connector's options - expected Object, got #{typeof options}")
-		
+
 		# Extract connector properties from options
 		database = options.database
 		username = options.username
@@ -34,6 +36,14 @@ class MySqlConnector
 		maxConnections = options.maxConnections || 10
 		idleTimeout = options.maxConnections || 30000
 		
+		# Make sure connector properties are valid
+		if typeof database isnt "string"
+			throw new Error("Invalid database name: expected string, got #{typeof database}")
+		if typeof username isnt "string"
+			throw new Error("Invalid username: expected string, got #{typeof username}")
+		if typeof password isnt "string"
+			throw new Error("Invalid password: expected string, got #{typeof password}")
+
 		# Create connection pool
 		@pool = mansion.Pool({
 			

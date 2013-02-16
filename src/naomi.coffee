@@ -11,25 +11,12 @@ class Naomi
 
 	###
 	Contructs a new Naomi instance of the specified properties.
-	@param {String} database the name of the database (a.k.a. schema).
-	@param {String} username the name of the user to login to the database.
-	@param {String} password the password to login to the database.
-	@param {Object} options key/value settings.
-	@throw {Error}
+	@param {String} type the type of the internal database connector, e.g. "MYSQL".
+	@param {Object} options key/value settings (optional).
+	@throw {Error} if type is unspecified or invalid.
 	###
-	constructor: (database, username, password, options = {}) ->
-		if typeof database isnt "string"
-			throw new Error("Invalid database name: expected string, got #{typeof database}")
-		if typeof username isnt "string"
-			throw new Error("Invalid username: expected string, got #{typeof username}")
-		if typeof password isnt "string"
-			throw new Error("Invalid password: expected string, got #{typeof password}")
-		if typeof options isnt "object"
-			throw new Error("Invalid options: expected object, got #{typeof(options)}")
-		engine = options.engine || Naomi.MYSQL
-
-		# set the database's connector
-		switch engine
+	constructor: (type, options = {}) ->
+		switch type
 			when Naomi.MYSQL
 				@_connector = new MySqlConnector(options)
 			when Naomi.POSTGRE
