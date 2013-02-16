@@ -25,7 +25,7 @@ class Naomi
 				throw new Error("Invalid or unsupported database engine")
 		
 		# set a new object to store the database's entity sets (a.k.a. tables)
-		@entitySets = {}
+		@schema = {}
 	
 	###
 	Creates and returns a new EntitySet of the specified properties.
@@ -36,11 +36,11 @@ class Naomi
 	@throw {Error} if EntitySet already exists in database.
 	###
 	extend: (name, attributes = {}, options = {}) ->
-		if @entitySets.hasOwnProperty(name)
+		if @schema.hasOwnProperty(name)
 			throw new Error("EntitySet #{name} is already defined")
 		
 		entitySet = new EntitySet(name, attributes, options)
-		@entitySets[name] = entitySet# store locally
+		@schema[name] = entitySet# store locally
 		return entitySet
 		
 	assosiate: ->
@@ -55,7 +55,7 @@ class Naomi
 		if typeof options is "function"
 			callback = options
 	
-		for own k, v of @entitySets
+		for own k, v of @schema
 			@_connector.create(k, v.attributes, v.options, (error, data) ->
 				console.log arguments
 			)
