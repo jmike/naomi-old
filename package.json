@@ -12,7 +12,8 @@
 		"amdefine": "0.0.x",
 		"generic-pool": "2.0.x",
 		"mysql": "2.0.0-alpha7",
-		"async": "0.2.x"
+		"async": "0.2.x",
+		"moment": "2.0.x"
 	},
 	"devDependencies": {
 		"mocha": "1.8.x",
