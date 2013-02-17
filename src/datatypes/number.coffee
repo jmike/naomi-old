@@ -28,11 +28,10 @@ class NumberDatatype extends AbstractDatatype
 			when "undefined"
 				return @_properties.precision
 			when "number"
-				if NumberUtils.isPositiveInt(value)
-					@_properties.precision = value
-					return this
-				else
+				unless NumberUtils.isPositiveInt(value)
 					throw new Error("Invalid precision value: cannot be negative or zero")
+				@_properties.precision = value
+				return this	
 			else
 				throw new Error("Invalid precision value: expected number, got #{typeof value}")
 
@@ -50,11 +49,12 @@ class NumberDatatype extends AbstractDatatype
 			when "undefined"
 				return @_properties.scale
 			when "number"
-				if NumberUtils.isNonNegativeInt(value)
-					@_properties.scale = value
-					return this
-				else
+				unless NumberUtils.isNonNegativeInt(value)
 					throw new Error("Invalid scale value: cannot be negative")
+				if value + 1 > @_properties.precision
+					throw new Error("Invalid scale value: cannot be greater than precision - 1")
+				@_properties.scale = value
+				return this
 			else
 				throw new Error("Invalid scale value: expected number, got #{typeof value}")
 
@@ -80,6 +80,8 @@ class NumberDatatype extends AbstractDatatype
 				else
 					return undefined
 			when "number"
+				if value > @_properties.max
+					throw new Error("Invalid minimum value: cannot be greater than maximum value")
 				@_properties.min = value
 				return this
 			else
@@ -107,36 +109,48 @@ class NumberDatatype extends AbstractDatatype
 				else
 					return undefined
 			when "number"
+				if value < @_properties.min
+					throw new Error("Invalid maximum value: cannot be less than minimum value")
 				@_properties.max = value
 				return this
 			else
 				throw new Error("Invalid maximum value: expected number, got #{typeof value}")
 		
 	###
-	Sets the datatype's allowed value(s).
-	@param {Number} values an infinite number of values separated by comma.
-	@return {NumberDatatype} to allow method chaining.
+	@overload equals()
+	  Returns the datatype's allowed values.
+	  @return {Array.<Number>}
+	@overload equals(values...)
+	  Sets the datatype's allowed values.
+	  @param {Number} values an infinite number of values separated by comma.
+	  @return {NumberDatatype} to allow method chaining.
 	###
 	equals: (values...) ->
 		if values.length is 0
-			throw new Error("You must specify at least one allowed value")
-		for e in values when typeof e isnt "number"
-			throw new Error("Invalid allowed value: expected number, got #{typeof e}")
-		@_properties.equals = values
-		return this
+			return @_properties.equals
+		else
+			for e in values when typeof e isnt "number"
+				throw new Error("Invalid allowed value: expected number, got #{typeof e}")
+			@_properties.equals = values
+			return this
 
 	###
-	Sets the datatype's prohibited value(s).
-	@param {Number} values an infinite number of values separated by comma.
-	@return {NumberDatatype} to allow method chaining.
+	@overload notEquals()
+	  Returns the datatype's prohibited values.
+	  @return {Array.<Number>}
+	@overload notEquals(values...)
+	  Sets the datatype's prohibited values.
+	  @param {Number} values an infinite number of values separated by comma.
+	  @return {NumberDatatype} to allow method chaining.
 	###
 	notEquals: (values...) ->
 		if values.length is 0
-			throw new Error("You must specify at least one prohibited value")
-		for e in values when typeof e isnt "number"
-			throw new Error("Invalid prohibited value: expected number, got #{typeof e}")
-		@_properties.notEquals = values
-		return this
+			return @_properties.notEquals
+		else
+			for e in values when typeof e isnt "number"
+				throw new Error("Invalid prohibited value: expected number, got #{typeof e}")
+			@_properties.notEquals = values
+			return this
 
 	###
 	Parses the supplied value and returns number or null.
