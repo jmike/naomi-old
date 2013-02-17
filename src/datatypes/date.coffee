@@ -1,4 +1,5 @@
 AbstractDatatype = require("./abstract")
+moment = require("moment")
 
 ###
 @extend AbstractDatatype
@@ -19,17 +20,23 @@ class DateDatatype extends AbstractDatatype
 	  @return {Date}
 	@overload min(value)
 	  Sets the datatype's minimum allowed value.
-	  @param {Date} value
+	  @param {Date, String} value
 	  @return {DateDatatype} to allow method chaining.
 	###
 	min: (value) ->
-		if typeof value is "undefined"
-			return @_properties.min
-		else if value instanceof Date
-			@_properties.min = value
-			return this
-		else
-			throw new Error("Invalid value: expected Date, got #{typeof value}")
+		switch typeof value
+			when "undefined"
+				return @_properties.min
+			when "string"
+				x = moment(value, "YYYY-MM-DD")
+				unless x.isValid()
+					throw new Error("Invalid minimum value: cannot be parsed as date")
+				@_properties.min = x.toDate()
+			else
+				if value not instanceof Date
+					throw new Error("Invalid minimum value: expected Date, got #{typeof value}")
+				@_properties.min = value
+		return this
 		
 	###
 	@overload max()
@@ -37,43 +44,71 @@ class DateDatatype extends AbstractDatatype
 	  @return {Date}
 	@overload max(value)
 	  Sets the datatype's maximum allowed value.
-	  @param {Date} value
+	  @param {Date, String} value
 	  @return {DateDatatype} to allow method chaining.
 	###
 	max: (value) ->
-		if typeof value is "undefined"
-			return @_properties.max
-		else if value instanceof Date
-			@_properties.max = value
-			return this
-		else
-			throw new Error("Invalid value: expected Date, got #{typeof value}")
+		switch typeof value
+			when "undefined"
+				return @_properties.max
+			when "string"
+				x = moment(value, "YYYY-MM-DD")
+				unless x.isValid()
+					throw new Error("Invalid maximum value: cannot be parsed as date")
+				@_properties.max = x.toDate()
+			else
+				if value not instanceof Date
+					throw new Error("Invalid maximum value: expected Date, got #{typeof value}")
+				@_properties.max = value
+		return this
 		
 	###
-	Sets the datatype's allowed value(s).
-	@param {Date} values an infinite number of values separated by comma.
-	@return {DateDatatype} to allow method chaining.
+	@overload equals()
+	  Returns the datatype's allowed values.
+	  @return {Array.<Date>}
+	@overload equals(values...)
+	  Sets the datatype's allowed values.
+	  @param {Date} values an infinite number of values separated by comma.
+	  @return {DateDatatype} to allow method chaining.
 	###
 	equals: (values...) ->
 		if values.length is 0
-			throw new Error("You must specify at least one allowed value")
-		for e in values when not e instanceof Date
-			throw new Error("Invalid allowed value: expected date, got #{typeof e}")
-		@_properties.equals = values
-		return this
+			return @_properties.equals
+		else
+			for value, i in values
+				if typeof value is "string"
+					x = moment(value, "YYYY-MM-DD")
+					unless x.isValid()
+						throw new Error("Invalid allowed value: cannot be parsed as date")
+					values[i] = x.toDate()
+				else if value not instanceof Date
+					throw new Error("Invalid allowed value: expected date, got #{typeof e}")
+			@_properties.equals = values
+			return this
 
 	###
-	Sets the datatype's prohibited value(s).
-	@param {Date} values an infinite number of values separated by comma.
-	@return {DateDatatype} to allow method chaining.
+	@overload notEquals()
+	  Returns the datatype's prohibited values.
+	  @return {Array.<Date>}
+	@overload notEquals(values...)
+	  Sets the datatype's prohibited values.
+	  @param {Date} values an infinite number of values separated by comma.
+	  @return {DateDatatype} to allow method chaining.
 	###
 	notEquals: (values...) ->
 		if values.length is 0
-			throw new Error("You must specify at least one prohibited value")
-		for e in values when not e instanceof Date
-			throw new Error("Invalid prohibited value: expected date, got #{typeof e}")
-		@_properties.notEquals = values
-		return this
+			return @_properties.notEquals
+		else
+			for value, i in values
+				if typeof value is "string"
+					x = moment(value, "YYYY-MM-DD")
+					unless x.isValid()
+						throw new Error("Invalid prohibited value: cannot be parsed as date")
+					values[i] = x.toDate()
+				else if value not instanceof Date
+					throw new Error("Invalid prohibited value: expected date, got #{typeof e}")
+			@_properties.notEquals = values
+			return this
 
 	###
 	Parses the supplied value and returns Date or null.
@@ -85,7 +120,8 @@ class DateDatatype extends AbstractDatatype
 			if value instanceof Date
 				return value
 			else
-				return new Date(value)
+				x = moment(value, "YYYY-MM-DD")
+				return x.toDate()
 		else
 			return null
 
