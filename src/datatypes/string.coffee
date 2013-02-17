@@ -29,15 +29,16 @@ class StringDatatype extends AbstractDatatype
 				if @_properties.minLength?
 					return @_properties.minLength
 				else if @_properties.equals?
-					return Math.min.apply(Math, @_properties.equals.map((e) -> e.length));
+					return Math.min.apply(Math, @_properties.equals.map((e) -> e.length))
 				else
 					return undefined
 			when "number"
-				if NumberUtils.isNonNegativeInt(value)
-					@_properties.minLength = value
-					return this
-				else
+				unless NumberUtils.isNonNegativeInt(value)
 					throw new Error("Invalid minimum length: cannot be negative")
+				if value > @_properties.maxLength
+					throw new Error("Invalid minimum length: cannot be greater than maximum length")
+				@_properties.minLength = value
+				return this	
 			else
 				throw new Error("Invalid minimum length: expected number, got #{typeof value}")
 		
@@ -60,11 +61,12 @@ class StringDatatype extends AbstractDatatype
 				else
 					return undefined
 			when "number"
-				if NumberUtils.isPositiveInt(value)
-					@_properties.maxLength = value
-					return this
-				else
+				unless NumberUtils.isPositiveInt(value)
 					throw new Error("Invalid maximum length: cannot be negative or zero")
+				if value < @_properties.minLength
+					throw new Error("Invalid maximum length: cannot be less than minimum length")
+				@_properties.maxLength = value
+				return this	
 			else
 				throw new Error("Invalid maximum length: expected number, got #{typeof value}")
 		
@@ -82,39 +84,48 @@ class StringDatatype extends AbstractDatatype
 			when "undefined"
 				return @_properties.length
 			when "number"
-				if NumberUtils.isPositiveInt(value)
-					@_properties.length = value
-					return this
-				else
+				unless NumberUtils.isPositiveInt(value)
 					throw new Error("Invalid exact length: cannot be negative or zero")
+				@_properties.length = value
+				return this
 			else
 				throw new Error("Invalid exact length: expected number, got #{typeof value}")
 		
 	###
-	Sets the datatype's allowed value(s).
-	@param {String} values an infinite number of values separated by comma.
-	@return {StringDatatype} to allow method chaining.
+	@overload equals()
+	  Returns the datatype's allowed values.
+	  @return {Array.<String>}
+	@overload equals(values...)
+	  Sets the datatype's allowed values.
+	  @param {String} values an infinite number of values separated by comma.
+	  @return {StringDatatype} to allow method chaining.
 	###
 	equals: (values...) ->
 		if values.length is 0
-			throw new Error("You must specify at least one allowed value")
-		for e in values when typeof e isnt "string"
-			throw new Error("Invalid allowed value: expected string, got #{typeof e}")
-		@_properties.equals = values
-		return this
+			return @_properties.equals
+		else
+			for e in values when typeof e isnt "string"
+				throw new Error("Invalid allowed value: expected string, got #{typeof e}")
+			@_properties.equals = values
+			return this
 
 	###
-	Sets the datatype's prohibited value(s).
-	@param {String} values an infinite number of values separated by comma.
-	@return {StringDatatype} to allow method chaining.
+	@overload notEquals()
+	  Returns the datatype's prohibited values.
+	  @return {Array.<String>}
+	@overload notEquals(values...)
+	  Sets the datatype's prohibited values.
+	  @param {String} values an infinite number of values separated by comma.
+	  @return {StringDatatype} to allow method chaining.
 	###
 	notEquals: (values...) ->
 		if values.length is 0
-			throw new Error("You must specify at least one prohibited value")
-		for e in values when typeof e isnt "string"
-			throw new Error("Invalid prohibited value: expected string, got #{typeof e}")
-		@_properties.notEquals = values
-		return this
+			return @_properties.notEquals
+		else
+			for e in values when typeof e isnt "string"
+				throw new Error("Invalid prohibited value: expected string, got #{typeof e}")
+			@_properties.notEquals = values
+			return this
 
 	###
 	Sets a regex to match the datatype's value.
