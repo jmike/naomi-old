@@ -56,5 +56,11 @@ describe("Integer datatype", ->
 		assert.strictEqual(attr.scale(), 0)
 		return
 	)
+	
+	it("should inherit max() from number", ->
+		attr = new IntegerDatatype().max(100)
+		assert.strictEqual(attr.max(), 100)
+		return
+	)
 
 )

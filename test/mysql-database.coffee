@@ -11,7 +11,7 @@ describe("MySql database", ->
 	User = db.extend("user", {
 		"name": Attribute.string().maxLength(100)
 		"gender": Attribute.string().equals("MALE", "FEMALE")
-		"age": Attribute.integer().max(133)
+		"age": Attribute.integer().min(0).max(133)
 		"email": Attribute.email()
 	}, {
 		engine: Naomi.MYISAM
