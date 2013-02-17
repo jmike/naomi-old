@@ -30,9 +30,9 @@ class Naomi
 	
 	###
 	Creates and returns a new EntitySet of the specified properties.
-	@param name {String} the name of the entity, must be unique.
-	@param attributes {Object} the entity's attributes (optional).
-	@param options {Object} key/value settings (optional).
+	@param {String} name the name of the entity, must be unique.
+	@param {Object} attributes the entity's attributes (optional).
+	@param {Object} options key/value settings (optional).
 	@return {EntitySet}
 	@throw {Error} if EntitySet already exists in database.
 	###
