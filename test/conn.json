@@ -1,8 +1,0 @@
-{
-	"MYSQL": {
-		"database": "test",
-		"username": "root",
-		"password": "",
-		"host": "localhost"		
-	}
-}
