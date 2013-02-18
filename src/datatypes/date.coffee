@@ -28,7 +28,7 @@ class DateDatatype extends AbstractDatatype
 			when "undefined"
 				return @_properties.min
 			when "string"
-				x = moment(value, "YYYY-MM-DD")
+				x = moment(value, @_properties.format)
 				unless x.isValid()
 					throw new Error("Invalid minimum value: cannot be parsed as date")
 				@_properties.min = x.toDate()
@@ -52,7 +52,7 @@ class DateDatatype extends AbstractDatatype
 			when "undefined"
 				return @_properties.max
 			when "string"
-				x = moment(value, "YYYY-MM-DD")
+				x = moment(value, @_properties.format)
 				unless x.isValid()
 					throw new Error("Invalid maximum value: cannot be parsed as date")
 				@_properties.max = x.toDate()
@@ -77,7 +77,7 @@ class DateDatatype extends AbstractDatatype
 		else
 			for value, i in values
 				if typeof value is "string"
-					x = moment(value, "YYYY-MM-DD")
+					x = moment(value, @_properties.format)
 					unless x.isValid()
 						throw new Error("Invalid allowed value: cannot be parsed as date")
 					values[i] = x.toDate()
@@ -101,7 +101,7 @@ class DateDatatype extends AbstractDatatype
 		else
 			for value, i in values
 				if typeof value is "string"
-					x = moment(value, "YYYY-MM-DD")
+					x = moment(value, @_properties.format)
 					unless x.isValid()
 						throw new Error("Invalid prohibited value: cannot be parsed as date")
 					values[i] = x.toDate()
@@ -109,6 +109,25 @@ class DateDatatype extends AbstractDatatype
 					throw new Error("Invalid prohibited value: expected date, got #{typeof e}")
 			@_properties.notEquals = values
 			return this
+
+	###
+	@overload format()
+	  Returns the date format used to parse the datatype's value.
+	  @return {String}
+	@overload format(value)
+	  Sets the date format to parse the datatype's value.
+	  @param {String} format a valid date format, e.g. "YYYY-MM-DD".
+	  @return {DateDatatype} to allow method chaining.
+	###
+	format: (value) ->
+		switch typeof value
+			when "undefined"
+				return @_properties.format
+			when "string"
+				@_properties.format = value
+				return this
+			else
+				throw new Error("Invalid date format: expected string, got #{typeof value}")
 
 	###
 	Parses the supplied value and returns Date or null.
@@ -120,7 +139,7 @@ class DateDatatype extends AbstractDatatype
 			if value instanceof Date
 				return value
 			else
-				x = moment(value, "YYYY-MM-DD")
+				x = moment(value, @_properties.format)
 				return x.toDate()
 		else
 			return null
@@ -129,6 +148,7 @@ class DateDatatype extends AbstractDatatype
 	Throws an error if the specified value is invalid.
 	@param {*} value
 	@param {Boolean} parse indicates whether the specified value should be parsed, defaults to true.
+	@note Turn parse to false only if you know what you are doing.
 	@throw {Error} if value is invalid.
 	###
 	validate: (value, parse = true) ->
@@ -136,16 +156,17 @@ class DateDatatype extends AbstractDatatype
 			value = DateDatatype.parse(value)
 
 		if value?
-			if @_properties.min? and value < @_properties.min
+			format = @_properties.format
+			if @_properties.min? and value.getTime() < @_properties.min.getTime()
 				throw new Error("Datatype must be at least #{@_properties.min} in value")
 
-			if @_properties.max? and value > @_properties.max
+			if @_properties.max? and value.getTime() > @_properties.max.getTime()
 				throw new Error("Datatype must be at most #{@_properties.max} in value")
 
-			if @_properties.equals? and value not in @_properties.equals
+			if @_properties.equals? and value.getTime() not in @_properties.equals.map((e) -> e.getTime())
 				throw new Error("Datatype should match an allowed value")
 
-			if @_properties.notEquals? and value in @_properties.notEquals
+			if @_properties.notEquals? and value.getTime() in @_properties.notEquals.map((e) -> e.getTime())
 				throw new Error("Datatype cannot match a prohibited value")
 								
 		super(value)
