@@ -2,6 +2,7 @@ BooleanDatatype = require("./datatypes/boolean")
 DateDatatype = require("./datatypes/date")
 IntegerDatatype = require("./datatypes/integer")
 NumberDatatype = require("./datatypes/number")
+TimeDatatype = require("./datatypes/time")
 StringDatatype = require("./datatypes/string")
 EmailDatatype = require("./datatypes/email")
 
@@ -14,6 +15,7 @@ class Attribute
 	@Number = NumberDatatype
 	@String = StringDatatype
 	@Date = DateDatatype
+	@Time = TimeDatatype
 	@Integer = IntegerDatatype
 	@Email = EmailDatatype
 
@@ -52,6 +54,12 @@ class Attribute
 	@return {Attribute.Date}
 	###
 	@date: -> new DateDatatype()
+	
+	###
+	Constructs and returns a new time datatype.
+	@return {Attribute.Date}
+	###
+	@time: -> new TimeDatatype()
 	
 module.exports = Attribute
 	
