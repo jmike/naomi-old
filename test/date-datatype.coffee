@@ -1,8 +1,6 @@
 assert = require("chai").assert
 DateDatatype = require("../src/datatypes/date")
 
-console.log DateDatatype.parse("2013-02-18 23:11:34").getTime()
-
 describe("Date datatype", ->
 
 	it("should be able to parse '2013-02-18'", ->
