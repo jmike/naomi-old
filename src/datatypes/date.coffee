@@ -139,7 +139,7 @@ class DateDatatype extends AbstractDatatype
 			if value instanceof Date
 				return value
 			else
-				x = moment(value, @_properties.format)
+				x = moment(value)
 				return x.toDate()
 		else
 			return null
