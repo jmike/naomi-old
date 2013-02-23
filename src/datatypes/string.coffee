@@ -26,18 +26,18 @@ class StringDatatype extends AbstractDatatype
 	minLength: (value) ->
 		switch typeof value
 			when "undefined"
-				if @_properties.minLength?
-					return @_properties.minLength
-				else if @_properties.equals?
-					return Math.min.apply(Math, @_properties.equals.map((e) -> e.length))
+				if @properties.minLength?
+					return @properties.minLength
+				else if @properties.equals?
+					return Math.min.apply(Math, @properties.equals.map((e) -> e.length))
 				else
 					return undefined
 			when "number"
 				unless NumberUtils.isNonNegativeInt(value)
 					throw new Error("Invalid minimum length: cannot be negative")
-				if value > @_properties.maxLength
+				if value > @properties.maxLength
 					throw new Error("Invalid minimum length: cannot be greater than maximum length")
-				@_properties.minLength = value
+				@properties.minLength = value
 				return this	
 			else
 				throw new Error("Invalid minimum length: expected number, got #{typeof value}")
@@ -54,18 +54,18 @@ class StringDatatype extends AbstractDatatype
 	maxLength: (value) ->
 		switch typeof value
 			when "undefined"
-				if @_properties.maxLength?
-					return @_properties.maxLength
-				else if @_properties.equals?
-					return Math.max.apply(Math, @_properties.equals.map((e) -> e.length));
+				if @properties.maxLength?
+					return @properties.maxLength
+				else if @properties.equals?
+					return Math.max.apply(Math, @properties.equals.map((e) -> e.length));
 				else
 					return undefined
 			when "number"
 				unless NumberUtils.isPositiveInt(value)
 					throw new Error("Invalid maximum length: cannot be negative or zero")
-				if value < @_properties.minLength
+				if value < @properties.minLength
 					throw new Error("Invalid maximum length: cannot be less than minimum length")
-				@_properties.maxLength = value
+				@properties.maxLength = value
 				return this	
 			else
 				throw new Error("Invalid maximum length: expected number, got #{typeof value}")
@@ -82,11 +82,11 @@ class StringDatatype extends AbstractDatatype
 	length: (value) ->
 		switch typeof value
 			when "undefined"
-				return @_properties.length
+				return @properties.length
 			when "number"
 				unless NumberUtils.isPositiveInt(value)
 					throw new Error("Invalid exact length: cannot be negative or zero")
-				@_properties.length = value
+				@properties.length = value
 				return this
 			else
 				throw new Error("Invalid exact length: expected number, got #{typeof value}")
@@ -102,11 +102,11 @@ class StringDatatype extends AbstractDatatype
 	###
 	equals: (values...) ->
 		if values.length is 0
-			return @_properties.equals
+			return @properties.equals
 		else
 			for e in values when typeof e isnt "string"
 				throw new Error("Invalid allowed value: expected string, got #{typeof e}")
-			@_properties.equals = values
+			@properties.equals = values
 			return this
 
 	###
@@ -120,11 +120,11 @@ class StringDatatype extends AbstractDatatype
 	###
 	notEquals: (values...) ->
 		if values.length is 0
-			return @_properties.notEquals
+			return @properties.notEquals
 		else
 			for e in values when typeof e isnt "string"
 				throw new Error("Invalid prohibited value: expected string, got #{typeof e}")
-			@_properties.notEquals = values
+			@properties.notEquals = values
 			return this
 
 	###
@@ -135,7 +135,7 @@ class StringDatatype extends AbstractDatatype
 	regex: (re) ->
 		unless re instanceof RegExp
 			throw new Error("Invalid regular expression: expected RegExp, got #{typeof re}")
-		@_properties.regex = re
+		@properties.regex = re
 		return this
 
 	###
@@ -146,7 +146,7 @@ class StringDatatype extends AbstractDatatype
 	notRegex: (re) ->
 		unless re instanceof RegExp
 			throw new Error("Invalid regular expression: expected RegExp, got #{typeof re}")
-		@_properties.notRegex = re
+		@properties.notRegex = re
 		return this
 
 	###
@@ -159,7 +159,7 @@ class StringDatatype extends AbstractDatatype
 			throw new Error("Invalid string to contain: expected string, got #{typeof str}")
 		if str.length is 0
 			throw new Error("String cannot be empty")
-		@_properties.contains = str
+		@properties.contains = str
 		return this
 		
 	###
@@ -172,7 +172,7 @@ class StringDatatype extends AbstractDatatype
 			throw new Error("Invalid string to not contain: expected string, got #{typeof str}")
 		if str.length is 0
 			throw new Error("Invalid string to not contain: value cannot be empty")
-		@_properties.notContains = str
+		@properties.notContains = str
 		return this
 
 	###
@@ -197,32 +197,32 @@ class StringDatatype extends AbstractDatatype
 			value = StringDatatype.parse(value)
 		
 		if value?
-			if @_properties.minLength? and value.length < @_properties.minLength
-				throw new Error("Datatype must have at least #{@_properties.minLength} characters in length")
+			if @properties.minLength? and value.length < @properties.minLength
+				throw new Error("Datatype must have at least #{@properties.minLength} characters in length")
 
-			if @_properties.maxLength? and value.length > @_properties.maxLength
-				throw new Error("Datatype must have at most #{@_properties.maxLength} characters in length")
+			if @properties.maxLength? and value.length > @properties.maxLength
+				throw new Error("Datatype must have at most #{@properties.maxLength} characters in length")
 
-			if @_properties.length? and value.length isnt @_properties.length
-				throw new Error("Datatype must have exactly #{@_properties.length} characters in length")
+			if @properties.length? and value.length isnt @properties.length
+				throw new Error("Datatype must have exactly #{@properties.length} characters in length")
 
-			if @_properties.equals? and value not in @_properties.equals
+			if @properties.equals? and value not in @properties.equals
 				throw new Error("Datatype must be equal to an allowed value")
 
-			if @_properties.notEquals? and value in @_properties.notEquals
+			if @properties.notEquals? and value in @properties.notEquals
 				throw new Error("Datatype cannot be equal to a prohibited value")
 
-			if @_properties.regex? and not @_properties.regex.test(value)
-				throw new Error("Datatype must match the regular expression #{@_properties.regex.toString()}")
+			if @properties.regex? and not @properties.regex.test(value)
+				throw new Error("Datatype must match the regular expression #{@properties.regex.toString()}")
 
-			if @_properties.notRegex? and @_properties.notRegex.test(value)
-				throw new Error("Datatype cannot match the regular expression #{@_properties.notRegex.toString()}")
+			if @properties.notRegex? and @properties.notRegex.test(value)
+				throw new Error("Datatype cannot match the regular expression #{@properties.notRegex.toString()}")
 
-			if @_properties.contains? and value.indexOf(@_properties.contains) is -1
-				throw new Error("Datatype must contain the value #{@_properties.contains}")
+			if @properties.contains? and value.indexOf(@properties.contains) is -1
+				throw new Error("Datatype must contain the value #{@properties.contains}")
 
-			if @_properties.notContains? and value.indexOf(@_properties.notContains) isnt -1
-				throw new Error("Datatype cannot contain the value #{@_properties.notContains}")
+			if @properties.notContains? and value.indexOf(@properties.notContains) isnt -1
+				throw new Error("Datatype cannot contain the value #{@properties.notContains}")
 
 		super(value)	
 		return

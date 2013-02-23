@@ -92,7 +92,7 @@ describe("String datatype", ->
 	it("should accept an infinite number of allowed values", ->
 		attr = new StringDatatype()
 			.equals("a", "b", "c", "d")
-		assert.strictEqual(attr._properties.equals.length, 4)
+		assert.strictEqual(attr.properties.equals.length, 4)
 		return
 	)
 	

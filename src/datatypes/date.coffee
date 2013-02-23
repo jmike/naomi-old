@@ -26,16 +26,16 @@ class DateDatatype extends AbstractDatatype
 	min: (value) ->
 		switch typeof value
 			when "undefined"
-				return @_properties.min
+				return @properties.min
 			when "string"
-				x = moment(value, @_properties.format)
+				x = moment(value, @properties.format)
 				unless x.isValid()
 					throw new Error("Invalid minimum value: cannot be parsed as date")
-				@_properties.min = x.toDate()
+				@properties.min = x.toDate()
 			else
 				if value not instanceof Date
 					throw new Error("Invalid minimum value: expected Date, got #{typeof value}")
-				@_properties.min = value
+				@properties.min = value
 		return this
 		
 	###
@@ -50,16 +50,16 @@ class DateDatatype extends AbstractDatatype
 	max: (value) ->
 		switch typeof value
 			when "undefined"
-				return @_properties.max
+				return @properties.max
 			when "string"
-				x = moment(value, @_properties.format)
+				x = moment(value, @properties.format)
 				unless x.isValid()
 					throw new Error("Invalid maximum value: cannot be parsed as date")
-				@_properties.max = x.toDate()
+				@properties.max = x.toDate()
 			else
 				if value not instanceof Date
 					throw new Error("Invalid maximum value: expected Date, got #{typeof value}")
-				@_properties.max = value
+				@properties.max = value
 		return this
 		
 	###
@@ -73,17 +73,17 @@ class DateDatatype extends AbstractDatatype
 	###
 	equals: (values...) ->
 		if values.length is 0
-			return @_properties.equals
+			return @properties.equals
 		else
 			for value, i in values
 				if typeof value is "string"
-					x = moment(value, @_properties.format)
+					x = moment(value, @properties.format)
 					unless x.isValid()
 						throw new Error("Invalid allowed value: cannot be parsed as date")
 					values[i] = x.toDate()
 				else if value not instanceof Date
 					throw new Error("Invalid allowed value: expected date, got #{typeof e}")
-			@_properties.equals = values
+			@properties.equals = values
 			return this
 
 	###
@@ -97,17 +97,17 @@ class DateDatatype extends AbstractDatatype
 	###
 	notEquals: (values...) ->
 		if values.length is 0
-			return @_properties.notEquals
+			return @properties.notEquals
 		else
 			for value, i in values
 				if typeof value is "string"
-					x = moment(value, @_properties.format)
+					x = moment(value, @properties.format)
 					unless x.isValid()
 						throw new Error("Invalid prohibited value: cannot be parsed as date")
 					values[i] = x.toDate()
 				else if value not instanceof Date
 					throw new Error("Invalid prohibited value: expected date, got #{typeof e}")
-			@_properties.notEquals = values
+			@properties.notEquals = values
 			return this
 
 	###
@@ -122,9 +122,9 @@ class DateDatatype extends AbstractDatatype
 	format: (value) ->
 		switch typeof value
 			when "undefined"
-				return @_properties.format
+				return @properties.format
 			when "string"
-				@_properties.format = value
+				@properties.format = value
 				return this
 			else
 				throw new Error("Invalid date format: expected string, got #{typeof value}")
@@ -156,17 +156,17 @@ class DateDatatype extends AbstractDatatype
 			value = DateDatatype.parse(value)
 
 		if value?
-			format = @_properties.format
-			if @_properties.min? and value.getTime() < @_properties.min.getTime()
-				throw new Error("Datatype must be at least #{@_properties.min} in value")
+			format = @properties.format
+			if @properties.min? and value.getTime() < @properties.min.getTime()
+				throw new Error("Datatype must be at least #{@properties.min} in value")
 
-			if @_properties.max? and value.getTime() > @_properties.max.getTime()
-				throw new Error("Datatype must be at most #{@_properties.max} in value")
+			if @properties.max? and value.getTime() > @properties.max.getTime()
+				throw new Error("Datatype must be at most #{@properties.max} in value")
 
-			if @_properties.equals? and value.getTime() not in @_properties.equals.map((e) -> e.getTime())
+			if @properties.equals? and value.getTime() not in @properties.equals.map((e) -> e.getTime())
 				throw new Error("Datatype should match an allowed value")
 
-			if @_properties.notEquals? and value.getTime() in @_properties.notEquals.map((e) -> e.getTime())
+			if @properties.notEquals? and value.getTime() in @properties.notEquals.map((e) -> e.getTime())
 				throw new Error("Datatype cannot match a prohibited value")
 								
 		super(value)

@@ -14,7 +14,7 @@ class EmailDatatype extends DateDatatype
 	###
 	constructor: (properties = {}) ->
 		super(properties)
-		Object.defineProperty(@_properties, "format", {
+		Object.defineProperty(@properties, "format", {
 			value: format
 			writable: false
 			enumerable: true

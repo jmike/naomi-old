@@ -13,7 +13,7 @@ class EmailDatatype extends StringDatatype
 	###
 	constructor: (properties = {}) ->
 		super(properties)
-		Object.defineProperty(@_properties, "regex", {
+		Object.defineProperty(@properties, "regex", {
 			value: re
 			writable: false
 			enumerable: true

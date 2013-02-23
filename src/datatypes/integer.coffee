@@ -12,7 +12,7 @@ class IntegerDatatype extends NumberDatatype
 	###
 	constructor: (properties = {}) ->
 		super(properties)
-		Object.defineProperty(@_properties, "scale", {
+		Object.defineProperty(@properties, "scale", {
 			value: 0
 			writable: false
 			enumerable: true

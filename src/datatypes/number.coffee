@@ -26,11 +26,11 @@ class NumberDatatype extends AbstractDatatype
 	precision: (value) ->
 		switch typeof value
 			when "undefined"
-				return @_properties.precision
+				return @properties.precision
 			when "number"
 				unless NumberUtils.isPositiveInt(value)
 					throw new Error("Invalid precision value: cannot be negative or zero")
-				@_properties.precision = value
+				@properties.precision = value
 				return this	
 			else
 				throw new Error("Invalid precision value: expected number, got #{typeof value}")
@@ -47,13 +47,13 @@ class NumberDatatype extends AbstractDatatype
 	scale: (value) ->
 		switch typeof value
 			when "undefined"
-				return @_properties.scale
+				return @properties.scale
 			when "number"
 				unless NumberUtils.isNonNegativeInt(value)
 					throw new Error("Invalid scale value: cannot be negative")
-				if value + 1 > @_properties.precision
+				if value + 1 > @properties.precision
 					throw new Error("Invalid scale value: cannot be greater than precision - 1")
-				@_properties.scale = value
+				@properties.scale = value
 				return this
 			else
 				throw new Error("Invalid scale value: expected number, got #{typeof value}")
@@ -70,19 +70,19 @@ class NumberDatatype extends AbstractDatatype
 	min: (value) ->
 		switch typeof value
 			when "undefined"
-				if @_properties.min?
-					return @_properties.min
-				else if @_properties.equals?
-					return Math.min.apply(Math, @_properties.equals)
-				else if @_properties.precision?
-					return - (Math.pow(10, @_properties.precision - (@_properties.scale || 0)) - 1 / 
-						Math.pow(10, (@_properties.scale || 0)))
+				if @properties.min?
+					return @properties.min
+				else if @properties.equals?
+					return Math.min.apply(Math, @properties.equals)
+				else if @properties.precision?
+					return - (Math.pow(10, @properties.precision - (@properties.scale || 0)) - 1 / 
+						Math.pow(10, (@properties.scale || 0)))
 				else
 					return undefined
 			when "number"
-				if value > @_properties.max
+				if value > @properties.max
 					throw new Error("Invalid minimum value: cannot be greater than maximum value")
-				@_properties.min = value
+				@properties.min = value
 				return this
 			else
 				throw new Error("Invalid minimum value: expected number, got #{typeof value}")
@@ -99,19 +99,19 @@ class NumberDatatype extends AbstractDatatype
 	max: (value) ->
 		switch typeof value
 			when "undefined"
-				if @_properties.max?
-					return @_properties.max
-				else if @_properties.equals?
-					return Math.max.apply(Math, @_properties.equals)
-				else if @_properties.precision?
-					return Math.pow(10, @_properties.precision - (@_properties.scale || 0)) - 1 / 
-						Math.pow(10, (@_properties.scale || 0))
+				if @properties.max?
+					return @properties.max
+				else if @properties.equals?
+					return Math.max.apply(Math, @properties.equals)
+				else if @properties.precision?
+					return Math.pow(10, @properties.precision - (@properties.scale || 0)) - 1 / 
+						Math.pow(10, (@properties.scale || 0))
 				else
 					return undefined
 			when "number"
-				if value < @_properties.min
+				if value < @properties.min
 					throw new Error("Invalid maximum value: cannot be less than minimum value")
-				@_properties.max = value
+				@properties.max = value
 				return this
 			else
 				throw new Error("Invalid maximum value: expected number, got #{typeof value}")
@@ -127,11 +127,11 @@ class NumberDatatype extends AbstractDatatype
 	###
 	equals: (values...) ->
 		if values.length is 0
-			return @_properties.equals
+			return @properties.equals
 		else
 			for e in values when typeof e isnt "number"
 				throw new Error("Invalid allowed value: expected number, got #{typeof e}")
-			@_properties.equals = values
+			@properties.equals = values
 			return this
 
 	###
@@ -145,11 +145,11 @@ class NumberDatatype extends AbstractDatatype
 	###
 	notEquals: (values...) ->
 		if values.length is 0
-			return @_properties.notEquals
+			return @properties.notEquals
 		else
 			for e in values when typeof e isnt "number"
 				throw new Error("Invalid prohibited value: expected number, got #{typeof e}")
-			@_properties.notEquals = values
+			@properties.notEquals = values
 			return this
 
 	###
@@ -174,26 +174,26 @@ class NumberDatatype extends AbstractDatatype
 			value = NumberDatatype.parse(value)# parse this value
 		
 		if value?
-			if @_properties.min? and value < @_properties.min
-				throw new Error("Datatype must be at least #{@_properties.min} in value")
+			if @properties.min? and value < @properties.min
+				throw new Error("Datatype must be at least #{@properties.min} in value")
 
-			if @_properties.max? and value > @_properties.max
-				throw new Error("Datatype must be at most #{@_properties.max} in value")
+			if @properties.max? and value > @properties.max
+				throw new Error("Datatype must be at most #{@properties.max} in value")
 
-			if @_properties.equals? and value not in @_properties.equals
+			if @properties.equals? and value not in @properties.equals
 				throw new Error("Datatype should match an allowed value")
 
-			if @_properties.notEquals? and value in @_properties.notEquals
+			if @properties.notEquals? and value in @properties.notEquals
 				throw new Error("Datatype cannot match a prohibited value")
 
-			if @_properties.precision?
-				if value.toString().replace(/\.|,/, "").length > @_properties.precision
-					throw new Error("Datatype must have at most #{@_properties.precision} digits")
+			if @properties.precision?
+				if value.toString().replace(/\.|,/, "").length > @properties.precision
+					throw new Error("Datatype must have at most #{@properties.precision} digits")
 
-			if @_properties.scale?
+			if @properties.scale?
 				arr = value.toString().split(/\.|,/)
-				if arr[1]? and arr[1].length > @_properties.scale
-					throw new Error("Datatype must have at most #{@_properties.scale} digits to the right of the decimal point")
+				if arr[1]? and arr[1].length > @properties.scale
+					throw new Error("Datatype must have at most #{@properties.scale} digits to the right of the decimal point")
 		
 		super(value)
 		return
