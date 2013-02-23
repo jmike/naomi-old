@@ -17,22 +17,5 @@ describe("Time datatype", ->
 		assert.strictEqual(TimeDatatype.parse("13").getTime(), -62167179600000)
 		return
 	)
-	
-	it("should accept null values if nullable", ->
-		assert.doesNotThrow(->
-			new TimeDatatype()
-				.nullable(true)
-				.validate(null)
-		)
-		return
-	)
-	
-	it("should not accept null values if not nullable", ->
-		assert.throw(->
-			new TimeDatatype()
-				.validate(null)
-		)
-		return
-	)
 
 )
