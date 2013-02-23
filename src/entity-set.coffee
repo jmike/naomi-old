@@ -1,3 +1,5 @@
+esprima = require("esprima")
+
 ###
 @author Dimitrios C. Michalakos
 ###
@@ -21,8 +23,37 @@ class EntitySet
 		@name = name
 		@attributes = attributes
 		@options = options
+		@query = {}
 		return
-	
+
+	###
+	@overload filter()
+	  Returns the the maximum number of digits allowed in the datatype's value.
+	  @return {Object}
+	@overload filter(value)
+	  Applies the designated filter to the entity set.
+	  @param {String, Function} value a javascript expression as a string or a function.
+	  @return {EntitySet} to allow method chaining.
+	###
+	filter: (value) ->
+		switch typeof value
+			when "undefined"
+				return @query.filter
+			when "string"
+				try
+					filter = esprima.parse(value)
+				catch error
+					throw error
+			when "function"
+				try
+					filter = esprima.parse(value)
+				catch error
+					throw error
+			else
+				throw new Error("Invalid filter value: expected function or string, got #{typeof value}")
+		@query.filter = filter
+		return this
+
 	###
 	Validates the supplied data against the entity set's attributes.
 	@param {Object} data key/value properties, where key is the name of the entity set's attribute.
