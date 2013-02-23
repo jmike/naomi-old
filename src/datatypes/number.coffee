@@ -16,10 +16,10 @@ class NumberDatatype extends AbstractDatatype
 		
 	###
 	@overload precision()
-	  Returns the the maximum number of digits allowed in the datatype's value.
+	  Returns the maximum number of digits allowed in the datatype's value.
 	  @return {Number}
 	@overload precision(value)
-	  Sets the the maximum number of digits allowed in the datatype's value.
+	  Sets the maximum number of digits allowed in the datatype's value.
 	  @param {Number} value number of digits, cannot be negative or zero.
 	  @return {NumberDatatype} to allow method chaining.
 	###
@@ -37,10 +37,10 @@ class NumberDatatype extends AbstractDatatype
 
 	###
 	@overload scale()
-	  Returns the the maximum number of digits allowed to the right of a decimal point.
+	  Returns the maximum number of digits allowed to the right of a decimal point.
 	  @return {Number}
 	@overload scale(value)
-	  Sets the the maximum number of digits allowed to the right of a decimal point.
+	  Sets the maximum number of digits allowed to the right of a decimal point.
 	  @param {Number} value number of digits.
 	  @return {NumberDatatype} to allow method chaining.
 	###
