@@ -51,7 +51,7 @@ class EntitySet
 					throw error
 			when "function"
 				try
-					filter = esprima.parse(value.toString())
+					filter = esprima.parse(value.toString())# function.toString()
 				catch error
 					throw error
 			else
