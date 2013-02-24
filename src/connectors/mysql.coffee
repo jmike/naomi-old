@@ -94,6 +94,31 @@ class MySqlConnector
 				)
 		)
 		return
+
+	###
+	Generates and returns a SQL where clause based on the supplied filter object.
+	@param {Object} obj filter object.
+	@return {String}
+	###
+	_where: (obj) ->
+		sql = ""
+		switch obj.type
+			when "Program"
+				for e in obj.body
+					sql += _where(e)
+			when "ExpressionStatement"
+				sql += _where(obj.expression)
+			when "AssignmentExpression", "BinaryExpression"
+				sql += "#{_where(obj.left)} #{obj.operator} #{_where(obj.right)}"
+			when "LogicalExpression"
+				sql += "(#{_where(obj.left)} #{obj.operator} #{_where(obj.right)})"
+			when "Identifier"
+				sql += obj.name
+			when "Literal"	
+				sql += obj.value
+			else
+				throw Error("Unsupported javascript clause: #{obj.type}")
+		return sql
 	
 	###
 	Adds the supplied data to the designated entity set.
