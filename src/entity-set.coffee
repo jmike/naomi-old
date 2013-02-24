@@ -32,8 +32,13 @@ class EntitySet
 	  @return {Object}
 	@overload filter(value)
 	  Applies the designated filter to the entity set.
-	  @param {String, Function} value a javascript expression as a string or a function.
+	  @param {String, Function} value a javascript expression.
 	  @return {EntitySet} to allow method chaining.
+	  @throw {Error} if value is invalid.
+	@example Filter using a function.
+	  filter(function(entity) {entity.id >= 10})
+	@example Filter using a string expression.
+	  filter("entity.id === 42")
 	###
 	filter: (value) ->
 		switch typeof value
@@ -46,7 +51,7 @@ class EntitySet
 					throw error
 			when "function"
 				try
-					filter = esprima.parse(value)
+					filter = esprima.parse(value.toString())
 				catch error
 					throw error
 			else
