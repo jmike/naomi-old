@@ -1,33 +1,33 @@
 {
-  "name": "naomi",
-  "description": "Entity relation management for node.js and the browser.",
-  "version": "0.1.6",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/jmike/naomi.git"
-  },
-  "main": "src/index.js",
-  "dependencies": {
-    "coffee-script": "1.4.0",
-    "amdefine": "0.0.4",
-    "generic-pool": "2.0.3",
-    "mysql": "2.0.0-alpha7",
-    "async": "0.2.5",
-    "moment": "2.0.0",
-    "jison": "0.4.2",
-    "esprima": "1.0.2"
-  },
-  "devDependencies": {
-    "mocha": "1.8.1",
-    "chai": "1.5.0",
-    "codo": "1.5.6",
-    "grunt": "0.4.0",
-    "grunt-cli": "0.1.6",
-    "grunt-exec": "0.4.0"
-  },
-  "optionalDependencies": {},
-  "engines": {
-    "node": "0.8.x",
-    "npm": "1.1.x"
-  }
+	"name": "naomi",
+	"description": "Entity relation management for node.js and the browser.",
+	"version": "0.1.6",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/jmike/naomi.git"
+	},
+	"main": "src/index.js",
+	"dependencies": {
+		"coffee-script": "1.4.0",
+		"amdefine": "0.0.4",
+		"generic-pool": "2.0.3",
+		"mysql": "2.0.0-alpha7",
+		"async": "0.2.5",
+		"moment": "2.0.0",
+		"jison": "0.4.2",
+		"esprima": "1.0.2"
+	},
+	"devDependencies": {
+		"mocha": "1.8.1",
+		"chai": "1.5.0",
+		"codo": "1.5.6",
+		"grunt": "0.4.0",
+		"grunt-cli": "0.1.6",
+		"grunt-exec": "0.4.0"
+	},
+	"optionalDependencies": {},
+	"engines": {
+		"node": "0.8.x",
+		"npm": "1.1.x"
+	}
 }
