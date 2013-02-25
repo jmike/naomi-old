@@ -1,0 +1,1 @@
+[![Build Status](https://secure.travis-ci.org/jmike/naomi.png)](http://travis-ci.org/jmike/naomi) [![Dependency Status](https://gemnasium.com/jmike/naomi.png)](https://gemnasium.com/jmike/naomi)
