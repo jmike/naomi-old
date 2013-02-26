@@ -4,17 +4,26 @@ TimeDatatype = require("../src/datatypes/time")
 describe("Time datatype", ->
 
 	it("should be able to parse '22:35:34'", ->
-		assert.strictEqual(TimeDatatype.parse("22:35:34").getTime(), -62167145066000)
+		time = TimeDatatype.parse("22:35:34")
+		assert.strictEqual(time.getHours(), 22)
+		assert.strictEqual(time.getMinutes(), 35)
+		assert.strictEqual(time.getSeconds(), 34)
 		return
 	)
 	
 	it("should be able to parse '22:59'", ->
-		assert.strictEqual(TimeDatatype.parse("22:59").getTime(), -62167143660000)
+		time = TimeDatatype.parse("22:35")
+		assert.strictEqual(time.getHours(), 22)
+		assert.strictEqual(time.getMinutes(), 35)
+		assert.strictEqual(time.getSeconds(), 0)
 		return
 	)
 	
 	it("should be able to parse '13'", ->
-		assert.strictEqual(TimeDatatype.parse("13").getTime(), -62167179600000)
+		time = TimeDatatype.parse("13")
+		assert.strictEqual(time.getHours(), 13)
+		assert.strictEqual(time.getMinutes(), 0)
+		assert.strictEqual(time.getSeconds(), 0)
 		return
 	)
 

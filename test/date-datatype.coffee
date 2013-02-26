@@ -4,17 +4,26 @@ DateDatatype = require("../src/datatypes/date")
 describe("Date datatype", ->
 
 	it("should be able to parse '2013-02-18'", ->
-		assert.strictEqual(DateDatatype.parse("2013-02-18").getTime(), 1361138400000)
+		assert.strictEqual(
+			DateDatatype.parse("2013-02-18").getTime()
+			new Date(2013, 1, 18).getTime()
+		)
 		return
 	)
 	
 	it("should be able to parse '2013-02-18T23:03:01+0200'", ->
-		assert.strictEqual(DateDatatype.parse("2013-02-18T23:03:01+0200").getTime(), 1361221381000)
+		assert.strictEqual(
+			DateDatatype.parse("2013-02-18T23:03:01+0200").getTime()
+			1361221381000
+		)
 		return
 	)
 	
 	it("should be able to parse '2013-02-18 23:11:34'", ->
-		assert.strictEqual(DateDatatype.parse("2013-02-18 23:11:34").getTime(), 1361221894000)
+		assert.strictEqual(
+			DateDatatype.parse("2013-02-18 23:11:34").getTime()
+			new Date(2013, 1, 18, 23, 11, 34).getTime()
+		)
 		return
 	)
 	
