@@ -15,7 +15,7 @@
 		"amdefine": "0.0.4",
 		"generic-pool": "2.0.3",
 		"mysql": "2.0.0-alpha7",
-		"async": "0.2.5",
+		"async": "0.2.6",
 		"moment": "2.0.0",
 		"jison": "0.4.2",
 		"esprima": "1.0.2"
