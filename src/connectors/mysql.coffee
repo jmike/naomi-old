@@ -83,7 +83,6 @@ class MySqlConnector
 	@param {Function} callback i.e. function(error, data).
 	###
 	execute: (sql, params, callback = -> null) ->
-		console.log sql
 		@pool.acquire((error, client) =>
 			if error?
 				callback(error)
@@ -96,29 +95,35 @@ class MySqlConnector
 		return
 
 	###
-	Generates and returns a SQL where clause based on the supplied filter object.
-	@param {Object} obj filter object.
-	@return {String}
+	Generates and returns a parameterized SQL where clause based on the supplied filter AST.
+	@param {Object} ast the filter abstract syntax tree.
+	@param {String} entity the entity identifier in the filter object (optional), defaults to "entity".
+	@return {Object}
 	###
-	_where: (obj) ->
+	filter: (ast, entity = "entity") ->
 		sql = ""
-		switch obj.type
+		params = []
+
+		switch ast.type
 			when "Program"
-				for e in obj.body
-					sql += _where(e)
+				for e in ast.body
+					obj = this._where(e)
+					sql += obj.sql
+					params = params.concat(obj.params)
 			when "ExpressionStatement"
-				sql += _where(obj.expression)
+				sql += this._where(ast.expression)
 			when "AssignmentExpression", "BinaryExpression"
-				sql += "#{_where(obj.left)} #{obj.operator} #{_where(obj.right)}"
+				sql += "#{this._where(ast.left)} #{ast.operator} #{_where(ast.right)}"
 			when "LogicalExpression"
-				sql += "(#{_where(obj.left)} #{obj.operator} #{_where(obj.right)})"
+				sql += "(#{_where(ast.left)} #{ast.operator} #{_where(ast.right)})"
 			when "Identifier"
-				sql += obj.name
+				sql += ast.name
 			when "Literal"	
-				sql += obj.value
+				sql += ast.value
 			else
-				throw Error("Unsupported javascript clause: #{obj.type}")
-		return sql
+				throw Error("Unsupported javascript clause: #{ast.type}")
+
+		return {sql, params}
 	
 	###
 	Adds the supplied data to the designated entity set.
@@ -132,7 +137,9 @@ class MySqlConnector
 		sql = "INSERT INTO `#{name}`"
 		params = []
 		keys = (k for own k of attributes)
-		unless Array.isArray(data) then data = [data]
+		
+		unless Array.isArray(data)
+			data = [data]
 	
 		sql += " ("
 		for key, i in keys
@@ -166,11 +173,37 @@ class MySqlConnector
 		
 		this.execute(sql, params, callback)
 		return sql
+
+	###
+	Fetches the specified entities from database.
+	@param {String} name the name of the entity set.
+	@param {Object} attributes the attributes of the entity set.
+	@param {Object} query maps, filters, sorts and limits the returned entities.
+	@param {Object} options key/value settings.
+	@param {Function} callback i.e. function(error, data).
+	###
+	fetch: (name, attributes, query, options, callback) ->
+		sql = "SELECT "
+		params = []
 		
+		if query.filter
+			console.log this._where(query.filter)
+#		if query.show?
+#			for x, i in query.show
+#				if i isnt 0 then sql += ", "
+#				sql += "`#{x.key}`"
+#				if x.alias?
+#					sql += " AS '{x.alias}'"
+#		else
+#			sql += "*"
+#		sql += " FROM `#{this.name}`"
+#		sql += ";"
+		return sql
+
 	###
 	Creates a new entity set with the specified properties.
 	@param {String} name the name of the entity set.
-	@param {Object} attributes the entity set's attributes.
+	@param {Object} attributes the attributes of the entity set.
 	@param {Object} options key/value settings.
 	@option options {String} engine the entity set's internal engine, e.g. "MYISAM" or "InnoDB".
 	@param {Function} callback i.e. function(error, data).
@@ -281,21 +314,6 @@ class MySqlConnector
 		sql += ";"
 
 		this.execute(sql, params, callback)
-		return sql
+		return
 
-#	fetch: ->
-#		params = []
-#		sql = "SELECT "
-#		if query.show?
-#			for x, i in query.show
-#				if i isnt 0 then sql += ", "
-#				sql += "`#{x.key}`"
-#				if x.alias?
-#					sql += " AS '{x.alias}'"
-#		else
-#			sql += "*"
-#		sql += " FROM `#{this.name}`"
-#		sql += ";"
-#		return sql
-	
 module.exports = MySqlConnector

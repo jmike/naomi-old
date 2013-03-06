@@ -7,11 +7,14 @@ class EntitySet
 
 	###*
 	* Constructs a new entity set of the specified properties.
-	* @param {String} name the entity set's name.
-	* @param {Object} attributes the entity set's attributes (optional).
+	* @param {Object} connector the database connector.
+	* @param {String} name the name of the entity set.
+	* @param {Object} attributes the attributes of the entity set.
 	* @param {Object} options key/value properties (optional).
 	###
-	constructor: (name, attributes = {}, options = {}) ->
+	constructor: (connector, name, attributes, options = {}) ->
+		if typeof connector isnt "object"
+			throw new Error("Invalid connector: expected object, got #{typeof connector}")
 		if typeof name isnt "string"
 			throw new Error("Invalid name: expected string, got #{typeof name}")
 		if name.length is 0
@@ -20,43 +23,43 @@ class EntitySet
 			throw new Error("Invalid attributes: expected object, got #{typeof attributes}")
 		if typeof options isnt "object"
 			throw new Error("Invalid options: expected object, got #{typeof options}")
+
+		@_connector = connector
 		@name = name
 		@attributes = attributes
 		@options = options
 		@query = {}
-		return
 
 	###
 	@overload filter()
-	  Returns the the maximum number of digits allowed in the datatype's value.
-	  @return {Object}
+	  Returns the abstract syntax tree of the filter function.
+	  @return {Object, undefined}
 	@overload filter(value)
-	  Applies the designated filter to the entity set.
-	  @param {String, Function} value a javascript expression.
+	  Filters the entity set with the test implemented by the provided function.
+	  @param {Function, String} callback the function to test each entity of the entity set.
 	  @return {EntitySet} to allow method chaining.
 	  @throw {Error} if value is invalid.
 	@example Filter using a function.
-	  filter(function(entity) {entity.id >= 10})
+	  filter(function(entity) {return entity.id >= 10})
 	@example Filter using a string expression.
 	  filter("entity.id === 42")
 	###
-	filter: (value) ->
-		switch typeof value
+	filter: (callback) ->
+		switch typeof callback
 			when "undefined"
 				return @query.filter
 			when "string"
 				try
-					filter = esprima.parse(value)
+					@query.filter = esprima.parse(callback)
 				catch error
-					throw error
+					throw new Error("Filter parse error: #{error.message}")
 			when "function"
 				try
-					filter = esprima.parse(value.toString())# function.toString()
+					@query.filter = esprima.parse(callback.toString())# function.toString()
 				catch error
-					throw error
+					throw new Error("Filter parse error: #{error.message}")
 			else
-				throw new Error("Invalid filter value: expected function or string, got #{typeof value}")
-		@query.filter = filter
+				throw new Error("Invalid filter: expected function or string, got #{typeof callback}")
 		return this
 
 	###
@@ -72,10 +75,21 @@ class EntitySet
 				throw error
 		return
 	
-	fetch: -> null
+	###
+	Fetches entities from the remote database.
+	@param {Object} options key/value settings (optional).
+	@param {Function} callback i.e. function(error, entities).
+	@return {EntitySet} to allow method chaining.
+	###
+	fetch: (options, callback = -> null) ->
+		if typeof options is "function"
+			callback = options
+			options = {}
+		
+		@_connector.fetch(@name, @attributes, @query, options, callback)
+		return this
+		
 	count: -> null
-	destroy: -> null
-	update: -> null
 	
 	###
 	Adds a new entity or an array of entities to the entity set.
@@ -104,5 +118,9 @@ class EntitySet
 		catch error
 			callback(error)
 			return
+
+	update: -> null
+	
+	destroy: -> null
 
 module.exports = EntitySet

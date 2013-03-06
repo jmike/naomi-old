@@ -25,11 +25,10 @@ class Naomi
 			else 
 				throw new Error("Invalid or unsupported database engine")
 		
-		# set a new object to store the database's entity sets (a.k.a. tables)
-		@schema = {}
+		@schema = {}# store the database's entity sets (a.k.a. tables)
 	
 	###
-	Creates and returns a new EntitySet of the specified properties.
+	Creates and returns a new entity set of the specified properties.
 	@param {String} name the name of the entity, must be unique.
 	@param {Object} attributes the entity's attributes (optional).
 	@param {Object} options key/value settings (optional).
@@ -38,17 +37,24 @@ class Naomi
 	###
 	extend: (name, attributes = {}, options = {}) ->
 		if @schema.hasOwnProperty(name)
-			throw new Error("EntitySet #{name} is already defined")
+			throw new Error("Entity-set #{name} is already defined")
 		
-		entitySet = new EntitySet(name, attributes, options)
-		@schema[name] = entitySet# store locally
+		entitySet = new EntitySet(@_connector, name, attributes, options)
+		@schema[name] = entitySet# cache
 		return entitySet
+
+	###
+	Acquires the specified entity set by name.
+	@param {String} name the name of the entity, must be unique.
+	@return {EntitySet, undefined}
+	###
+	get: (name) -> @schema[name]
 		
-	assosiate: ->
+	assosiate: -> null
 	
 	###
 	Synchronizes the current naomi instance with the remote database.
-	@note Makes sure all entity sets exist on the remote database, but doen't store any data in them.
+	@note Makes sure the defined entity sets exist in the remote database, but doen't store any data in them.
 	@param {Object} options key/value settings (optional).
 	@param {Function} callback i.e. function(error, data).
 	###
