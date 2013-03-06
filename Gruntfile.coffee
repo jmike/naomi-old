@@ -32,8 +32,18 @@ module.exports = (grunt) ->
 				}
 				files: [
 					{
-						src: "test/*"
+						src: "test/*.coffee"
 						filter: (src) -> not /\-database/.test(src)
+					}
+				]
+			}
+			mysql: {
+				options: {
+					reporter: "spec"
+				}
+				files: [
+					{
+						src: "test/mysql-database.coffee"
 					}
 				]
 			}
@@ -48,5 +58,8 @@ module.exports = (grunt) ->
 		}
 	})
 
-	grunt.registerTask("test", ["mocha:main"])
+	grunt.registerTask("test", [
+		"mocha:main"
+		"mocha:mysql"
+	])
 	grunt.registerTask("docs", ["exec:codo"])
