@@ -13,11 +13,13 @@ class Filter
 			ast = esprima.parse(expression)
 		catch error
 			throw new Error("Filter parse error: #{error.message}")
+#		console.log(JSON.stringify(ast, null, 4))
 		
 		try
 			{@sql, @params} = this._compile(ast, attributes)
 		catch error
 			throw error
+#		console.log @sql
 
 	###
 	Compiles the given abstract syntax tree to parameterized SQL.
@@ -49,6 +51,8 @@ class Filter
 					switch ast.operator
 						when "&&" then "AND"
 						when "||" then "OR"
+						else
+							throw Error("Unsupported javascript operator: #{ast.operator}")
 				) + " "
 
 				o = this._compile(ast.right, attr)
@@ -64,7 +68,18 @@ class Filter
 				sql += " " + (
 					switch ast.operator
 						when "!==", "!=" then "!="
-						when "===", "==" then "<=>"
+						when "===", "==" then "="
+						when ">" then ">"
+						when "<" then "<"
+						when ">=" then ">="
+						when "<=" then "<="
+						when "+" then "+"
+						when "-" then "-"
+						when "*" then "*"
+						when "/" then "/"
+						when "%" then "%"
+						else
+							throw Error("Unsupported javascript operator: #{ast.operator}")
 				) + " "
 
 				o = this._compile(ast.right, attr)

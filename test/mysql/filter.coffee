@@ -11,51 +11,114 @@ attributes = {
 		
 describe("MySql filter", ->
 	
-	it("should be able to parse !== operator", ->
+	it("should be able to understand the !== operator", ->
 		assert.doesNotThrow(->
 			new Filter("age !== 23", attributes)
 		)
 		return
 	)
 	
-	it("should be able to parse != operator", ->
+	it("should be able to understand the != operator", ->
 		assert.doesNotThrow(->
 			new Filter("age != 23", attributes)
 		)
 		return
 	)
 	
-	it("should be able to parse === operator", ->
+	it("should be able to understand the === operator", ->
 		assert.doesNotThrow(->
 			new Filter("age === 23", attributes)
 		)
 		return
 	)
 	
-	it("should be able to parse == operator", ->
+	it("should be able to understand the == operator", ->
 		assert.doesNotThrow(->
 			new Filter("age == 23", attributes)
 		)
 		return
 	)
 	
-	it("should be able to parse && operator", ->
+	it("should be able to understand the && operator", ->
 		assert.doesNotThrow(->
 			new Filter("age !== 23 && gender === 'MALE'", attributes)
 		)
 		return
 	)
 	
-	it("should be able to parse || operator", ->
+	it("should be able to understand the || operator", ->
 		assert.doesNotThrow(->
 			new Filter("age !== 23 || gender === 'MALE'", attributes)
 		)
 		return
 	)
 	
-	it("should understand precedence of && over ||", ->
+	it("should be able to understand precedence of && over ||", ->
 		filter = new Filter("age !== 23 && gender === 'MALE' || gender === 'FEMALE' && email !== null", attributes)
 		assert.match(filter.sql, /\(\([^\(]+\) AND \([^\(]+\)\) OR \(\([^\(]+\) AND \([^\(]+\)\)/)
+		return
+	)
+	
+	it("should be able to understand the > operator", ->
+		assert.doesNotThrow(->
+			new Filter("age > 23", attributes)
+		)
+		return
+	)
+	
+	it("should be able to understand the < operator", ->
+		assert.doesNotThrow(->
+			new Filter("age < 23", attributes)
+		)
+		return
+	)
+	
+	it("should be able to understand the >= operator", ->
+		assert.doesNotThrow(->
+			new Filter("age > 23", attributes)
+		)
+		return
+	)
+	
+	it("should be able to understand the <= operator", ->
+		assert.doesNotThrow(->
+			new Filter("age < 23", attributes)
+		)
+		return
+	)
+	
+	it("should be able to understand the + operator", ->
+		assert.doesNotThrow(->
+			new Filter("age + 1 < 23", attributes)
+		)
+		return
+	)
+	
+	it("should be able to understand the - operator", ->
+		assert.doesNotThrow(->
+			new Filter("age - 1 === 23", attributes)
+		)
+		return
+	)
+	
+	it("should be able to understand the * operator", ->
+		assert.doesNotThrow(->
+			new Filter("age * 3 === 6", attributes)
+		)
+		return
+	)
+	
+	it("should be able to understand the / operator", ->
+		assert.doesNotThrow(->
+			new Filter("age / 2 === 23", attributes)
+		)
+		return
+	)
+	
+	it("should be able to understand the % operator", ->
+		assert.doesNotThrow(->
+			new Filter("age % 2 === 1", attributes)
+		)
 		return
 	)
 
