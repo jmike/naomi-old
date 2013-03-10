@@ -3,55 +3,95 @@ esprima = require("esprima")
 class Filter
 
 	###
-	Creates a new mysql filter to use in a where clause.
-    @param {Object} attributes the attributes of the entity set to filter.
+	Constructs a new mysql filter containing sql and parameter(s) to use in a where clause.
     @param {String} expression a javascript expression to test each entity of the entity set.
-	@note The current entity in the javascript expression should always be identifies as "entity", e.g. "entity.id === 1".
-	@throw {Error} if the expression cannot be parsed.
+	@param {Object} attributes the attributes of the entity set to filter.
+	@throw {Error} if the expression is invalid or contains an unsupported javascript clause.
     ###
-	constructor: (attributes, expression) ->
+	constructor: (expression, attributes) ->
 		try
 			ast = esprima.parse(expression)
 		catch error
 			throw new Error("Filter parse error: #{error.message}")
 		
-		@attributes = attributes
-		@sql = ""
-		@params = []
-		
-		this._compile(ast)
-
-		console.log(JSON.stringify(ast, null, 4))
-		console.log this
+		try
+			{@sql, @params} = this._compile(ast, attributes)
+		catch error
+			throw error
 
 	###
+	Compiles the given abstract syntax tree to parameterized SQL.
+	@param {Object} ast the abstract syntax tree.
+	@param {Object} attr the attribute(s) of the entity set.
+	@throw {Error} if ast contains an unsupported javascript clause.
 	###
-	_compile: (ast) ->
+	_compile: (ast, attr) ->
+		sql = ""
+		params = []
+
 		switch ast.type
 			when "Program"
-				for e in ast.body
-					this._compile(e)
+				o = this._compile(ast.body[0], attr)
+				sql += o.sql
+				params = params.concat(o.params)
+
 			when "ExpressionStatement"
-				this._compile(ast.expression)
-			when "BinaryExpression"
-				this._compile(ast.left)
-				@sql += (
+				o = this._compile(ast.expression, attr)
+				sql += o.sql
+				params = params.concat(o.params)
+
+			when "LogicalExpression"
+				o = this._compile(ast.left, attr)
+				sql += "(#{o.sql})"
+				params = params.concat(o.params)
+				
+				sql += " " + (
 					switch ast.operator
-						when "!==", "!="
-							" != "
-				)
-				this._compile(ast.right)
-			when "MemberExpression"
-				this._compile(ast.object)
-				@sql += "."
-				this._compile(ast.property)
+						when "&&" then "AND"
+						when "||" then "OR"
+				) + " "
+
+				o = this._compile(ast.right, attr)
+				sql += "(#{o.sql})"
+				params = params.concat(o.params)
+
+			when "BinaryExpression"# i.e. id === 2
+				o = this._compile(ast.left, attr)
+				sql += o.sql
+				params = params.concat(o.params)
+				attr = o.attr
+
+				sql += " " + (
+					switch ast.operator
+						when "!==", "!=" then "!="
+						when "===", "==" then "<=>"
+				) + " "
+
+				o = this._compile(ast.right, attr)
+				sql += o.sql
+				params = params.concat(o.params)
+
+			when "MemberExpression"# i.e. object.property
+				o = this._compile(ast.object, attr)
+				sql += o.sql + "."
+				params = params.concat(o.params)
+				attr = o.attr
+
+				o = this._compile(ast.property, attr)
+				sql += o.sql
+				params = params.concat(o.params)
+
 			when "Identifier"
-				@sql += "`#{ast.name}`"
-			when "Literal"
-				@sql += "?"
-				@params.push(ast.value)
+				sql += "`#{ast.name}`"
+				attr = attr[ast.name]
+
+			when "Literal"# i.e. 32
+				sql += "?"
+				params.push(attr.parse(ast.value, false))
+
 			else
 				throw Error("Unsupported javascript clause: #{ast.type}")
-		return
+
+		return {sql, params, attr}
 
 module.exports = Filter
