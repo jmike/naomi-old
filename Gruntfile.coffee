@@ -43,7 +43,7 @@ module.exports = (grunt) ->
 				}
 				files: [
 					{
-						src: "test/mysql-database.coffee"
+						src: "test/mysql/*.coffee"
 					}
 				]
 			}

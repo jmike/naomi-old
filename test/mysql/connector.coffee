@@ -1,5 +1,5 @@
 assert = require("chai").assert
-Naomi = require("../src/naomi")
+Naomi = require("../../src/naomi")
 Attribute = Naomi.Attribute
 
 db = new Naomi("MYSQL", {

@@ -1,12 +1,12 @@
 mansion = require("generic-pool")
 mysql = require("mysql")
-Attribute = require("../attribute")
-NumberUtils = require("../utils/number")
+Attribute = require("../../attribute")
+NumberUtils = require("../../utils/number")
 
 ###
 @author Dimitrios C. Michalakos
 ###
-class MySqlConnector
+class Connector
 
 	###
 	Constructs a new mysql connector of the designated properties.
@@ -316,4 +316,4 @@ class MySqlConnector
 		this.execute(sql, params, callback)
 		return
 
-module.exports = MySqlConnector
+module.exports = Connector
