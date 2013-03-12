@@ -12,13 +12,13 @@ class Filter
 			ast = esprima.parse(expression)
 		catch error
 			throw new Error("Filter parse error: #{error.message}")
-#		console.log(JSON.stringify(ast, null, 4))
+		console.log(JSON.stringify(ast, null, 4))
 		
 		try
 			{@sql, @params} = this._compile(ast)
 		catch error
 			throw error
-#		console.log @sql
+		console.log @sql
 
 	###
 	Compiles the given abstract syntax tree to parameterized SQL.
@@ -40,7 +40,44 @@ class Filter
 				sql += o.sql
 				params = params.concat(o.params)
 
-			when "LogicalExpression"
+			when "CallExpression"
+				callee = ast.callee
+				if callee.type is "MemberExpression"
+					if callee.object.name is "Math"
+						switch callee.property.name
+							when "abs" then sql += "ABS"
+							when "acos" then sql += "ACOS"
+							when "asin" then sql += "ASIN"
+							when "atan" then sql += "ATAN"
+							when "atan2" then sql += "ATAN2"
+							when "ceil" then sql += "CEIL"
+							when "cos" then sql += "COS"
+							when "exp" then sql += "EXP"
+							when "floor" then sql += "FLOOR"
+							when "log" then sql += "LOG"
+							when "pow" then sql += "POW"
+							when "random" then sql += "RAND"
+							when "round" then sql += "ROUND"
+							when "sin" then sql += "SIN"
+							when "sqrt" then sql += "SQRT"
+							when "tan" then sql += "TAN"
+							else
+								throw Error("Unsupported math property: #{callee.property.name}")
+					else
+						throw Error("Unsupported javascript object: #{callee.object.name}")
+				else
+					throw Error("Unsupported call expression")
+				
+				sql += "("
+				for argument, i in ast.arguments
+					if i isnt 0
+						sql += ", "
+					o = this._compile(argument)
+					sql += o.sql
+					params = params.concat(o.params)
+				sql += ")"
+
+			when "LogicalExpression"# i.e. true || false
 				o = this._compile(ast.left)
 				sql += "(#{o.sql})"
 				params = params.concat(o.params)
