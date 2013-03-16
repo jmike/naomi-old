@@ -128,9 +128,13 @@ class Filter
 				params = params.concat(o.params)
 
 			when "BinaryExpression"# i.e. id === 2
-				left = ast.left
 				operator = ast.operator
-				right = ast.right
+				if ast.left.type is "Literal" and ast.right.type isnt "Literal"
+					left = ast.right
+					right = ast.left
+				else
+					left = ast.left
+					right = ast.right
 
 				o = this._compile(left, entity)
 				sql += o.sql
