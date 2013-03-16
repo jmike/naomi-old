@@ -114,13 +114,6 @@ describe("MySql filter", ->
 		return
 	)
 
-	it("should be able to understand the null value", ->
-		assert.doesNotThrow(->
-			new Filter("e.email !== null", "e")
-		)
-		return
-	)
-
 	it("should be able to understand member expressions of > 2 levels", ->
 		assert.doesNotThrow(->
 			new Filter("e.person.age === 10", "e")
@@ -159,6 +152,12 @@ describe("MySql filter", ->
 		assert.doesNotThrow(->
 			new Filter("e.name.endsWith('ike')", "e")
 		)
+		return
+	)
+
+	it("should be able to understand the null value", ->
+		filter = new Filter("e.email !== null", "e")
+		assert.match(filter.sql, /IS NOT \?$/i)
 		return
 	)
 

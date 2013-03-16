@@ -136,12 +136,18 @@ class Filter
 				sql += o.sql
 				params = params.concat(o.params)
 
-#				if ast.right.type is "Literal" and ast.right.value is null
-
 				sql += " " + (
 					switch operator
-						when "!==", "!=" then "!="
-						when "===", "==" then "="
+						when "!==", "!="
+							if right.type is "Literal" and right.value is null
+								"IS NOT"
+							else
+								"!="
+						when "===", "=="
+							if right.type is "Literal" and right.value is null
+								"IS"
+							else
+								"="
 						when ">" then ">"
 						when "<" then "<"
 						when ">=" then ">="
