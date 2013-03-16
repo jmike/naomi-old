@@ -130,7 +130,7 @@ describe("MySql filter", ->
 
 	it("should be able to understand member expressions of > 2 levels when the second member equals the entity name", ->
 		filter = new Filter("entity.entity.age === 10", "entity")
-		assert.match(filter.sql, /^`entity`./)
+		assert.match(filter.sql, /^`entity`\./)
 		return
 	)
 
