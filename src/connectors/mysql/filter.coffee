@@ -19,7 +19,7 @@ class Filter
 			{@sql, @params} = this._compile(ast, entity)
 		catch error
 			throw error
-		console.log @sql
+		console.log @sql, @params
 
 	###
 	Compiles the given abstract syntax tree to parameterized SQL.
@@ -85,14 +85,20 @@ class Filter
 						sql += o.sql
 						params = params.concat(o.params)
 
-						sql += " LIKE '%"
+						sql += " LIKE "
+
 						if args.length is 1
 							o = this._compile(args[0], entity)
 							sql += o.sql
-							params = params.concat(o.params)
+							switch property.name
+								when "contains"
+									params.push("%#{o.params[0]}%")
+								when "startsWith"
+									params.push("%#{o.params[0]}")
+								when "endsWith"
+									params.push("#{o.params[0]}%")
 						else
 							throw Error("Invalid argument length")
-						sql += "%'"
 
 					else
 						throw Error("Unsupported javascript object: #{callee.object.name}")
