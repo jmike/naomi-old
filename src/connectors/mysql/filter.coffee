@@ -5,17 +5,18 @@ class Filter
 	###
 	Constructs a new mysql filter containing sql and parameter(s) to use in a where clause.
     @param {String} expression a javascript expression to test each entity of the entity set.
+	@param {String} entity the entity identifier in the given expression (optional), defaults to "entity".
 	@throw {Error} if the expression is invalid or contains an unsupported javascript clause.
     ###
-	constructor: (expression) ->
+	constructor: (expression, entity = "entity") ->
 		try
 			ast = esprima.parse(expression)
 		catch error
 			throw new Error("Filter parse error: #{error.message}")
 		console.log(JSON.stringify(ast, null, 4))
-		
+
 		try
-			{@sql, @params} = this._compile(ast)
+			{@sql, @params} = this._compile(ast, entity)
 		catch error
 			throw error
 		console.log @sql
@@ -23,28 +24,34 @@ class Filter
 	###
 	Compiles the given abstract syntax tree to parameterized SQL.
 	@param {Object} ast the abstract syntax tree.
+	@param {String} entity the entity identifier in the AST.
 	@throw {Error} if ast contains an unsupported javascript clause.
 	###
-	_compile: (ast) ->
+	_compile: (ast, entity = "") ->
 		sql = ""
 		params = []
 
 		switch ast.type
 			when "Program"
-				o = this._compile(ast.body[0])
+				o = this._compile(ast.body[0], entity)
 				sql += o.sql
 				params = params.concat(o.params)
 
 			when "ExpressionStatement"
-				o = this._compile(ast.expression)
+				o = this._compile(ast.expression, entity)
 				sql += o.sql
 				params = params.concat(o.params)
 
 			when "CallExpression"
 				callee = ast.callee
+				args = ast.arguments
+
 				if callee.type is "MemberExpression"
-					if callee.object.name is "Math"
-						switch callee.property.name
+					object = callee.object
+					property = callee.property
+
+					if object.name is "Math"
+						switch property.name
 							when "abs" then sql += "ABS"
 							when "acos" then sql += "ACOS"
 							when "asin" then sql += "ASIN"
@@ -62,47 +69,71 @@ class Filter
 							when "sqrt" then sql += "SQRT"
 							when "tan" then sql += "TAN"
 							else
-								throw Error("Unsupported math property: #{callee.property.name}")
+								throw Error("Unsupported math property: #{property.name}")
+
+						sql += "("
+						for arg, i in args
+							if i isnt 0
+								sql += ", "
+							o = this._compile(arg, entity)
+							sql += o.sql
+							params = params.concat(o.params)
+						sql += ")"
+
+					else if property.name in ["contains", "startsWith", "endsWith"]
+						o = this._compile(object, entity)
+						sql += o.sql
+						params = params.concat(o.params)
+
+						sql += " LIKE '%"
+						if args.length is 1
+							o = this._compile(args[0], entity)
+							sql += o.sql
+							params = params.concat(o.params)
+						else
+							throw Error("Invalid argument length")
+						sql += "%'"
+
 					else
 						throw Error("Unsupported javascript object: #{callee.object.name}")
+
 				else
 					throw Error("Unsupported call expression")
-				
-				sql += "("
-				for argument, i in ast.arguments
-					if i isnt 0
-						sql += ", "
-					o = this._compile(argument)
-					sql += o.sql
-					params = params.concat(o.params)
-				sql += ")"
 
 			when "LogicalExpression"# i.e. true || false
-				o = this._compile(ast.left)
+				left = ast.left
+				operator = ast.operator
+				right = ast.right
+
+				o = this._compile(left, entity)
 				sql += "(#{o.sql})"
 				params = params.concat(o.params)
-				
+
 				sql += " " + (
-					switch ast.operator
+					switch operator
 						when "&&" then "AND"
 						when "||" then "OR"
 						else
-							throw Error("Unsupported javascript operator: #{ast.operator}")
+							throw Error("Unsupported javascript operator: #{operator}")
 				) + " "
 
-				o = this._compile(ast.right)
+				o = this._compile(right, entity)
 				sql += "(#{o.sql})"
 				params = params.concat(o.params)
 
 			when "BinaryExpression"# i.e. id === 2
-				o = this._compile(ast.left)
+				left = ast.left
+				operator = ast.operator
+				right = ast.right
+
+				o = this._compile(left, entity)
 				sql += o.sql
 				params = params.concat(o.params)
-				
+
 #				if ast.right.type is "Literal" and ast.right.value is null
 
 				sql += " " + (
-					switch ast.operator
+					switch operator
 						when "!==", "!=" then "!="
 						when "===", "==" then "="
 						when ">" then ">"
@@ -115,21 +146,30 @@ class Filter
 						when "/" then "/"
 						when "%" then "%"
 						else
-							throw Error("Unsupported javascript operator: #{ast.operator}")
+							throw Error("Unsupported javascript operator: #{operator}")
 				) + " "
-				
-				o = this._compile(ast.right)
+
+				o = this._compile(right, entity)
 				sql += o.sql
 				params = params.concat(o.params)
 
 			when "MemberExpression"# i.e. object.property
-				o = this._compile(ast.object)
-				sql += o.sql + "."
-				params = params.concat(o.params)
+				object = ast.object
+				property = ast.property
 
-				o = this._compile(ast.property)
-				sql += o.sql
-				params = params.concat(o.params)
+				if object.name is entity# i.e. "entity.name"
+					o = this._compile(property)
+					sql += o.sql
+					params = params.concat(o.params)
+
+				else
+					o = this._compile(object, entity)
+					sql += o.sql + "."
+					params = params.concat(o.params)
+
+					o = this._compile(property, entity)
+					sql += o.sql
+					params = params.concat(o.params)
 
 			when "Identifier"
 				sql += "`#{ast.name}`"
