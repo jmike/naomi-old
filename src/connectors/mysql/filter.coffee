@@ -94,9 +94,9 @@ class Filter
 								when "contains"
 									params.push("%#{o.params[0]}%")
 								when "startsWith"
-									params.push("%#{o.params[0]}")
-								when "endsWith"
 									params.push("#{o.params[0]}%")
+								when "endsWith"
+									params.push("%#{o.params[0]}")
 						else
 							throw Error("Invalid argument length")
 
