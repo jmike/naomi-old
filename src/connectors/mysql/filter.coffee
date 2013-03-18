@@ -3,9 +3,9 @@ esprima = require("esprima")
 class Filter
 
 	###
-	Constructs a new mysql filter containing sql and parameter(s) to use in a where clause.
+	Constructs a new mysql filter statement to use in a where clause.
     @param {String} expression a javascript expression to test each entity of the entity set.
-	@param {String} entity the entity identifier in the given expression (optional), defaults to "entity".
+	@param {String} entity the entity's identifier in the given expression (optional), defaults to "entity".
 	@throw {Error} if the expression is invalid or contains an unsupported javascript clause.
     ###
 	constructor: (expression, entity = "entity") ->
@@ -13,18 +13,18 @@ class Filter
 			ast = esprima.parse(expression)
 		catch error
 			throw new Error("Filter parse error: #{error.message}")
-		console.log(JSON.stringify(ast, null, 4))
+#		console.log(JSON.stringify(ast, null, 4))
 
 		try
 			{@sql, @params} = this._compile(ast, entity)
 		catch error
 			throw error
-		console.log @sql, @params
+#		console.log @sql, @params
 
 	###
 	Compiles the given abstract syntax tree to parameterized SQL.
 	@param {Object} ast the abstract syntax tree.
-	@param {String} entity the entity identifier in the AST.
+	@param {String} entity the entity's identifier in the AST.
 	@throw {Error} if ast contains an unsupported javascript clause.
 	###
 	_compile: (ast, entity = "") ->
