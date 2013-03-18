@@ -157,13 +157,13 @@ describe("MySql filter", ->
 
 	it("should be able to understand the null value", ->
 		filter = new Filter("e.email !== null", "e")
-		assert.match(filter.sql, /IS NOT \?$/i)
+		assert.match(filter.sql, /IS NOT \?/i)
 		return
 	)
 
 	it("should be able to understand expressions where the literal value is on the left side", ->
 		filter = new Filter("null !== e.email", "e")
-		assert.match(filter.sql, /IS NOT \?$/i)
+		assert.match(filter.sql, /\? IS NOT/i)
 		return
 	)
 
