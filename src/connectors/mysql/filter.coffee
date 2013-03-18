@@ -193,7 +193,7 @@ class Filter
 				params.push(ast.value)
 
 			else
-				throw Error("Unsupported javascript clause: #{ast.type}")
+				throw Error("Unsupported javascript expression: #{ast.type}")
 
 		return {sql, params}
 
