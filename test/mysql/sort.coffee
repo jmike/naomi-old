@@ -38,14 +38,14 @@ describe("MySql sort", ->
 		return
 	)
 
-	it("should be able to parse operator '-' where 'a' is on the left", ->
+	it("should be able to understand the - operator, where object a is on the left", ->
 		sort = new Sort("a.age - b.age", "a", "b")
 		assert.strictEqual(sort.sql, "`age` ASC")
 		assert.strictEqual(sort.params.length, 0)
 		return
 	)
 
-	it("should be able to parse operator '-' where 'a' is on the right", ->
+	it("should be able to understand the - operator, where object a is on the right", ->
 		sort = new Sort("b.age - a.age", "a", "b")
 		assert.strictEqual(sort.sql, "`age` DESC")
 		assert.strictEqual(sort.params.length, 0)
