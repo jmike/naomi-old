@@ -24,6 +24,21 @@ class Sort
 #		console.log @sql, @params
 
 	###
+	Returns true if the supplied object are comparable, false if not.
+	@param {Object} x as taken from the AST.
+	@param {Object} y as taken from the AST.
+	@param {String} a the current entity's identifier in the abstract syntax tree.
+	@param {String} b the next entity's identifier in the abstract syntax tree.
+	@return {Boolean}
+	###
+	_isComparable: (x, y, a, b) ->
+		x.type is "MemberExpression" and
+		y.type is "MemberExpression" and (
+			x.object.name is a and y.object.name is b or
+			x.object.name is b and y.object.name is a
+		) and _.isEqual(x.property, y.property)
+
+	###
 	Compiles the given abstract syntax tree to parameterized SQL.
 	@param {Object} ast the abstract syntax tree.
 	@param {String} a the current entity's identifier in the abstract syntax tree.
@@ -45,37 +60,57 @@ class Sort
 				sql += o.sql
 				params = params.concat(o.params)
 
+			when "CallExpression"
+				callee = ast.callee
+				args = ast.arguments
+
+				if callee.type is "MemberExpression"
+					object = callee.object
+					property = callee.property
+
+					if property.name is "localCompare"
+						if args.length isnt 1
+							throw new Error("Invalid argument length: expected exactly one (1) argument")
+
+						if this._isComparable(object, args[0], a, b)
+							o = this._compile(object, a, b)
+							sql += o.sql
+							params = params.concat(o.params)
+
+							sql += " " + (
+								if object.object.name is a
+									"ASC"
+								else
+									"DESC"
+							)
+
+						else
+							throw Error("Uncomparable javascript members")
+					else
+						throw Error("Unsupported javascript function: #{property.name}")
+				else
+					throw Error("Unsupported javascript call")
+
 			when "BinaryExpression"# i.e. a.id - b.id
 				left = ast.left
 				operator = ast.operator
 				right = ast.right
 
-				if left.type isnt "MemberExpression"
-					throw Error("Expected MemberExpression, got #{left.type}")
-				if right.type isnt "MemberExpression"
-					throw Error("Expected MemberExpression, got #{right.type}")
-
-				if left.object.name not in [a, b]
-					throw Error("Unknown object: #{left.object.name}")
-				if right.object.name not in [a, b]
-					throw Error("Unknown object: #{right.object.name}")
-
-				if left.object.name is right.object.name
-					throw Error("Compared properties are of the same object")
-				if not _.isEqual(left.property, right.property)
-					throw Error("Expected property of object #{a} to be equal to property of object #{b}")
-
 				if operator is "-"
-					o = this._compile(left, a, b)
-					sql += o.sql
-					params = params.concat(o.params)
+					if this._isComparable(left, right, a, b)
+						o = this._compile(left, a, b)
+						sql += o.sql
+						params = params.concat(o.params)
 
-					sql += " " + (
-						if left.object.name is a
-							"ASC"
-						else
-							"DESC"
-					)
+						sql += " " + (
+							if left.object.name is a
+								"ASC"
+							else
+								"DESC"
+						)
+
+					else
+						throw Error("Uncomparable javascript members")
 				else
 					throw Error("Unsupported javascript operator: #{operator}")
 
