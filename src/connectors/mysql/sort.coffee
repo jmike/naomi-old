@@ -5,7 +5,7 @@ class Sort
 
 	###
 	Constructs a new mysql sort to use in an order by clause.
-    @param {String} expression a javascript expression that defines the sort order.
+    @param {String} expression a javascript expression that defines the sort order of the entities in the entity-set.
 	@param {String} a the current entity's name in the given expression (optional), defaults to "a".
 	@param {String} b the next entity's name in the given expression (optional), defaults to "b".
 	@throw {Error} if the expression is invalid or unsupported.
@@ -14,7 +14,7 @@ class Sort
 		try
 			ast = esprima.parse(expression)
 		catch error
-			throw new Error("Sort parse error: #{error.message}")
+			throw new Error("Invalid javascript expression: #{error.message}")
 #		console.log(JSON.stringify(ast, null, 4))
 
 		try

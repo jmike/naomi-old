@@ -12,7 +12,7 @@ class Filter
 		try
 			ast = esprima.parse(expression)
 		catch error
-			throw new Error("Filter parse error: #{error.message}")
+			throw new Error("Invalid javascript expression: #{error.message}")
 #		console.log(JSON.stringify(ast, null, 4))
 
 		try
