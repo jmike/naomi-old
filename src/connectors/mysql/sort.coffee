@@ -4,11 +4,11 @@ _ = require("underscore")
 class Sort
 
 	###
-	Constructs a new mysql sort statement to use in an order by clause.
+	Constructs a new mysql sort to use in an order by clause.
     @param {String} expression a javascript expression that defines the sort order.
-	@param {String} a the current entity's identifier in the given expression (optional), defaults to "a".
-	@param {String} b the next entity's identifier in the given expression (optional), defaults to "b".
-	@throw {Error} if the expression is invalid or contains an unsupported javascript clause.
+	@param {String} a the current entity's name in the given expression (optional), defaults to "a".
+	@param {String} b the next entity's name in the given expression (optional), defaults to "b".
+	@throw {Error} if the expression is invalid or unsupported.
     ###
 	constructor: (expression, a = "a", b = "b") ->
 		try
@@ -24,11 +24,11 @@ class Sort
 #		console.log @sql, @params
 
 	###
-	Returns true if the supplied object are comparable, false if not.
-	@param {Object} x as taken from the AST.
-	@param {Object} y as taken from the AST.
-	@param {String} a the current entity's identifier in the abstract syntax tree.
-	@param {String} b the next entity's identifier in the abstract syntax tree.
+	Returns true if the supplied objects are comparable, false if not.
+	@param {Object} x as taken from the abstract syntax tree.
+	@param {Object} y as taken from the abstract syntax tree.
+	@param {String} a the current entity's name in the abstract syntax tree.
+	@param {String} b the next entity's name in the abstract syntax tree.
 	@return {Boolean}
 	###
 	_isComparable: (x, y, a, b) ->
@@ -41,9 +41,9 @@ class Sort
 	###
 	Compiles the given abstract syntax tree to parameterized SQL.
 	@param {Object} ast the abstract syntax tree.
-	@param {String} a the current entity's identifier in the abstract syntax tree.
-	@param {String} b the next entity's identifier in the abstract syntax tree.
-	@throw {Error} if ast contains an unsupported javascript clause.
+	@param {String} a the current entity's name in the abstract syntax tree.
+	@param {String} b the next entity's name in the abstract syntax tree.
+	@throw {Error} if ast contains an invalid or unsupported javascript clause.
 	###
 	_compile: (ast, a = "", b = "") ->
 		sql = ""

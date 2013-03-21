@@ -3,10 +3,10 @@ esprima = require("esprima")
 class Filter
 
 	###
-	Constructs a new mysql filter statement to use in a where clause.
+	Constructs a new mysql filter to use in a where clause.
     @param {String} expression a javascript expression to test each entity of the entity set.
-	@param {String} entity the entity's identifier in the given expression (optional), defaults to "entity".
-	@throw {Error} if the expression is invalid or contains an unsupported javascript clause.
+	@param {String} entity the entity's name in the given expression (optional), defaults to plain "entity".
+	@throw {Error} if the expression is invalid or unsupported.
     ###
 	constructor: (expression, entity = "entity") ->
 		try
@@ -24,8 +24,8 @@ class Filter
 	###
 	Compiles the given abstract syntax tree to parameterized SQL.
 	@param {Object} ast the abstract syntax tree.
-	@param {String} entity the entity's identifier in the AST.
-	@throw {Error} if ast contains an unsupported javascript clause.
+	@param {String} entity the entity's name in the abstract syntax tree.
+	@throw {Error} if ast contains an invalid or unsupported javascript clause.
 	###
 	_compile: (ast, entity = "") ->
 		sql = ""
