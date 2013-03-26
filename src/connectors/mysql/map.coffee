@@ -1,12 +1,30 @@
 esprima = require("esprima")
 
+operators = {
+	"&&": -> "AND"
+	"||": -> "OR"
+	"!==": (isNull) -> "!="
+	"!=": (isNull) -> "!="
+	"===": (isNull) -> "="
+	"==": (isNull) -> "="
+	">": -> ">"
+	"<": -> "<"
+	">=": -> ">="
+	"<=": -> "<="
+	"+": -> "+"
+	"-": -> "-"
+	"*": -> "*"
+	"/": -> "/"
+	"%": -> "%"
+}
+
 class Map
 
 	###
 	Constructs a new mysql map to use in a select clause.
     @param {Function} callback a function that produces a new entity.
 	@param {Object} thisArg Object to use as this when executing callback.
-	@throw {Error} if the expression is invalid or unsupported.
+	@throw {Error} if callback contains an invalid or unsupported expression.
     ###
 	constructor: (callback, thisArg) ->
 		try
@@ -25,7 +43,7 @@ class Map
 	Compiles the given abstract syntax tree to parameterized SQL.
 	@param {Object} ast the abstract syntax tree.
 	@param {String} entity the entity's name in the abstract syntax tree.
-	@throw {Error} if ast contains an invalid or unsupported javascript clause.
+	@throw {Error} if ast contains an invalid or unsupported expression.
 	###
 	_compile: (ast, entity) ->
 		sql = ""
@@ -35,6 +53,7 @@ class Map
 			when "Program"
 				funct = ast.body[0].expression.right
 
+				# make sure parameters are valid
 				if funct.params.length is 1
 					entity = funct.params[0].name
 				else
@@ -43,6 +62,7 @@ class Map
 				if funct.body.type is "BlockStatement"
 					block = funct.body
 
+					# make sure block statement is valid
 					if block.body.length is 1
 						statement = block.body[0]
 
@@ -60,18 +80,42 @@ class Map
 				params = params.concat(o.params)
 
 			when "ObjectExpression"# i.e. {id: entity.id}
-				for property in ast.properties
+				for property, i in ast.properties
+					if i isnt 0
+						sql += ", "
+
 					o = this._compile(property.value, entity)
 					sql += o.sql
 					params = params.concat(o.params)
 
-					sql+= " AS "
+					sql+= " AS ?"
+					params.push(property.key.name)
 
-					key = property.key
-					if key.type is "Identifier"
-						sql += "'#{key.name}'"
-					else
-						throw Error("Invalid object property key: expected identifier, got #{key.type}")
+			when "LogicalExpression", "BinaryExpression"# i.e. true || false
+				left = ast.left
+				right = ast.right
+
+				isNull = (
+					right.type is "Literal" and right.value is null or
+					left.type is "Literal" and left.value is null
+				)
+
+				if operators.hasOwnProperty(ast.operator)
+					operator = operators[ast.operator](isNull)
+				else
+					throw Error("Unsupported javascript operator: #{ast.operator}")
+
+				sql += "("
+				o = this._compile(left, entity)
+				sql += o.sql
+				params = params.concat(o.params)
+
+				sql += " #{operator} "
+
+				o = this._compile(right, entity)
+				sql += o.sql
+				params = params.concat(o.params)
+				sql += ")"
 
 			when "MemberExpression"# i.e. object.property
 				object = ast.object
@@ -81,7 +125,6 @@ class Map
 					o = this._compile(property)
 					sql += o.sql
 					params = params.concat(o.params)
-
 				else
 					o = this._compile(object, entity)
 					sql += o.sql + "."
