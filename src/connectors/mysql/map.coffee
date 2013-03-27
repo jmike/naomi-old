@@ -53,19 +53,21 @@ class Map
 			when "Program"
 				funct = ast.body[0].expression.right
 
-				# make sure parameters are valid
+				# make sure function parameters are valid
 				if funct.params.length is 1
 					entity = funct.params[0].name
 				else
 					throw Error("Invalid function parameters: expected exactly 1 parameter, got #{funct.params.length}")
 
+				# make sure function body is a block
 				if funct.body.type is "BlockStatement"
 					block = funct.body
 
-					# make sure block statement is valid
+					# make sure block has a single statement
 					if block.body.length is 1
 						statement = block.body[0]
 
+						# make sure the statement is of type "return"
 						if statement.type is "ReturnStatement"
 							expression = statement.argument
 						else
@@ -81,8 +83,7 @@ class Map
 
 			when "ObjectExpression"# i.e. {id: entity.id}
 				for property, i in ast.properties
-					if i isnt 0
-						sql += ", "
+					if i isnt 0 then sql += ", "
 
 					o = this._compile(property.value, entity)
 					sql += o.sql
