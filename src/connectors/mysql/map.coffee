@@ -76,6 +76,34 @@ class Map
 					sql+= " AS ?"
 					params.push(property.key.name)
 
+			when "CallExpression"
+				callee = ast.callee
+				args = ast.arguments
+
+				if callee.type is "MemberExpression"
+					object = callee.object
+					property = callee.property
+
+					if object.name is "Math"
+						funct = mathFunctions[property.name]
+
+						if funct?
+							sql += funct + "("
+							for arg, i in args
+								if i isnt 0 then sql += ", "
+								o = this._compile(arg, entity)
+								sql += o.sql
+								params = params.concat(o.params)
+							sql += ")"
+						else
+							throw Error("Unsupported math function: #{property.name}")
+
+					else
+						throw Error("Unsupported callee object: #{callee.object.name}")
+
+				else
+					throw Error("Unsupported call expression")
+
 			when "LogicalExpression", "BinaryExpression"# i.e. true || false
 				left = ast.left
 				right = ast.right
