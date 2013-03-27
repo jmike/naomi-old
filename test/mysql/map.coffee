@@ -5,7 +5,7 @@ describe("MySql map", ->
 
 	it("should be able to accept member expressions", ->
 		map = new Map((entity) ->
-			return {
+			{
 				id: entity.id
 			}
 		)
@@ -13,7 +13,7 @@ describe("MySql map", ->
 		assert.deepEqual(map.params, ["id"])
 
 		map = new Map((entity) ->
-			return {
+			{
 				id: entity.id,
 				name: entity.name
 				age: entity.age
@@ -26,7 +26,7 @@ describe("MySql map", ->
 
 	it("should be able to accept literals", ->
 		map = new Map((entity) ->
-			return {
+			{
 				id: entity.id,
 				number: 777
 				string: "test"
@@ -40,7 +40,7 @@ describe("MySql map", ->
 
 	it("should be able to accept logical expressions", ->
 		map = new Map((entity) ->
-			return {
+			{
 				id: entity.id
 				test: true and false or false
 			}
@@ -52,7 +52,7 @@ describe("MySql map", ->
 
 	it("should be able to accept binary expressions", ->
 		map = new Map((entity) ->
-			return {
+			{
 				id: entity.id
 				senior: entity.age > 70
 			}
@@ -61,13 +61,33 @@ describe("MySql map", ->
 		assert.deepEqual(map.params, ["id", 70, "senior"])
 
 		map = new Map((entity) ->
-			return {
+			{
 				id: entity.id
 				oddYear: entity.age % 2 is 1
 			}
 		)
 		assert.strictEqual(map.sql, "`id` AS ?, ((`age` % ?) = ?) AS ?")
 		assert.deepEqual(map.params, ["id", 2, 1, "oddYear"])
+		return
+	)
+
+	it("should be able to accept math functions", ->
+		map = new Map((entity) ->
+			{
+				id: entity.id
+				tan: Math.tan(entity.age)
+			}
+		)
+		assert.strictEqual(map.sql, "`id` AS ?, TAN(`age`) AS ?")
+		assert.deepEqual(map.params, ["id", "tan"])
+
+		assert.throw(->
+			new Map((entity) ->
+				{
+					whatever: Math.whatever(entity.age)
+				}
+			)
+		)
 		return
 	)
 
