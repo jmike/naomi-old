@@ -1,22 +1,6 @@
 esprima = require("esprima")
-
-operators = {
-	"&&": -> "AND"
-	"||": -> "OR"
-	"!==": (isNull) -> "!="
-	"!=": (isNull) -> "!="
-	"===": (isNull) -> "="
-	"==": (isNull) -> "="
-	">": -> ">"
-	"<": -> "<"
-	">=": -> ">="
-	"<=": -> "<="
-	"+": -> "+"
-	"-": -> "-"
-	"*": -> "*"
-	"/": -> "/"
-	"%": -> "%"
-}
+operators = require("./operators")
+mathFunctions = require("./math-functions")
 
 class Map
 
