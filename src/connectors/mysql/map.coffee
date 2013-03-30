@@ -1,6 +1,5 @@
 esprima = require("esprima")
-operators = require("./operators")
-mathFunctions = require("./math-functions")
+Expression = require("./expression")
 
 class Map
 
@@ -15,13 +14,11 @@ class Map
 			ast = esprima.parse("map = #{callback.toString()}")
 		catch error
 			throw new Error("Invalid javascript expression: #{error.message}")
-		console.log(JSON.stringify(ast, null, 4))
 
 		try
 			{@sql, @params} = this._compile(ast)
 		catch error
 			throw error
-		console.log @sql, @params
 
 	###
 	Compiles the given abstract syntax tree to parameterized SQL.
@@ -30,133 +27,34 @@ class Map
 	@throw {Error} if ast contains an invalid or unsupported expression.
 	###
 	_compile: (ast, entity) ->
-		sql = ""
-		params = []
+		funct = ast.body[0].expression.right
 
-		switch ast.type
-			when "Program"
-				funct = ast.body[0].expression.right
+		# make sure function parameters are valid
+		if funct.params.length is 1
+			entity = funct.params[0].name
+		else
+			throw Error("Invalid function parameters: expected exactly 1 parameter, got #{funct.params.length}")
 
-				# make sure function parameters are valid
-				if funct.params.length is 1
-					entity = funct.params[0].name
-				else
-					throw Error("Invalid function parameters: expected exactly 1 parameter, got #{funct.params.length}")
+		# make sure function body is a block
+		if funct.body.type is "BlockStatement"
+			block = funct.body
 
-				# make sure function body is a block
-				if funct.body.type is "BlockStatement"
-					block = funct.body
+			# make sure block has a single statement
+			if block.body.length is 1
+				statement = block.body[0]
 
-					# make sure block has a single statement
-					if block.body.length is 1
-						statement = block.body[0]
-
-						# make sure the statement is of type "return"
-						if statement.type is "ReturnStatement"
-							expression = statement.argument
-						else
-							throw Error("Unsupported function block: expected a return statement, got #{statement.type}")
-					else
-						throw Error("Unsupported function block: expected a single statement, got #{block.body.length}")
-				else
-					throw Error("Unsupported function body: expected a block statement, got #{funct.body.type}")
-
-				o = this._compile(expression, entity)
-				sql += o.sql
-				params = params.concat(o.params)
-
-			when "ObjectExpression"# i.e. {id: entity.id}
-				for property, i in ast.properties
-					if i isnt 0 then sql += ", "
-
-					o = this._compile(property.value, entity)
-					sql += o.sql
-					params = params.concat(o.params)
-
-					sql+= " AS ?"
-					params.push(property.key.name)
-
-			when "CallExpression"
-				callee = ast.callee
-				args = ast.arguments
-
-				if callee.type is "MemberExpression"
-					object = callee.object
-					property = callee.property
-
-					if object.name is "Math"
-						funct = mathFunctions[property.name]
-
-						if funct?
-							sql += funct + "("
-							for arg, i in args
-								if i isnt 0 then sql += ", "
-								o = this._compile(arg, entity)
-								sql += o.sql
-								params = params.concat(o.params)
-							sql += ")"
-						else
-							throw Error("Unsupported math function: #{property.name}")
-
-					else
-						throw Error("Unsupported callee object: #{callee.object.name}")
+				# make sure the statement is of type "return"
+				if statement.type is "ReturnStatement"
+#					console.log(JSON.stringify(statement.argument, null, 4))
+					return new Expression(statement.argument, entity)
 
 				else
-					throw Error("Unsupported call expression")
-
-			when "LogicalExpression", "BinaryExpression"# i.e. true || false
-				left = ast.left
-				right = ast.right
-
-				isNull = (
-					right.type is "Literal" and right.value is null or
-					left.type is "Literal" and left.value is null
-				)
-
-				if operators.hasOwnProperty(ast.operator)
-					operator = operators[ast.operator](isNull)
-				else
-					throw Error("Unsupported javascript operator: #{ast.operator}")
-
-				sql += "("
-				o = this._compile(left, entity)
-				sql += o.sql
-				params = params.concat(o.params)
-
-				sql += " #{operator} "
-
-				o = this._compile(right, entity)
-				sql += o.sql
-				params = params.concat(o.params)
-				sql += ")"
-
-			when "MemberExpression"# i.e. object.property
-				object = ast.object
-				property = ast.property
-
-				if object.name is entity# i.e. "entity.name"
-					o = this._compile(property)
-					sql += o.sql
-					params = params.concat(o.params)
-				else
-					o = this._compile(object, entity)
-					sql += o.sql + "."
-					params = params.concat(o.params)
-
-					o = this._compile(property, entity)
-					sql += o.sql
-					params = params.concat(o.params)
-
-			when "Identifier"
-				sql += "`#{ast.name}`"
-
-			when "Literal"# i.e. 32
-				sql += "?"
-				params.push(ast.value)
+					throw Error("Unsupported function block: expected a return statement, got #{statement.type}")
 
 			else
-				throw Error("Unsupported javascript expression: #{ast.type}")
+				throw Error("Unsupported function block: expected a single statement, got #{block.body.length}")
 
-		return {sql, params}
+		else
+			throw Error("Unsupported function body: expected a block statement, got #{funct.body.type}")
 
 module.exports = Map
