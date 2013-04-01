@@ -49,26 +49,31 @@ class Expression.MemberExpression
 		object = ast.object
 		property = ast.property
 
-		switch object.name
-			when entity
-				{@sql, @params} = new Expression(property, "", thisObject)
+		if object.name is entity
+		 	{@sql, @params} = new Expression(property, "", thisObject)
 
-			when "this"
-				throw new Error("Keyword 'this' is not yet supported")
+		else if object.type is "ThisExpression"
+
+			if thisObject?.hasOwnProperty(property.name)
+				@sql = "?"
+				@params = [thisObject[property.name]]
 
 			else
-				expression = new Expression(object, entity, thisObject)
-				sql = expression.sql
-				params = expression.params
+				throw new Error("Undefined property #{property.name} of 'this' object")
 
-				sql += "."
+		else
+			expression = new Expression(object, entity, thisObject)
+			sql = expression.sql
+			params = expression.params
 
-				expression = new Expression(property, entity, thisObject)
-				sql += expression.sql
-				params = params.concat(expression.params)
+			sql += "."
 
-				@sql = sql
-				@params = params
+			expression = new Expression(property, entity, thisObject)
+			sql += expression.sql
+			params = params.concat(expression.params)
+
+			@sql = sql
+			@params = params
 
 class Expression.LogicalExpression
 
@@ -262,7 +267,7 @@ class Expression.ObjectExpression
 		for property, i in ast.properties
 			if i isnt 0 then sql += ", "
 
-			expression = new Expression(property.value, entity)
+			expression = new Expression(property.value, entity, thisObject)
 			sql += expression.sql
 			params = params.concat(expression.params)
 

@@ -91,4 +91,43 @@ describe("MySql map", ->
 		return
 	)
 
+	it("should be able to accept math functions", ->
+		map = new Map((entity) ->
+			{
+				id: entity.id
+				tan: Math.tan(entity.age)
+			}
+		)
+		assert.strictEqual(map.sql, "`id` AS ?, TAN(`age`) AS ?")
+		assert.deepEqual(map.params, ["id", "tan"])
+
+		assert.throw(->
+			new Map((entity) ->
+				{
+					whatever: Math.whatever(entity.age)
+				}
+			)
+		)
+		return
+	)
+
+	it("should be able to accept a this object", ->
+		map = new Map((entity) ->
+			{
+				sum: entity.age + this.num
+			}
+		, {num: 55})
+		assert.strictEqual(map.sql, "(`age` + ?) AS ?")
+		assert.deepEqual(map.params, [55, "sum"])
+
+		assert.throw(->
+			new Map((entity) ->
+				{
+					sum: entity.age + this.whatever
+				}
+			)
+		)
+		return
+	)
+
 )
