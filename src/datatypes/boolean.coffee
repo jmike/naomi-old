@@ -9,6 +9,7 @@ class BooleanDatatype extends AbstractDatatype
 	###
 	Constructs a new boolean datatype.
 	@param {Object} properties key/value properties (optional).
+    @option options {Boolean} nullable
 	###
 	constructor: (properties = {}) ->
 		super(properties)
@@ -23,15 +24,17 @@ class BooleanDatatype extends AbstractDatatype
 			switch typeof value
 				when "boolean"
 					return value
-				when "string", "number"
+				when "string"
 					return /^(true|1)$/i.test(value) or value is 1
+				when "number"
+					return value is 1
 				else
 					return Boolean(value)
 		else# null or undefined
 			return null
 
 	###
-	Throws an error if the specified value is invalid.
+	Throws an error if the specified value cannot be assigned to the datatype.
 	@param {*} value
 	@param {Boolean} parse indicates whether the specified value should be parsed before being validated, defaults to true.
 	@throw {Error} if value is invalid.
@@ -39,22 +42,23 @@ class BooleanDatatype extends AbstractDatatype
 	validate: (value, parse = true) ->
 		if parse
 			value = BooleanDatatype.parse(value)
+
 		super(value)
-		return
 
 	###
 	Parses the supplied value and returns boolean or null.
 	@param {*} value
-	@param {Boolean} validate indicates whether the result should be validated before being returned, defaults to true.
 	@return {Boolean, null}
+    @throw {Error} if value is invalid.
 	###	
-	parse: (value, validate = true) ->
+	parse: (value) ->
 		value = BooleanDatatype.parse(value)
-		if validate
-			try
-				this.validate(value, false)
-			catch error
-				throw error
+
+		try
+			this.validate(value, false)
+		catch error
+			throw error
+
 		return value
 
 module.exports = BooleanDatatype

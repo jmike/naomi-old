@@ -6,11 +6,12 @@ class AbstractDatatype
 	###
 	Constructs a new abstract datatype.
 	@param {Object} properties key/value properties (optional).
+    @option options {Boolean} nullable
 	@throw {Error} if properties is of the wrong type.
 	###
 	constructor: (properties = {}) ->
 		if typeof properties isnt "object"
-			throw new Error("Invalid datatype's properties: expected Object, got #{typeof properties}")
+			throw new Error("Invalid datatype properties: expected Object, got #{typeof properties}")
 		@properties = properties
 
 	###
@@ -19,27 +20,26 @@ class AbstractDatatype
 	  @return {Boolean}
 	@overload nullable(value)
 	  Specifies whether an explicit null value can be assigned to the datatype.
-	  @param {Boolean} x (optional).
+	  @param {Boolean} nullable
 	  @return {AbstractDatatype} to allow method chaining.
 	###
-	nullable: (value) ->
-		switch typeof value
+	nullable: (nullable) ->
+		switch typeof nullable
 			when "undefined"
 				return @properties.nullable
 			when "boolean"
-				@properties.nullable = value
+				@properties.nullable = nullable
 				return this
 			else
-				throw new Error("Invalid nullable value: expected Boolean, got #{typeof value}")
+				throw new Error("Invalid nullable value: expected Boolean, got #{typeof nullable}")
 
 	###
-	Throws an error if the specified value is invalid.
+	Throws an error if the specified value cannot be assigned to the datatype.
 	@param {*} value
 	@throw {Error} if value is invalid.
 	###
 	validate: (value) ->
 		if value is null and not @properties.nullable
-			throw new Error("Datatype cannot be assigned with a null value")
-		return
+			throw new Error("Datatype cannot be assigned to a null value")
 
 module.exports = AbstractDatatype
