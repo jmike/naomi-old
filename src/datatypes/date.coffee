@@ -195,7 +195,6 @@ class DateDatatype extends AbstractDatatype
 			value = DateDatatype.parse(value)
 
 		if value?
-			format = @properties.format
 			if @properties.min? and value.getTime() < @properties.min.getTime()
 				throw new Error("Datatype must be at least #{@properties.min} in value")
 

@@ -1,5 +1,6 @@
 DateDatatype = require("./date")
 moment = require("moment")
+format = "HH:mm:ss.S"
 
 ###
 @extend DateDatatype
@@ -19,9 +20,9 @@ class TimeDatatype extends DateDatatype
 	constructor: (properties = {}) ->
 		super(properties)
 
-		# Hardcode the time format in the datatype
+		# Hardcode the format property
 		Object.defineProperty(@properties, "format", {
-			value: "HH:mm:ss.S"
+			value: format
 			writable: false
 			enumerable: true
 			configurable: false
@@ -37,8 +38,8 @@ class TimeDatatype extends DateDatatype
 			if value instanceof Date
 				return value
 			else
-				x = moment(value, "HH:mm:ss.S")
-				return x.toDate()
+				d = moment(value, format)
+				return d.toDate()
 		else
 			return null
 

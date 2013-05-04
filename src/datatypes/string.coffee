@@ -263,7 +263,7 @@ class StringDatatype extends AbstractDatatype
 	@return {Boolean, null}
     @throw {Error} if value is invalid.
 	###	
-	parse: (value, validate = true) ->
+	parse: (value) ->
 		value = StringDatatype.parse(value)
 
 		try
