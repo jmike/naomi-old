@@ -10,6 +10,16 @@ class StringDatatype extends AbstractDatatype
 	###
 	Constructs a new string datatype.
 	@param {Object} properties key/value properties (optional).
+    @option options {Boolean} nullable
+    @option options {Number} minLength
+    @option options {Number} maxLength
+    @option options {Number} length
+    @option options {Array.<String>} equals
+    @option options {Array.<String>} notEquals
+    @option options {RegExp} regex
+    @option options {RegExp} notRegex
+    @option options {String} contains
+    @option options {String} notContains
 	###
 	constructor: (properties = {}) ->
 		super(properties)
@@ -22,6 +32,7 @@ class StringDatatype extends AbstractDatatype
 	  Sets the datatype's minimum length.
 	  @param {Number} value number of characters.
 	  @return {StringDatatype} to allow method chaining.
+      @throw {Error} if the supplied value is invalid.
 	###
 	minLength: (value) ->
 		switch typeof value
@@ -32,13 +43,15 @@ class StringDatatype extends AbstractDatatype
 					return Math.min.apply(Math, @properties.equals.map((e) -> e.length))
 				else
 					return undefined
+
 			when "number"
 				unless NumberUtils.isNonNegativeInt(value)
 					throw new Error("Invalid minimum length: cannot be negative")
 				if value > @properties.maxLength
 					throw new Error("Invalid minimum length: cannot be greater than maximum length")
 				@properties.minLength = value
-				return this	
+				return this
+
 			else
 				throw new Error("Invalid minimum length: expected number, got #{typeof value}")
 		
@@ -50,6 +63,7 @@ class StringDatatype extends AbstractDatatype
 	  Sets the datatype's maximum length.
 	  @param {Number} length number of characters.
 	  @return {StringDatatype} to allow method chaining.
+      @throw {Error} if the supplied value is invalid.
 	###
 	maxLength: (value) ->
 		switch typeof value
@@ -60,13 +74,15 @@ class StringDatatype extends AbstractDatatype
 					return Math.max.apply(Math, @properties.equals.map((e) -> e.length));
 				else
 					return undefined
+
 			when "number"
 				unless NumberUtils.isPositiveInt(value)
 					throw new Error("Invalid maximum length: cannot be negative or zero")
 				if value < @properties.minLength
 					throw new Error("Invalid maximum length: cannot be less than minimum length")
 				@properties.maxLength = value
-				return this	
+				return this
+
 			else
 				throw new Error("Invalid maximum length: expected number, got #{typeof value}")
 		
@@ -78,16 +94,20 @@ class StringDatatype extends AbstractDatatype
 	  Sets the datatype's exact length.
 	  @param {Number} length number of characters.
 	  @return {StringDatatype} to allow method chaining.
+      @throw {Error} if the supplied value is invalid.
 	###
 	length: (value) ->
 		switch typeof value
 			when "undefined"
 				return @properties.length
+
 			when "number"
-				unless NumberUtils.isPositiveInt(value)
+				if NumberUtils.isPositiveInt(value)
+					@properties.length = value
+				else
 					throw new Error("Invalid exact length: cannot be negative or zero")
-				@properties.length = value
 				return this
+
 			else
 				throw new Error("Invalid exact length: expected number, got #{typeof value}")
 		
@@ -99,10 +119,12 @@ class StringDatatype extends AbstractDatatype
 	  Sets the datatype's allowed values.
 	  @param {String} values an infinite number of values separated by comma.
 	  @return {StringDatatype} to allow method chaining.
+      @throw {Error} if the supplied values are invalid.
 	###
 	equals: (values...) ->
 		if values.length is 0
 			return @properties.equals
+
 		else
 			for e in values when typeof e isnt "string"
 				throw new Error("Invalid allowed value: expected string, got #{typeof e}")
@@ -117,10 +139,12 @@ class StringDatatype extends AbstractDatatype
 	  Sets the datatype's prohibited values.
 	  @param {String} values an infinite number of values separated by comma.
 	  @return {StringDatatype} to allow method chaining.
+      @throw {Error} if the supplied values are invalid.
 	###
 	notEquals: (values...) ->
 		if values.length is 0
 			return @properties.notEquals
+
 		else
 			for e in values when typeof e isnt "string"
 				throw new Error("Invalid prohibited value: expected string, got #{typeof e}")
@@ -131,28 +155,33 @@ class StringDatatype extends AbstractDatatype
 	Sets a regex to match the datatype's value.
 	@param {RegExp} re
 	@return {StringDatatype} to allow method chaining.
+    @throw {Error} if the supplied value is invalid.
 	###
 	regex: (re) ->
-		unless re instanceof RegExp
+		if re instanceof RegExp
+			@properties.regex = re
+		else
 			throw new Error("Invalid regular expression: expected RegExp, got #{typeof re}")
-		@properties.regex = re
 		return this
 
 	###
 	Sets a regex to not match the datatype's value.
 	@param {RegExp} re
 	@return {StringDatatype} to allow method chaining.
+    @throw {Error} if the supplied value is invalid.
 	###
 	notRegex: (re) ->
-		unless re instanceof RegExp
+		if re instanceof RegExp
+			@properties.notRegex = re
+		else
 			throw new Error("Invalid regular expression: expected RegExp, got #{typeof re}")
-		@properties.notRegex = re
 		return this
 
 	###
 	Sets a string to contain in the datatype's value.
 	@param {String} str
 	@return {StringDatatype} to allow method chaining.
+    @throw {Error} if the supplied value is invalid.
 	###
 	contains: (str) ->
 		if typeof str isnt "string"
@@ -166,6 +195,7 @@ class StringDatatype extends AbstractDatatype
 	Sets a string to not contain in the datatype's value.
 	@param {String} str
 	@return {StringDatatype} to allow method chaining.
+    @throw {Error} if the supplied value is invalid.
 	###
 	notContains: (str) ->
 		if typeof str isnt "string"
@@ -230,16 +260,17 @@ class StringDatatype extends AbstractDatatype
 	###
 	Parses the supplied value and returns string or null.
 	@param {*} value
-	@param {Boolean} validate indicates whether the value should be validated, defaults to true.
 	@return {Boolean, null}
+    @throw {Error} if value is invalid.
 	###	
 	parse: (value, validate = true) ->
 		value = StringDatatype.parse(value)
-		if validate
-			try
-				this.validate(value, false)
-			catch error
-				throw error
+
+		try
+			this.validate(value, false)
+		catch error
+			throw error
+
 		return value
 
 module.exports = StringDatatype

@@ -19,7 +19,7 @@ class TimeDatatype extends DateDatatype
 	constructor: (properties = {}) ->
 		super(properties)
 
-		# Hardcore the time format
+		# Hardcode the time format in the datatype
 		Object.defineProperty(@properties, "format", {
 			value: "HH:mm:ss.S"
 			writable: false

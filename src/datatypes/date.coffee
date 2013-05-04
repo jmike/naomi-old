@@ -28,6 +28,7 @@ class DateDatatype extends AbstractDatatype
 	  Sets the datatype's minimum allowed value.
 	  @param {Date, String} value
 	  @return {DateDatatype} to allow method chaining.
+      @throw {Error} if the supplied value is invalid.
 	###
 	min: (value) ->
 		switch typeof value
@@ -57,6 +58,7 @@ class DateDatatype extends AbstractDatatype
 	  Sets the datatype's maximum allowed value.
 	  @param {Date, String} value
 	  @return {DateDatatype} to allow method chaining.
+      @throw {Error} if the supplied value is invalid.
 	###
 	max: (value) ->
 		switch typeof value
@@ -80,12 +82,13 @@ class DateDatatype extends AbstractDatatype
 		
 	###
 	@overload equals()
-	  Returns an array of allowed values.
+	  Returns an array of datatype allowed values.
 	  @return {Array.<Date>}
 	@overload equals(values...)
 	  Sets the datatype's allowed values.
 	  @param {Date} values an infinite number of values separated by comma.
 	  @return {DateDatatype} to allow method chaining.
+      @throw {Error} if the supplied values are invalid.
 	###
 	equals: (values...) ->
 		if values.length is 0
@@ -112,12 +115,13 @@ class DateDatatype extends AbstractDatatype
 
 	###
 	@overload notEquals()
-	  Returns the datatype's prohibited values.
+	  Returns an array of datatype prohibited values.
 	  @return {Array.<Date>}
 	@overload notEquals(values...)
 	  Sets the datatype's prohibited values.
 	  @param {Date} values an infinite number of values separated by comma.
 	  @return {DateDatatype} to allow method chaining.
+      @throw {Error} if the supplied values are invalid.
 	###
 	notEquals: (values...) ->
 		if values.length is 0
@@ -150,6 +154,7 @@ class DateDatatype extends AbstractDatatype
 	  Sets the date format to parse the datatype's value.
 	  @param {String} format a valid date format, e.g. "YYYY-MM-DD".
 	  @return {DateDatatype} to allow method chaining.
+      @throw {Error} if the supplied value is invalid.
 	###
 	format: (value) ->
 		switch typeof value
@@ -210,6 +215,7 @@ class DateDatatype extends AbstractDatatype
 	Parses the supplied value and returns Date or null.
 	@param {*} value
 	@return {Date, null}
+    @throw {Error} if value is invalid.
 	###
 	parse: (value) ->
 		value = DateDatatype.parse(value)
