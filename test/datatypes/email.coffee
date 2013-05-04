@@ -1,5 +1,5 @@
 assert = require("chai").assert
-EmailDatatype = require("../src/datatypes/email")
+EmailDatatype = require("../../src/datatypes/email")
 
 describe("Email datatype", ->
 	

@@ -1,5 +1,5 @@
 assert = require("chai").assert
-BooleanDatatype = require("../src/datatypes/boolean")
+BooleanDatatype = require("../../src/datatypes/boolean")
 
 describe("Boolean datatype", ->
 	

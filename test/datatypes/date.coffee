@@ -1,5 +1,5 @@
 assert = require("chai").assert
-DateDatatype = require("../src/datatypes/date")
+DateDatatype = require("../../src/datatypes/date")
 
 describe("Date datatype", ->
 

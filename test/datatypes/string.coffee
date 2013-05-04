@@ -1,5 +1,5 @@
 assert = require("chai").assert
-StringDatatype = require("../src/datatypes/string")
+StringDatatype = require("../../src/datatypes/string")
 
 describe("String datatype", ->
 

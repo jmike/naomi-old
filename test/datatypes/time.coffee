@@ -1,5 +1,5 @@
 assert = require("chai").assert
-TimeDatatype = require("../src/datatypes/time")
+TimeDatatype = require("../../src/datatypes/time")
 
 describe("Time datatype", ->
 

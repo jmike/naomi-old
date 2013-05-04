@@ -26,14 +26,13 @@ module.exports = (grunt) ->
 		pkg: grunt.file.readJSON("package.json")
 		
 		mocha: {
-			main: {
+			datatypes: {
 				options: {
 					reporter: "spec"
 				}
 				files: [
 					{
-						src: "test/*.coffee"
-						filter: (src) -> not /\-database/.test(src)
+						src: "test/datatypes/*.coffee"
 					}
 				]
 			}
@@ -59,7 +58,7 @@ module.exports = (grunt) ->
 	})
 
 	grunt.registerTask("test", [
-		"mocha:main"
+		"mocha:datatypes"
 		"mocha:mysql"
 	])
 	grunt.registerTask("docs", ["exec:codo"])

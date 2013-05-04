@@ -1,6 +1,6 @@
 assert = require("chai").assert
-NumberDatatype = require("../src/datatypes/number")
-IntegerDatatype = require("../src/datatypes/integer")
+NumberDatatype = require("../../src/datatypes/number")
+IntegerDatatype = require("../../src/datatypes/integer")
 
 describe("Integer datatype", ->
 	
