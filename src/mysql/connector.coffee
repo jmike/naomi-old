@@ -1,7 +1,7 @@
 mansion = require("generic-pool")
 mysql = require("mysql")
-Attribute = require("../../attribute")
-NumberUtils = require("../../utils/number")
+Attribute = require("../attribute")
+NumberUtils = require("../utils/number")
 
 ###
 @author Dimitrios C. Michalakos

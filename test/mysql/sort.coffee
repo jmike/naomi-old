@@ -1,53 +1,71 @@
 assert = require("chai").assert
-Sort = require("../../src/connectors/mysql/sort")
+Sort = require("../../src/mysql/sort/index")
 
 describe("MySql sort", ->
 
+	it("should be able to accept the '-' operator", ->
+		sort = new Sort((a, b) ->
+			a.age - b.age
+		)
+		assert.strictEqual(sort.sql, "?? ASC")
+		assert.deepEqual(sort.params, ["age"])
+
+		sort = new Sort((a, b) ->
+			b.age - a.age
+		)
+		assert.strictEqual(sort.sql, "?? DESC")
+		assert.deepEqual(sort.params, ["age"])
+		return
+	)
+
+	it("should be able to accept the localeCompare() callee", ->
+		sort = new Sort((a, b) ->
+			a.name.localeCompare(b.name)
+		)
+		assert.strictEqual(sort.sql, "?? ASC")
+		assert.deepEqual(sort.params, ["name"])
+
+		sort = new Sort((a, b) ->
+			b.name.localeCompare(a.name)
+		)
+		assert.strictEqual(sort.sql, "?? DESC")
+		assert.deepEqual(sort.params, ["name"])
+		return
+	)
+
 	it("should throw an error if the supplied objects are uncomparable", ->
 		assert.throw(->
-			new Sort("a.age - b.id", "a", "b")
+			new Sort((a, b) ->
+				a.age - b.id
+			)
 		)
 
 		assert.throw(->
-			new Sort("a.age - a.age", "a", "b")
+			new Sort((a, b) ->
+				a.age - a.age
+			)
 		)
 
 		assert.throw(->
-			new Sort("age - b.age", "a", "b")
+			new Sort((a, b) ->
+				age - b.age
+			)
 		)
 
 		assert.throw(->
-			new Sort("c.age - a.age", "a", "b")
+			new Sort((a, b) ->
+				c.age - b.age
+			)
 		)
 		return
 	)
 
 	it("should throw an error on unsupported javascript operator", ->
 		assert.throw(->
-			new Sort("a.age + b.age", "a", "b")
+			new Sort((a, b) ->
+				a.age + b.age
+			)
 		)
-		return
-	)
-
-	it("should be able to understand the - operator", ->
-		sort = new Sort("a.age - b.age", "a", "b")
-		assert.strictEqual(sort.sql, "`age` ASC")
-		assert.strictEqual(sort.params.length, 0)
-
-		sort = new Sort("b.age - a.age", "a", "b")
-		assert.strictEqual(sort.sql, "`age` DESC")
-		assert.strictEqual(sort.params.length, 0)
-		return
-	)
-
-	it("should be able to understand the localeCompare() function", ->
-		sort = new Sort("a.name.localCompare(b.name)", "a", "b")
-		assert.strictEqual(sort.sql, "`name` ASC")
-		assert.strictEqual(sort.params.length, 0)
-
-		sort = new Sort("b.name.localCompare(a.name)", "a", "b")
-		assert.strictEqual(sort.sql, "`name` DESC")
-		assert.strictEqual(sort.params.length, 0)
 		return
 	)
 

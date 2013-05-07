@@ -8,9 +8,9 @@ class Expression
 	@throw {Error} if ast contains an invalid or unsupported expression.
 	###
 	constructor: (ast, entity = "entity", thisObject) ->
-		CustomExpression = Expression[ast.type]
-		if CustomExpression?
-			{@sql, @params} = new CustomExpression(ast, entity, thisObject)
+		Expr = Expression[ast.type]
+		if Expr?
+			{@sql, @params} = new Expr(ast, entity, thisObject)
 		else
 			throw Error("Unsupported javascript expression: #{ast.type}")
 
@@ -22,13 +22,13 @@ class Expression.Identifier
 	@throw {Error} if ast contains an invalid or unsupported expression.
 	###
 	constructor: (ast) ->
-		@sql = "`#{ast.name}`"
-		@params = []
+		@sql = "??"
+		@params = [ast.name]
 
 class Expression.Literal
 
 	###
-	Constructs a parameterized SQL expression from given abstract syntax tree containing a literal, i.e. 32.
+	Constructs a parameterized SQL expression from given abstract syntax tree containing a literal, e.g. 32.
 	@param {Object} ast the abstract syntax tree.
 	@throw {Error} if ast contains an invalid or unsupported expression.
 	###
@@ -39,7 +39,7 @@ class Expression.Literal
 class Expression.MemberExpression
 
 	###
-	Constructs a parameterized SQL expression from given abstract syntax tree containing a member expression, i.e. object.property.
+	Constructs a parameterized SQL expression from given abstract syntax tree containing a member expression, e.g. object.property.
 	@param {Object} ast the abstract syntax tree.
 	@param {String} entity the entity's name in the abstract syntax tree (optional), defaults to "entity".
 	@param {Object} thisObject object to use as this (optional).
@@ -49,28 +49,27 @@ class Expression.MemberExpression
 		object = ast.object
 		property = ast.property
 
-		if object.name is entity
+		if object.name is entity # e.g. entity.object.name
 		 	{@sql, @params} = new Expression(property, "", thisObject)
 
-		else if object.type is "ThisExpression"
-
-			if thisObject?.hasOwnProperty(property.name)
+		else if object.type is "ThisExpression"# e.g. this.age
+			if thisObject? and thisObject.hasOwnProperty(property.name)
 				@sql = "?"
 				@params = [thisObject[property.name]]
 
 			else
 				throw new Error("Undefined property #{property.name} of 'this' object")
 
-		else
-			expression = new Expression(object, entity, thisObject)
-			sql = expression.sql
-			params = expression.params
+		else# e.g. object.name
+			expr = new Expression(object, entity, thisObject)
+			sql = expr.sql
+			params = expr.params
 
 			sql += "."
 
-			expression = new Expression(property, entity, thisObject)
-			sql += expression.sql
-			params = params.concat(expression.params)
+			expr = new Expression(property, entity, thisObject)
+			sql += expr.sql
+			params = params.concat(expr.params)
 
 			@sql = sql
 			@params = params
@@ -78,7 +77,7 @@ class Expression.MemberExpression
 class Expression.LogicalExpression
 
 	###
-	Constructs a parameterized SQL expression from given abstract syntax tree containing a logical expression, i.e. true || false.
+	Constructs a parameterized SQL expression from given abstract syntax tree containing a logical expression, e.g. true || false.
 	@param {Object} ast the abstract syntax tree.
 	@param {String} entity the entity's name in the abstract syntax tree (optional), defaults to "entity".
 	@param {Object} thisObject object to use as this (optional).
@@ -94,19 +93,20 @@ class Expression.LogicalExpression
 			params = []
 
 			sql += "("
-			expression = new Expression(left, entity, thisObject)
-			sql += expression.sql
-			params = params.concat(expression.params)
+			expr = new Expression(left, entity, thisObject)
+			sql += expr.sql
+			params = params.concat(expr.params)
 
 			sql += " #{this._operators[operator]} "
 
-			expression = new Expression(right, entity, thisObject)
-			sql += expression.sql
-			params = params.concat(expression.params)
+			expr = new Expression(right, entity, thisObject)
+			sql += expr.sql
+			params = params.concat(expr.params)
 			sql += ")"
 
 			@sql = sql
 			@params = params
+
 		else
 			throw Error("Unsupported javascript operator: #{ast.operator}")
 
@@ -118,7 +118,7 @@ class Expression.LogicalExpression
 class Expression.BinaryExpression
 
 	###
-	Constructs a parameterized SQL expression from given abstract syntax tree containing a binary expression, i.e. 1 + 1.
+	Constructs a parameterized SQL expression from given abstract syntax tree containing a binary expression, e.g. 1 + 1.
 	@param {Object} ast the abstract syntax tree.
 	@param {String} entity the entity's name in the abstract syntax tree (optional), defaults to "entity".
 	@param {Object} thisObject object to use as this (optional).
@@ -129,28 +129,36 @@ class Expression.BinaryExpression
 		operator = ast.operator
 		right = ast.right
 
+		# Make sure literals are always on the right
+		if right.type isnt "Literal" and left.type is "Literal"
+			left = ast.right
+			right = ast.left
+
+		# Indicate whether on of literal values is null
+		isNull = (
+			right.type is "Literal" and right.value is null or
+			left.type is "Literal" and left.value is null
+		)
+
 		if this._operators.hasOwnProperty(operator)
 			sql = ""
 			params = []
 
 			sql += "("
-			expression = new Expression(left, entity, thisObject)
-			sql += expression.sql
-			params = params.concat(expression.params)
+			expr = new Expression(left, entity, thisObject)
+			sql += expr.sql
+			params = params.concat(expr.params)
 
-			isNull = (
-				right.type is "Literal" and right.value is null or
-				left.type is "Literal" and left.value is null
-			)
 			sql += " #{this._operators[operator](isNull)} "
 
-			expression = new Expression(right, entity, thisObject)
-			sql += expression.sql
-			params = params.concat(expression.params)
+			expr = new Expression(right, entity, thisObject)
+			sql += expr.sql
+			params = params.concat(expr.params)
 			sql += ")"
 
 			@sql = sql
 			@params = params
+
 		else
 			throw Error("Unsupported javascript operator: #{ast.operator}")
 
@@ -193,7 +201,7 @@ class Expression.BinaryExpression
 class Expression.CallExpression
 
 	###
-	Constructs a parameterized SQL expression from given abstract syntax tree containing a call expression, i.e. Math.sin(variable).
+	Constructs a parameterized SQL expression from given abstract syntax tree containing a call expression, e.g. Math.sin(variable).
 	@param {Object} ast the abstract syntax tree.
 	@param {String} entity the entity's name in the abstract syntax tree (optional), defaults to "entity".
 	@param {Object} thisObject object to use as this (optional).
@@ -216,15 +224,36 @@ class Expression.CallExpression
 					sql += "("
 					for arg, i in args
 						if i isnt 0 then sql += ", "
-						expression = new Expression(arg, entity, thisObject)
-						sql += expression.sql
-						params = params.concat(expression.params)
+						expr = new Expression(arg, entity, thisObject)
+						sql += expr.sql
+						params = params.concat(expr.params)
 					sql += ")"
 
 					@sql = sql
 					@params = params
+
 				else
 					throw Error("Unsupported math function: #{property.name}")
+
+			else if this._string.hasOwnProperty(property.name)
+				sql = ""
+				params = []
+
+				sql += "("
+				expr = new Expression(object, entity, thisObject)
+				sql += expr.sql
+				params = params.concat(expr.params)
+
+				sql += " LIKE "
+
+				expr = new Expression(args[0], entity, thisObject)
+				str = this._string[property.name](expr.params[0])
+				sql += expr.sql
+				params = params.concat(str)
+				sql += ")"
+
+				@sql = sql
+				@params = params
 
 			else
 				throw Error("Unsupported callee object: #{callee.object.name}")
@@ -251,30 +280,10 @@ class Expression.CallExpression
 		tan: "TAN"
 	}
 
-class Expression.ObjectExpression
-
-	###
-	Constructs a parameterized SQL expression from given abstract syntax tree containing a call expression, i.e. {id: entity.id}.
-	@param {Object} ast the abstract syntax tree.
-	@param {String} entity the entity's name in the abstract syntax tree (optional), defaults to "entity".
-	@param {Object} thisObject object to use as this (optional).
-	@throw {Error} if ast contains an invalid or unsupported expression.
-	###
-	constructor: (ast, entity = "entity", thisObject) ->
-		sql = ""
-		params = []
-
-		for property, i in ast.properties
-			if i isnt 0 then sql += ", "
-
-			expression = new Expression(property.value, entity, thisObject)
-			sql += expression.sql
-			params = params.concat(expression.params)
-
-			sql+= " AS ?"
-			params.push(property.key.name)
-
-		@sql = sql
-		@params = params
+	_string: {
+		contains: (str) -> "%#{str}%"
+		startsWith: (str) -> "#{str}%"
+		endsWith: (str) -> "%#{str}"
+	}
 
 module.exports = Expression

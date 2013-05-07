@@ -1,6 +1,7 @@
-MySqlConnector = require("./connectors/mysql")
+MySqlConnector = require("./mysql/connector")
 EntitySet = require("./entity-set")
 Attribute = require("./attribute")
+
 async = require("async")
 
 class Naomi
@@ -40,7 +41,7 @@ class Naomi
 			throw new Error("Entity-set #{name} is already defined")
 		
 		entitySet = new EntitySet(@_connector, name, attributes, options)
-		@schema[name] = entitySet# cache
+		@schema[name] = entitySet # cache
 		return entitySet
 
 	###

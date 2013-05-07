@@ -34,7 +34,6 @@ class Map
 
 				# make sure that single statement is of type "return"
 				if statement.type is "ReturnStatement"
-#					console.log(JSON.stringify(statement.argument, null, 4))
 					{@sql, @params} = new Expression(statement.argument, entity, thisObject)
 
 				else
