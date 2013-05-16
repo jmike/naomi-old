@@ -1,20 +1,49 @@
+esprima = require("esprima")
 _ = require("underscore")
 
-class Expression
+class Sort
 
 	###
-	Constructs a parameterized SQL expression from given abstract syntax tree.
-	@param {Object} ast the abstract syntax tree.
-	@param {String} a reference to the current entity's instance in the abstract syntax tree.
-	@param {String} b reference to the next entity's instance in the abstract syntax tree.
-	@throw {Error} if ast contains an invalid or unsupported expression.
-	###
-	constructor: (ast, a = "a", b = "b") ->
-		Expr = Expression[ast.type]
-		if Expr?
-			{@sql, @params} = new Expr(ast, a, b)
+	Constructs a new mysql sort to use in an order by clause.
+    @param {Function} compareFunction a javascript function that defines the sort order in the entity-set.
+	@throw {Error} if compareFunction contains an invalid or unsupported expression.
+    ###
+	constructor: (compareFunction) ->
+		try
+			ast = esprima.parse("sort = #{compareFunction.toString()}")
+		catch error
+			throw new Error("Invalid javascript expression: #{error.message}")
+
+		# callee is on the right
+		callee = ast.body[0].expression.right
+
+		# make sure callee parameters are valid
+		if callee.params.length is 2
+			a = callee.params[0].name
+			b = callee.params[1].name
 		else
-			throw Error("Unsupported javascript expression: #{ast.type}")
+			throw Error("Invalid function parameters: expected exactly 2 parameters, got #{callee.params.length}")
+
+		# make sure callee body is a block statement
+		if callee.body.type is "BlockStatement"
+			block = callee.body
+
+			# make sure block has a single statement
+			if block.body.length is 1
+				statement = block.body[0]
+
+				# make sure that single statement is of type "return"
+				if statement.type is "ReturnStatement"
+					{@sql, @params} = new Sort.Expression(statement.argument, a, b)
+
+				else
+					throw Error("Unsupported function block: expected a return statement, got #{statement.type}")
+
+			else
+				throw Error("Unsupported function block: expected a single statement, got #{block.body.length}")
+
+		else
+			throw Error("Unsupported function body: expected a block statement, got #{callee.body.type}")
 
 	###
 	Returns true if the supplied objects are comparable, false if not.
@@ -30,7 +59,22 @@ class Expression
 			x.object.name is b and y.object.name is a
 		) and _.isEqual(x.property, y.property)
 
-class Expression.Identifier
+class Sort.Expression
+
+	###
+	Constructs a parameterized SQL expression from given abstract syntax tree.
+	@param {Object} ast the abstract syntax tree.
+	@param {String} a reference to the current entity's instance in the abstract syntax tree.
+	@param {String} b reference to the next entity's instance in the abstract syntax tree.
+	@throw {Error} if ast contains an invalid or unsupported expression.
+	###
+	constructor: (ast, a = "a", b = "b") ->
+		if Sort.hasOwnProperty(ast.type)
+			{@sql, @params} = new Sort[ast.type](ast, a, b)
+		else
+			throw Error("Unsupported javascript expression: #{ast.type}")
+
+class Sort.Identifier
 
 	###
 	Constructs a parameterized SQL expression from given abstract syntax tree containing an identifier.
@@ -41,7 +85,7 @@ class Expression.Identifier
 		@sql = "??"
 		@params = [ast.name]
 
-class Expression.MemberExpression
+class Sort.MemberExpression
 
 	###
 	Constructs a parameterized SQL expression from given abstract syntax tree containing a member expression, e.g. object.property.
@@ -55,23 +99,23 @@ class Expression.MemberExpression
 		property = ast.property
 
 		if object.name in [a, b]# e.g. "a.object.name" or "b.name"
-			{@sql, @params} = new Expression(property, "", "")
+			{@sql, @params} = new Sort.Expression(property, "", "")
 
 		else# e.g. object.name
-			expr = new Expression(object, a, b)
+			expr = new Sort.Expression(object, a, b)
 			sql = expr.sql
 			params = expr.params
 
 			sql += "."
 
-			expr = new Expression(property, a, b)
+			expr = new Sort.Expression(property, a, b)
 			sql += expr.sql
 			params = params.concat(expr.params)
 
 			@sql = sql
 			@params = params
 
-class Expression.BinaryExpression
+class Sort.BinaryExpression
 
 	###
 	Constructs a parameterized SQL expression from given abstract syntax tree containing a binary expression, e.g. a.id - b.id.
@@ -85,10 +129,10 @@ class Expression.BinaryExpression
 		operator = ast.operator
 		right = ast.right
 
-		if Expression._isComparable(left, right, a, b)
+		if Sort._isComparable(left, right, a, b)
 
 			if operator is "-"
-				{sql, params} = new Expression(left, a, b)
+				{sql, params} = new Sort.Expression(left, a, b)
 
 				sql += " " + (
 					if left.object.name is a
@@ -106,7 +150,7 @@ class Expression.BinaryExpression
 		else
 			throw Error("Uncomparable javascript members")
 
-class Expression.CallExpression
+class Sort.CallExpression
 
 	###
 	Constructs a parameterized SQL expression from given abstract syntax tree containing a call expression, e.g. Math.sin(variable).
@@ -127,8 +171,8 @@ class Expression.CallExpression
 
 				if args.length is 1
 
-					if Expression._isComparable(object, args[0], a, b)
-						{sql, params} = new Expression(object, a, b)
+					if Sort._isComparable(object, args[0], a, b)
+						{sql, params} = new Sort.Expression(object, a, b)
 
 						sql += " " + (
 							if object.object.name is a
@@ -152,4 +196,4 @@ class Expression.CallExpression
 		else
 			throw Error("Unsupported call expression")
 
-module.exports = Expression
+module.exports = Sort

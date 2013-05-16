@@ -52,12 +52,12 @@ class EntitySet
 				try
 					@query.filter = esprima.parse(callback)
 				catch error
-					throw new Error("Filter parse error: #{error.message}")
+					throw new Error("FilterExpression parse error: #{error.message}")
 			when "function"
 				try
 					@query.filter = esprima.parse(callback.toString())# function.toString()
 				catch error
-					throw new Error("Filter parse error: #{error.message}")
+					throw new Error("FilterExpression parse error: #{error.message}")
 			else
 				throw new Error("Invalid filter: expected function or string, got #{typeof callback}")
 		return this

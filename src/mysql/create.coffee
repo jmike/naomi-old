@@ -4,7 +4,7 @@ NumberDatatype = require("../datatypes/number")
 DateDatatype = require("../datatypes/date")
 TimeDatatype = require("../datatypes/time")
 
-class CreateStatement
+class Create
 
 	###
 	Constructs a parameterized "CREATE TABLE" SQL expression.
@@ -28,13 +28,14 @@ class CreateStatement
 			params.push(key)
 
 			if datatype instanceof BooleanDatatype
-				stmt = new CreateStatement.Boolean(datatype)
+				stmt = new Create.Boolean(datatype)
 			else if datatype instanceof NumberDatatype
-				stmt = new CreateStatement.Number(datatype)
+				stmt = new Create.Number(datatype)
 			else if datatype instanceof StringDatatype
-				stmt = new CreateStatement.String(datatype)
+				stmt = new Create.String(datatype)
 			else
 				throw new Error("Unsupported column datatype")
+
 			sql += stmt.sql
 			params = params.concat(stmt.params)
 
@@ -52,7 +53,7 @@ class CreateStatement
 		@sql = sql
 		@params = params
 
-class CreateStatement.Boolean
+class Create.Boolean
 
 	###
 	Constructs a parameterized SQL expression that defines a boolean column.
@@ -62,7 +63,7 @@ class CreateStatement.Boolean
 		@params = []
 		console.log @sql, @params
 
-class CreateStatement.Number
+class Create.Number
 
 	###
 	Constructs a parameterized SQL expression that defines a numeric column.
@@ -114,7 +115,7 @@ class CreateStatement.Number
 		@sql = sql
 		@params = params
 
-class CreateStatement.String
+class Create.String
 
 	###
 	Constructs a parameterized SQL expression that defines a textual column.
@@ -160,4 +161,4 @@ class CreateStatement.String
 		@sql = sql
 		@params = params
 
-module.exports = CreateStatement
+module.exports = Create
