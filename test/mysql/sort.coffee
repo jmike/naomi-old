@@ -1,5 +1,5 @@
 assert = require("chai").assert
-Sort = require("../../src/mysql/sort/index")
+Sort = require("../../src/mysql/sort")
 
 describe("MySql sort", ->
 

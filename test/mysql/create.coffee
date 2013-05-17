@@ -1,5 +1,5 @@
 assert = require("chai").assert
-CreateStatement = require("../../src/mysql/create-statement")
+CreateStatement = require("../../src/mysql/create")
 BooleanDatatype = require("../../src/datatypes/boolean")
 NumberDatatype = require("../../src/datatypes/number")
 IntegerDatatype = require("../../src/datatypes/integer")
