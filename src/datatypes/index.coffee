@@ -1,15 +1,15 @@
-BooleanDatatype = require("./datatypes/boolean")
-DateDatatype = require("./datatypes/date")
-IntegerDatatype = require("./datatypes/integer")
-NumberDatatype = require("./datatypes/number")
-TimeDatatype = require("./datatypes/time")
-StringDatatype = require("./datatypes/string")
-EmailDatatype = require("./datatypes/email")
+BooleanDatatype = require("./boolean")
+DateDatatype = require("./date")
+IntegerDatatype = require("./integer")
+NumberDatatype = require("./number")
+TimeDatatype = require("./time")
+StringDatatype = require("./string")
+EmailDatatype = require("./email")
 
 ###
 @author Dimitrios C. Michalakos
 ###
-class Attribute
+class Datatypes
 
 	@Boolean = BooleanDatatype
 	@Number = NumberDatatype
@@ -21,45 +21,45 @@ class Attribute
 
 	###
 	Constructs and returns a new number datatype.
-	@return {Attribute.Number}
+	@return {Datatypes.Number}
 	###
 	@number: -> new NumberDatatype()
-	
+
 	###
 	Constructs and returns a new integer datatype.
-	@return {Attribute.Integer}
+	@return {Datatypes.Integer}
 	###
 	@integer: -> new IntegerDatatype()
-	
+
 	###
 	Constructs and returns a new string datatype.
-	@return {Attribute.String}
+	@return {Datatypes.String}
 	###
 	@string: -> new StringDatatype()
-	
+
 	###
 	Constructs and returns a new e-mail datatype.
-	@return {Attribute.String}
+	@return {Datatypes.Email}
 	###
 	@email: -> new EmailDatatype()
-	
+
 	###
 	Constructs and returns a new boolean datatype.
-	@return {Attribute.Boolean}
+	@return {Datatypes.Boolean}
 	###
 	@bool: -> new BooleanDatatype()
 
 	###
 	Constructs and returns a new date datatype.
-	@return {Attribute.Date}
+	@return {Datatypes.Date}
 	###
 	@date: -> new DateDatatype()
-	
+
 	###
 	Constructs and returns a new time datatype.
-	@return {Attribute.Date}
+	@return {Datatypes.Time}
 	###
 	@time: -> new TimeDatatype()
-	
-module.exports = Attribute
+
+module.exports = Datatypes
 	

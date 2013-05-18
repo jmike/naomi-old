@@ -38,11 +38,6 @@ class Create
 
 			sql += stmt.sql
 			params = params.concat(stmt.params)
-
-			if datatype.nullable()
-				sql += " NULL"
-			else
-				sql += " NOT NULL"
 		sql += ")"
 
 		sql += " ENGINE = ?"
@@ -57,11 +52,22 @@ class Create.Boolean
 
 	###
 	Constructs a parameterized SQL expression that defines a boolean column.
+    @param {BooleanDatatype} datatype the column's datatype.
 	###
-	constructor: ->
-		@sql = "TINYINT(1) UNSIGNED"
-		@params = []
-		console.log @sql, @params
+	constructor: (datatype) ->
+		sql = ""
+		params = []
+
+		sql += "TINYINT(1) UNSIGNED"
+		sql += (
+			if datatype.nullable()
+				" NULL"
+			else
+				" NOT NULL"
+		)
+
+		@sql = sql
+		@params = params
 
 class Create.Number
 
@@ -75,11 +81,10 @@ class Create.Number
 
 		precision = datatype.precision()
 		scale = datatype.scale()
+		min = datatype.min()
+		max = datatype.max()
 
 		if scale is 0 #integer
-			min = datatype.min()
-			max = datatype.max()
-
 			if min >= 0 #unsigned
 				if max < 256
 					sql += "TINYINT"
@@ -111,6 +116,13 @@ class Create.Number
 				sql += "(#{precision}, #{scale})"
 			if min >= 0 #unsigned
 				sql += " UNSIGNED"
+
+		sql += (
+			if datatype.nullable()
+				" NULL"
+			else
+				" NOT NULL"
+		)
 
 		@sql = sql
 		@params = params
@@ -157,6 +169,13 @@ class Create.String
 				sql += "MEDIUMTEXT"
 			else
 				sql += "LONGTEXT"
+
+		sql += (
+			if datatype.nullable()
+				" NULL"
+			else
+				" NOT NULL"
+		)
 
 		@sql = sql
 		@params = params

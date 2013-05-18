@@ -52,7 +52,7 @@ describe("Boolean datatype", ->
 		assert.isNull(BooleanDatatype.parse())
 		return
 	)
-	
+
 	it("should accept null values if nullable", ->
 		assert.doesNotThrow(->
 			new BooleanDatatype()

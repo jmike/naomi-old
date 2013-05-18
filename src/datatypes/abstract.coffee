@@ -26,7 +26,7 @@ class AbstractDatatype
 	nullable: (nullable) ->
 		switch typeof nullable
 			when "undefined"
-				return @properties.nullable
+				return @properties.nullable is true
 			when "boolean"
 				@properties.nullable = nullable
 				return this
@@ -39,7 +39,7 @@ class AbstractDatatype
 	@throw {Error} if value is invalid.
 	###
 	validate: (value) ->
-		if value is null and not @properties.nullable
+		if value is null and @properties.nullable isnt true
 			throw new Error("Datatype cannot be assigned to a null value")
 
 module.exports = AbstractDatatype

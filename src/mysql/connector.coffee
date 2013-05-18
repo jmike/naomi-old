@@ -1,6 +1,6 @@
 mansion = require("generic-pool")
 mysql = require("mysql")
-Attribute = require("../attribute")
+Datatypes = require("../datatypes")
 NumberUtils = require("../utils/number")
 
 ###
@@ -199,121 +199,5 @@ class Connector
 #		sql += " FROM `#{this.name}`"
 #		sql += ";"
 		return sql
-
-	###
-	Creates a new entity set with the specified properties.
-	@param {String} name the name of the entity set.
-	@param {Object} attributes the attributes of the entity set.
-	@param {Object} options key/value settings.
-	@option options {String} engine the entity set's internal engine, e.g. "MYISAM" or "InnoDB".
-	@param {Function} callback i.e. function(error, data).
-	###
-	create: (name, attributes, options, callback) ->
-		sql = "CREATE TABLE IF NOT EXISTS `#{name}`"
-		params = []
-		keys = (k for own k of attributes)
-
-		sql += " ("
-		for key, i in keys
-			if i isnt 0
-				sql += ", "
-			sql += "`#{key}` "
-			attr = attributes[key]
-
-			if attr instanceof Attribute.Boolean# boolean
-				sql += "TINYINT(1) UNSIGNED"
-
-			else if attr instanceof Attribute.Number# number
-				precision = attr.precision()
-				scale = attr.scale()
-
-				if scale is 0# integer
-					min = attr.min()
-					max = attr.max()
-
-					if min >= 0# unsigned
-						if max < 256
-							sql += "TINYINT"
-						else if max < 65536
-							sql += "SMALLINT"
-						else if max < 16777216
-							sql += "MEDIUMINT"
-						else if max < 4294967296 or typeof max is "undefined"
-							sql += "INT"
-						else
-							sql += "BIGINT"
-						sql += " UNSIGNED"
-
-					else# signed
-						if min >= -128 and max < 128
-							sql += "TINYINT"
-						else if min >= -32768 and max < 32768
-							sql += "SMALLINT"
-						else if min >= -8388608 and max < 8388608
-							sql += "MEDIUMINT"
-						else if min >= -2147483648 or typeof min is "undefined" and
-						max < 2147483648 or typeof max is "undefined"
-							sql += "INT"
-						else
-							sql += "BIGINT"
-
-				else# float
-					sql += "FLOAT"
-					if typeof precision isnt "undefined" and typeof scale isnt "undefined"
-						sql += "(#{precision}, #{scale})"
-					if min >= 0# unsigned
-						sql += " UNSIGNED"
-
-			else if attr instanceof Attribute.String# String
-				equals = attr.equals()
-
-				if equals?# with predefined values
-					if equals.length <= 64
-						sql += "SET"
-					else
-						sql += "ENUM"
-					sql += "("
-					for value, i in equals
-						if i isnt 0
-							sql += ", "
-						sql += "?"
-						params.push(value)
-					sql += ")"
-
-				else# with free value
-					exactLength = attr.length()
-					maxLength = attr.maxLength() || 100
-
-					if exactLength < 256
-						sql += "CHAR(#{length})"
-					else if maxLength < 256
-						sql += "VARCHAR(#{maxLength})"
-					else
-						m = exactLength || maxLength
-						if m < 65536
-							sql += "TEXT"
-						else if m < 16777216
-							sql += "MEDIUMTEXT"
-						else
-							sql += "LONGTEXT"
-
-			else if attr instanceof Attribute.Date# Date
-				console.log "under contruction"
-
-			if attr.nullable()
-				sql += " NULL"
-			else
-				sql += " NOT NULL"
-
-		sql += ")"
-
-		engine = options.engine || "InnoDB"
-		if engine?
-			sql += " ENGINE = #{engine}"
-
-		sql += ";"
-
-		this.execute(sql, params, callback)
-		return
 
 module.exports = Connector
